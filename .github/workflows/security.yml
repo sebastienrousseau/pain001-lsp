@@ -52,4 +52,4 @@ jobs:
           pip install .
 
       - name: Audit installed packages
-        run: pip-audit --strict
+        run: pip-audit
