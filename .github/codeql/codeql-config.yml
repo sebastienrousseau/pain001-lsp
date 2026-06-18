@@ -1,0 +1,16 @@
+name: "pain001-lsp CodeQL config"
+
+# Examples deliberately demonstrate the LSP surface with deliberately-bad
+# sample data (e.g. ``"debtor_account_IBAN": "INVALID"``). CodeQL's
+# ``py/clear-text-logging-sensitive-data`` heuristic flags the print of
+# any expression downstream of a value in a "sensitive"-named field, even
+# when the value is obviously fake. Excluding the demo directory keeps
+# the scan focused on production code in ``pain001_lsp/``.
+paths-ignore:
+  - examples
+  - tests
+
+# Use the default + security-extended query suite so we get the same
+# coverage GitHub's default setup would have offered.
+queries:
+  - uses: security-and-quality
