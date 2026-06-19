@@ -1,4 +1,4 @@
-<!-- SPDX-License-Identifier: Apache-2.0 OR MIT -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <p align="center">
   <img
@@ -12,7 +12,7 @@
 <h1 align="center">pain001-lsp</h1>
 
 <p align="center">
-  <b>Language Server Protocol server for authoring pain001 ISO 20022 Customer Credit Transfer Initiation data files.</b>
+  <b>Language Server Protocol server for authoring pain001 ISO 20022 payment-data JSON files.</b>
 </p>
 
 <p align="center">
@@ -20,100 +20,82 @@
   <a href="https://pypi.org/project/pain001-lsp/"><img src="https://img.shields.io/pypi/pyversions/pain001-lsp.svg?style=for-the-badge" alt="Python versions" /></a>
   <a href="https://pypi.org/project/pain001-lsp/"><img src="https://img.shields.io/pypi/dm/pain001-lsp.svg?style=for-the-badge" alt="PyPI downloads" /></a>
   <a href="https://github.com/sebastienrousseau/pain001-lsp/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sebastienrousseau/pain001-lsp/ci.yml?branch=main&label=Tests&style=for-the-badge" alt="Tests" /></a>
-  <a href="https://github.com/sebastienrousseau/pain001-lsp/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sebastienrousseau/pain001-lsp/ci.yml?branch=main&label=Quality&style=for-the-badge" alt="Quality" /></a>
-  <a href="#licence"><img src="https://img.shields.io/pypi/l/pain001-lsp?style=for-the-badge" alt="Licence" /></a>
+  <a href="https://github.com/sebastienrousseau/pain001-lsp/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sebastienrousseau/pain001-lsp/ci.yml?branch=main&label=Coverage&style=for-the-badge" alt="Coverage" /></a>
+  <a href="#license"><img src="https://img.shields.io/pypi/l/pain001-lsp?style=for-the-badge" alt="License" /></a>
 </p>
 
 ---
 
-**Real-time editor help for ISO 20022 pain.001 data files** - diagnostics,
-completion, and hover as you author the JSON records that drive
-`pain.001` Customer Credit Transfer Initiation message generation.
-
-> **Latest release: v0.0.52** - a [pygls][pygls]-based Language Server with
-> schema + IBAN/BIC diagnostics, field and message-type completion, and
-> schema-description hover, all backed by the `pain001` public API.
-> [See what's new →][release-052]
-
 ## Contents
 
-- [Overview](#overview)
-- [Install](#install)
-- [Quick Start](#quick-start)
-  - [Editor wiring](#editor-wiring)
-- [Features](#features)
-- [Using the helpers](#using-the-helpers)
-- [Examples](#examples)
-- [Development](#development)
-- [Licence](#licence)
-- [Contribution](#contribution)
-- [Acknowledgements](#acknowledgements)
+**Getting started**
 
-## Overview
+- [What is pain001-lsp?](#what-is-pain001-lsp) — the problem it solves
+- [Install](#install) — PyPI, virtualenv, Docker
+- [Quick start](#quick-start) — wire it to your editor in 60 seconds
+
+**Library reference**
+
+- [Features](#features) — six LSP features as you type
+- [Editor wiring](#editor-wiring) — Neovim, VS Code, Helix, generic
+- [Using the helpers](#using-the-helpers) — call the diagnostic engine from Python
+- [The pain001 suite](#the-pain001-suite) — core lib, MCP server, LSP server
+
+**Operational**
+
+- [When not to use pain001-lsp](#when-not-to-use-pain001-lsp) — honest boundaries
+- [Development](#development) — gates, make targets
+- [Security](#security) — sandboxing posture
+- [Documentation](#documentation) — examples, guides
+- [Contributing](#contributing) — how to get changes in
+- [License](#license) — Apache-2.0
+
+---
+
+## What is pain001-lsp?
 
 A **Language Server** speaks the
-[Language Server Protocol (LSP)][lsp] - the editor-agnostic protocol that
-lets a single backend deliver diagnostics, completion, hover, and more to
-any LSP client (VS Code, Neovim, Helix, Emacs, …). **pain001-lsp** is that
-backend for **payment-data JSON files**: the JSON arrays of flat payment
-records that drive ISO 20022 `pain.001` message generation in the
-[`pain001`][pain001] suite.
+[Language Server Protocol (LSP)](https://microsoft.github.io/language-server-protocol/) —
+the editor-agnostic protocol that lets a single backend deliver
+diagnostics, completion, hover, code actions, formatting, and document
+symbols to any LSP client (VS Code, Neovim, Helix, Emacs, …).
+**pain001-lsp** is that backend for **payment-data JSON files**: the
+JSON arrays of flat payment records that drive ISO 20022 `pain.001`
+message generation in the
+[`pain001`](https://github.com/sebastienrousseau/pain001) suite.
 
-- **Website:** <https://pain001.com>
-- **Source code:** <https://github.com/sebastienrousseau/pain001-lsp>
-- **Bug reports:** <https://github.com/sebastienrousseau/pain001-lsp/issues>
+Every feature is backed by the `pain001` public API, so editor
+behaviour stays in lockstep with the CLI, REST API, and MCP server.
 
-It gives editors four features as you type, all backed by the `pain001`
-public API so they behave identically to the CLI, REST API, and MCP server:
+| Concern | How pain001-lsp handles it |
+| :--- | :--- |
+| Schema validation | Each record validated against the message type's input JSON Schema |
+| Identifier validation | `debtor_account_IBAN`, `creditor_account_IBAN`, `*_BIC`, etc. validated as IBAN/BIC |
+| Completion | Every input field with its schema description + every supported message type |
+| Hover | Schema descriptions for the field under the cursor |
+| Code actions | One-click "add missing required fields" with type-appropriate placeholders |
+| Formatting | Two-space, ISO 20022 Latin-clean JSON pretty-print; idempotent (no edits when already formatted) |
+| Outline | One `DocumentSymbol` per top-level record (named by `id`, detail = `payment_id`) |
+| Multi-record | Code actions target the record under the cursor, not just the first |
+| Live re-config | `workspace/didChangeConfiguration` switches the active message type without restart |
 
-- **Diagnostics** - each record is validated against a message type's input
-  JSON Schema, and any IBAN / BIC identifier values are additionally
-  checked with the dedicated validators.
-- **Completion** - every input field (with its description) plus the list
-  of supported `pain.001` / `pain.008` message types.
-- **Hover** - the schema description for the field under the cursor.
-- **Code actions** - a single quick-fix that inserts JSON `"field": …`
-  lines for every schema-required field missing from the first record,
-  using type-appropriate placeholders.
-
-The intended message type defaults to `pain.001.001.09` (Customer Credit
-Transfer Initiation V09); the pure helpers accept a `message_type` argument
-so a different type can be configured. Editors can override the default
-per-workspace by sending
-`initializationOptions: {"messageType": "pain.001.001.11"}` when they spawn
-the server.
-
-**pain001-lsp** is part of the **pain001 suite** - a set of independently
-installable packages (all Python 3.10+) built around the `pain001` library:
-
-| Package | Role |
-|---------|------|
-| [`pain001`](https://pypi.org/project/pain001/) | Core library + Click CLI + FastAPI REST API |
-| [`pain001-mcp`](https://pypi.org/project/pain001-mcp/) | Model Context Protocol server (for AI agents) |
-| `pain001-lsp` | **Language Server Protocol server (this package)** |
-
-```mermaid
-flowchart LR
-    A["Editor (VS Code / Neovim / …)"] -->|LSP over stdio| B["pain001-lsp"]
-    B -->|compute_diagnostics / completion_items / hover_text| C["pain001"]
-    C -->|schema + IBAN/BIC validation| B
-    B -->|diagnostics · completion · hover| A
-```
+---
 
 ## Install
 
-**pain001-lsp** runs on macOS, Linux, and Windows and requires **Python 3.10+**
-and **pip**. It pulls in the core [`pain001`][pain001] library and
-[`pygls`][pygls] automatically.
+| Channel | Command | Notes |
+| :--- | :--- | :--- |
+| PyPI | `pip install pain001-lsp` | Pulls in `pain001 >= 0.0.53` + `pygls` |
+| Source | `git clone https://github.com/sebastienrousseau/pain001-lsp && cd pain001-lsp && poetry install` | For development |
+| Docker (GHCR) | `docker pull ghcr.io/sebastienrousseau/pain001-lsp:latest` | Multi-arch (linux/amd64, linux/arm64); runs `pain001-lsp` over stdio |
 
-```sh
-python -m pip install pain001-lsp
-```
+Requires Python 3.10 or later. Works on macOS, Linux, and Windows.
 
 Verify the installation:
 
 ```sh
 python -c "import pain001_lsp; print('pain001-lsp', pain001_lsp.__version__)"
+# -> pain001-lsp 0.0.53
 ```
 
 <details>
@@ -125,26 +107,61 @@ source venv/bin/activate        # macOS/Linux
 venv\Scripts\activate           # Windows
 python -m pip install -U pain001-lsp
 ```
+
 </details>
 
-## Quick Start
+---
 
-The package installs a `pain001-lsp` console entry point that starts the
-language server over **stdio**:
+## Quick start
+
+The package installs a `pain001-lsp` console entry point that starts
+the language server over **stdio**:
 
 ```sh
 pain001-lsp
+# -> (waiting on stdin for LSP JSON-RPC)
 ```
 
-The command speaks LSP on stdin/stdout - it is meant to be launched by your
-editor's LSP client, not used interactively. Point your editor at it for
-JSON payment-data files and you get diagnostics, completion, and hover as
-you type.
+The command speaks LSP on stdin/stdout — it is meant to be launched by
+your editor's LSP client, not used interactively. Wire it up
+([Editor wiring](#editor-wiring)) and open any pain.001 payment-data
+JSON file; diagnostics, completion, hover, formatting, and the outline
+pane all light up as you type.
 
-### Editor wiring
+---
 
-Register `pain001-lsp` as the server `cmd` for JSON files in your editor's
-LSP client.
+## Features
+
+For payment-data JSON files (a JSON array of flat records, or a single
+record object treated as one record):
+
+| LSP method | Behaviour |
+| :--- | :--- |
+| `textDocument/publishDiagnostics` | Schema + IBAN/BIC validation on open and on every change; malformed JSON yields a single syntax diagnostic at the offending position |
+| `textDocument/completion` | Every input field (description as detail) + every supported `pain.001` / `pain.008` message type |
+| `textDocument/hover` | Schema `description` for the field under the cursor |
+| `textDocument/codeAction` | "Add missing required fields" quick-fix on the record under the cursor, with type-appropriate placeholders (`""`, `0`, `false`, `[]`, `{}`) |
+| `textDocument/formatting` | Two-space JSON pretty-print with a trailing newline; idempotent (returns no edits when already formatted); leaves malformed JSON untouched so diagnostics still surface the error |
+| `textDocument/documentSymbol` | One `DocumentSymbol` per top-level record so editors populate the outline pane, jump-to-record, and code-fold individual records (name = `id`, detail = `payment_id`) |
+
+The default message type is `pain.001.001.09` (Customer Credit Transfer
+Initiation V09). Override per-workspace at startup with
+`initializationOptions: {"messageType": "pain.001.001.11"}`, or
+hot-swap at runtime via `workspace/didChangeConfiguration` with
+`{"pain001": {"messageType": "pain.001.001.11"}}`.
+
+The feature logic lives in pure, importable helpers
+(`compute_diagnostics`, `completion_items`, `hover_text`,
+`missing_required_fields`, `build_insert_text`,
+`_record_close_positions`, `_normalise_records`); the LSP handlers are
+thin glue that map plain dicts to `lsprotocol` types.
+
+---
+
+## Editor wiring
+
+Register `pain001-lsp` as the server `cmd` for JSON files in your
+editor's LSP client.
 
 <details>
 <summary>Neovim (built-in <code>vim.lsp.config</code>)</summary>
@@ -154,55 +171,47 @@ vim.lsp.config["pain001"] = {
   cmd = { "pain001-lsp" },
   filetypes = { "json" },
   root_markers = { ".git" },
+  init_options = { messageType = "pain.001.001.09" },
 }
 vim.lsp.enable("pain001")
 ```
+
 </details>
 
 <details>
-<summary>VS Code (generic LSP client)</summary>
+<summary>VS Code (bundled scaffold)</summary>
 
-Configure a generic LSP client extension to spawn the `pain001-lsp` command
-over stdio for the `json` language, or wrap it in a small extension whose
-`serverOptions` is `{ command: "pain001-lsp", transport: TransportKind.stdio }`.
+A TypeScript language-client scaffold ships at
+[`editors/vscode/`](editors/vscode/) — runnable straight from source:
+
+```bash
+cd editors/vscode
+npm install
+npm run compile
+# Press F5 in VS Code to launch an Extension Development Host.
+```
+
+`pain001.serverCommand` (default `pain001-lsp`) and `pain001.messageType`
+(default `pain.001.001.09`) are exposed as settings.
+
 </details>
 
-Open a JSON array of payment records and the server validates each record
-on open and on every change, surfaces completion for field names and
-message types, and shows schema descriptions on hover.
+<details>
+<summary>Helix / Emacs / generic LSP</summary>
 
-## Features
+Any client that can spawn a stdio language server will work. The
+command is `pain001-lsp`, the filetype is `json`, and
+`initializationOptions` accepts `{"messageType": "..."}`.
 
-For payment-data JSON files (a JSON array of flat payment records, or a
-single record object treated as one record):
+</details>
 
-- **Diagnostics** - schema validation reports missing required fields,
-  wrong types, and pattern/length violations; identifier fields
-  (`debtor_account_IBAN`, `creditor_account_IBAN`, `charge_account_IBAN`,
-  `debtor_agent_BIC`, `creditor_agent_BIC`, `forwarding_agent_BIC`) are
-  additionally checked as IBAN / BIC. Malformed JSON yields a single syntax
-  diagnostic at the offending position.
-- **Completion** - every input field for the message type (with its schema
-  description as the detail) plus every supported `pain.001` / `pain.008`
-  message type.
-- **Hover** - the schema `description` for the field name under the cursor.
-- **Code actions** - `missing_required_fields(record, message_type)` lists
-  the schema-required fields absent from a record; `build_insert_text(...)`
-  renders type-appropriate placeholder lines (`""` for strings, `0` for
-  numbers, `false` for booleans). The LSP server stitches these together
-  into a single "Add missing required fields" quick-fix.
-
-The feature logic lives in pure, importable helpers (`compute_diagnostics`,
-`completion_items`, `hover_text`, `missing_required_fields`,
-`build_insert_text`) backed by the `pain001` public API, so editor
-behaviour stays in lockstep with the CLI, REST API, and MCP server. The
-LSP handlers are thin glue that map those plain dicts to `lsprotocol`
-types.
+---
 
 ## Using the helpers
 
-Because the feature logic is pure, you can call it directly - no editor or
-server process required. This is exactly what the server runs on each edit:
+Because the feature logic is pure, you can call it directly — no editor
+or server process required. This is exactly what the server runs on each
+edit:
 
 ```python
 import json
@@ -211,120 +220,195 @@ from pain001_lsp.server import (
     completion_items,
     compute_diagnostics,
     hover_text,
+    missing_required_fields,
 )
 
-# A complete, valid payment record produces no diagnostics.
-valid_doc = json.dumps(
-    [
-        {
-            "id": "MSG-0001",
-            "date": "2026-01-15T10:30:00",
-            "nb_of_txs": 1,
-            "ctrl_sum": 100.00,
-            "initiator_name": "Acme Embedded Finance Ltd",
-            "payment_information_id": "PMT-INFO-0001",
-            "payment_method": "TRF",
-            "batch_booking": False,
-            "service_level_code": "SEPA",
-            "requested_execution_date": "2026-01-20",
-            "debtor_name": "Acme Embedded Finance Ltd",
-            "debtor_account_IBAN": "DE89370400440532013000",
-            "debtor_agent_BIC": "DEUTDEFFXXX",
-            "charge_bearer": "SLEV",
-            "payment_id": "PAY-0001",
-            "payment_amount": 100.00,
-            "currency": "EUR",
-            "creditor_agent_BIC": "NWBKGB2LXXX",
-            "creditor_name": "National Westminster Bank",
-            "creditor_account_IBAN": "GB29NWBK60161331926819",
-            "remittance_information": "Invoice 0001",
-        }
-    ]
-)
-assert compute_diagnostics(valid_doc) == []
+# Minimal valid record (the schema accepts these required fields).
+valid_record = {
+    "id": "MSG-0001",
+    "date": "2026-01-15T10:30:00",
+    "nb_of_txs": 1,
+    "ctrl_sum": 100.00,
+    "initiator_name": "Acme Embedded Finance Ltd",
+    "payment_information_id": "PMT-INFO-0001",
+    "payment_method": "TRF",
+    "batch_booking": False,
+    "service_level_code": "SEPA",
+    "requested_execution_date": "2026-01-20",
+    "debtor_name": "Acme Embedded Finance Ltd",
+    "debtor_account_IBAN": "DE89370400440532013000",
+    "debtor_agent_BIC": "DEUTDEFFXXX",
+    "charge_bearer": "SLEV",
+    "payment_id": "PAY-0001",
+    "payment_amount": 100.00,
+    "currency": "EUR",
+    "creditor_agent_BIC": "NWBKGB2LXXX",
+    "creditor_name": "National Westminster Bank",
+    "creditor_account_IBAN": "GB29NWBK60161331926819",
+    "remittance_information": "Invoice 0001",
+}
 
-# Missing required fields are reported as errors.
-missing = json.dumps([{"id": "ONLY-ID"}])
-print(len(compute_diagnostics(missing)), "issue(s)")
+# 1. A complete record produces no diagnostics.
+assert compute_diagnostics(json.dumps([valid_record])) == []
 
-# An invalid IBAN is flagged as a warning.
-bad_iban = json.dumps([{"debtor_account_IBAN": "INVALID"}])
-print(compute_diagnostics(bad_iban)[:1])
+# 2. Missing required fields surface as errors.
+diagnostics = compute_diagnostics(json.dumps([{"id": "ONLY-ID"}]))
+print(len(diagnostics), "issue(s)")
+# -> e.g. "5 issue(s)"
 
-# Completion offers field names and message types; hover shows descriptions.
+# 3. An invalid IBAN is flagged.
+print(compute_diagnostics(
+    json.dumps([{"debtor_account_IBAN": "INVALID"}])
+)[:1])
+# -> [{"line": ..., "character": ..., "severity": "warning",
+#      "message": "debtor_account_IBAN: invalid IBAN"}]
+
+# 4. Quick-fix data: list missing fields, render insertion text.
+missing = missing_required_fields({"id": "ONLY-ID"})
+print(missing[:3])  # -> e.g. ['date', 'nb_of_txs', 'ctrl_sum']
+
+# 5. Completion + hover.
 items = completion_items()
-print(len(items), "completion items, e.g.", items[0]["label"])
-print(hover_text("debtor_account_IBAN"))   # -> the field's schema description
-print(hover_text("nope"))                  # -> None
+print(len(items), "items, first:", items[0]["label"])
+# -> e.g. "47 items, first: id"
+print(hover_text("debtor_account_IBAN"))
+# -> the field's schema description
+print(hover_text("nope"))
+# -> None
 ```
 
-Each diagnostic is a plain dict -
-`{"line": int, "character": int, "severity": "error" | "warning", "message": str}` -
-which the server maps to `lsprotocol` `Diagnostic` objects before publishing.
+Each diagnostic is a plain dict —
+`{"line": int, "character": int, "severity": "error"|"warning", "message": str}` —
+which the server maps to `lsprotocol.Diagnostic` before publishing.
 
-See [`examples/01_lsp_helpers.py`](examples/01_lsp_helpers.py) for the full
-runnable script.
+The runnable version of this snippet lives in
+[`examples/01_lsp_helpers.py`](examples/01_lsp_helpers.py). See also
+[`02_quick_fix.py`](examples/02_quick_fix.py) (the code-action surface)
+and [`03_configure_message_type.py`](examples/03_configure_message_type.py)
+(overriding the default message type via `initializationOptions`).
 
-## Examples
+---
 
-The [`examples/`](examples/) directory contains three self-contained,
-runnable scripts:
+## The pain001 suite
 
-| Example | Demonstrates |
-|---------|--------------|
-| [`01_lsp_helpers.py`](examples/01_lsp_helpers.py) | The LSP diagnostics / completion / hover helpers |
-| [`02_quick_fix.py`](examples/02_quick_fix.py) | The "Add missing required fields" code action - `missing_required_fields` + `build_insert_text` |
-| [`03_configure_message_type.py`](examples/03_configure_message_type.py) | Overriding the default message type via `initializationOptions` |
+`pain001-lsp` is part of a set of independently installable packages
+built around the [`pain001`](https://github.com/sebastienrousseau/pain001)
+library — pick whichever ones your stack needs:
 
-```sh
-git clone https://github.com/sebastienrousseau/pain001-lsp.git && cd pain001-lsp
-python examples/01_lsp_helpers.py
+| Package | Role |
+| :--- | :--- |
+| [`pain001`](https://pypi.org/project/pain001/) | Core library + CLI + FastAPI REST API |
+| [`pain001-mcp`](https://pypi.org/project/pain001-mcp/) | Model Context Protocol server (for AI agents) |
+| [`pain001-lsp`](https://pypi.org/project/pain001-lsp/) | **Language Server Protocol server (this package)** |
+
+```mermaid
+flowchart LR
+    A["Editor (VS Code / Neovim / …)"] -->|LSP over stdio| B["pain001-lsp"]
+    B -->|compute_diagnostics / completion_items / hover_text / formatting / document_symbol| C["pain001"]
+    C -->|schema + IBAN/BIC validation| B
+    B -->|diagnostics · completion · hover · code action · format · outline| A
 ```
+
+---
+
+## When not to use pain001-lsp
+
+- **You're not editing JSON payment data.** The server targets the
+  JSON record format consumed by the `pain001` generator; if you're
+  authoring the underlying XML directly, use a generic XSD-aware
+  language server.
+- **You need CSV diagnostics in the editor.** The CSV diagnostic engine
+  ships in-tree under [`pain001[lsp]`](https://github.com/sebastienrousseau/pain001)
+  (`pain001-lsp-builtin`); this standalone server focuses on the
+  richer JSON surface.
+- **You want agent tools, not editor diagnostics.** Use
+  [`pain001-mcp`](https://pypi.org/project/pain001-mcp/) — it speaks
+  the Model Context Protocol to AI assistants.
+
+---
 
 ## Development
 
-**pain001-lsp** uses [Poetry](https://python-poetry.org/) and
+`pain001-lsp` uses [Poetry](https://python-poetry.org/) and
 [mise](https://mise.jdx.dev/).
 
 ```bash
-git clone https://github.com/sebastienrousseau/pain001-lsp.git && cd pain001-lsp
+git clone https://github.com/sebastienrousseau/pain001-lsp.git
+cd pain001-lsp
 mise install
 poetry install
-poetry shell
 ```
 
 A `Makefile` orchestrates the quality gates (kept in lockstep with CI):
 
-```bash
-make check        # all gates (REQUIRED before commit)
-make test         # pytest
-make lint         # ruff + black
-make type-check   # mypy --strict
-make examples     # run the example script
-```
+| Target | What it runs |
+| :--- | :--- |
+| `make check` | All gates (REQUIRED before commit) |
+| `make test` | `pytest --cov=pain001_lsp --cov-branch --cov-fail-under=100` |
+| `make lint` | `ruff check` + `ruff format --check` |
+| `make type-check` | `mypy --strict` |
+| `make examples` | Run the three example scripts |
 
-## Licence
+Current state (v0.0.53): **81 tests passing, 100% line + branch
+coverage** against a 100% enforced floor, mypy `--strict` clean,
+interrogate 100% docstring coverage.
 
-Licensed under the [Apache Licence, Version 2.0][01]. Any contribution submitted
-for inclusion shall be licensed as above, without additional terms.
+---
 
-## Contribution
+## Security
 
-Contributions are welcome - see the [contributing instructions][04]. Thanks to
-all [contributors][05].
+- **No filesystem writes.** The server reads from the editor's
+  in-memory document buffer; no scratch files, no temp directories.
+- **JSON parsing** uses the stdlib `json` module on already-quoted text
+  from the editor — no `eval`, no shelling out, no XML.
+- **Validation failures** are returned as `lsprotocol.Diagnostic`
+  objects with no stack traces, so the editor never sees an internal
+  path or exception message.
+- **Dependencies** are pinned via `poetry.lock` and audited by
+  `pip-audit` and Bandit in CI.
 
-## Acknowledgements
+To report a vulnerability, please use
+[GitHub private vulnerability reporting](https://github.com/sebastienrousseau/pain001-lsp/security)
+rather than a public issue.
 
-Built on [pygls][pygls] and [lsprotocol][lsprotocol] by the
+---
+
+## Documentation
+
+- **Runnable examples:** [`examples/`](https://github.com/sebastienrousseau/pain001-lsp/tree/main/examples)
+- **VS Code scaffold:** [`editors/vscode/`](https://github.com/sebastienrousseau/pain001-lsp/tree/main/editors/vscode)
+- **Release history:** [CHANGELOG.md](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CHANGELOG.md)
+- **Core library docs:** [docs.pain001.com](https://docs.pain001.com)
+- **LSP specification:** [microsoft.github.io/language-server-protocol](https://microsoft.github.io/language-server-protocol/)
+
+---
+
+## Contributing
+
+Contributions are welcome — see the
+[contributing instructions](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CONTRIBUTING.md).
+Thanks to all the
+[contributors](https://github.com/sebastienrousseau/pain001-lsp/graphs/contributors)
+who have helped build `pain001-lsp`.
+
+---
+
+## License
+
+Licensed under the [Apache License, Version 2.0](https://opensource.org/license/apache-2-0/).
+Built on [pygls](https://github.com/openlawlibrary/pygls) and
+[lsprotocol](https://github.com/microsoft/lsprotocol) by the
 [Open Law Library](https://github.com/openlawlibrary), and on the core
-[`pain001`][pain001] library that powers the validators and schemas.
+[`pain001`](https://github.com/sebastienrousseau/pain001) library that
+powers the validators and schemas.
 
-[01]: https://opensource.org/license/apache-2-0/
-[04]: https://github.com/sebastienrousseau/pain001-lsp/blob/main/CONTRIBUTING.md
-[05]: https://github.com/sebastienrousseau/pain001-lsp/graphs/contributors
-[07]: https://pypi.org/project/pain001-lsp/
-[pain001]: https://github.com/sebastienrousseau/pain001
-[lsp]: https://microsoft.github.io/language-server-protocol/
-[lsprotocol]: https://github.com/microsoft/lsprotocol
-[pygls]: https://github.com/openlawlibrary/pygls
-[release-052]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.52
+Any contribution submitted for inclusion shall be licensed as above,
+without additional terms.
+
+---
+
+<p align="center">
+  <a href="https://pain001.com">pain001.com</a> ·
+  <a href="https://pypi.org/project/pain001-lsp/">PyPI</a> ·
+  <a href="https://github.com/sebastienrousseau/pain001-lsp">GitHub</a>
+</p>
