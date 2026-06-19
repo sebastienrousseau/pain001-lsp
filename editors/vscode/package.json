@@ -1,0 +1,58 @@
+{
+  "name": "pain001-lsp-json",
+  "displayName": "Pain001 - ISO 20022 payment JSON",
+  "description": "Diagnostics, completion, hover, code-fix, formatting and outline for Pain001 payment-data JSON files, powered by the pain001-lsp language server.",
+  "version": "0.0.53",
+  "publisher": "sebastienrousseau",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sebastienrousseau/pain001-lsp"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": ["Linters", "Formatters", "Programming Languages"],
+  "activationEvents": ["onLanguage:json"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Pain001 (JSON)",
+      "properties": {
+        "pain001.serverCommand": {
+          "type": "string",
+          "default": "pain001-lsp",
+          "description": "Command that starts the Pain001 language server (install with: pip install pain001-lsp)."
+        },
+        "pain001.messageType": {
+          "type": "string",
+          "default": "pain.001.001.09",
+          "enum": [
+            "pain.001.001.03",
+            "pain.001.001.04",
+            "pain.001.001.05",
+            "pain.001.001.06",
+            "pain.001.001.07",
+            "pain.001.001.08",
+            "pain.001.001.09",
+            "pain.001.001.10",
+            "pain.001.001.11",
+            "pain.001.001.12",
+            "pain.008.001.02"
+          ],
+          "description": "ISO 20022 message type the server validates against."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "typescript": "^5.0.0"
+  }
+}
