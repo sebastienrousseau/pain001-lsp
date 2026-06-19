@@ -61,3 +61,20 @@ A release is ready only when **all** of the following hold on `main`:
   [PyPI](https://pypi.org/project/pain001-lsp/) and the GitHub release is
   published (not draft).
 - Verify a clean install: `pip install pain001-lsp==X.Y.Z`.
+
+## Optional CI integrations
+
+These are deliberately gated so an empty / un-set secret skips the
+step rather than failing the build:
+
+- **Codecov upload** (`pr.yml`): set the `CODECOV_TOKEN` repository
+  secret and the PR Gate will start publishing branch coverage to
+  [codecov.io](https://about.codecov.io). Without the secret the
+  step skips silently; the 100% coverage gate is still enforced
+  in-CI by pytest's `--cov-fail-under=100`.
+- **PyPI trusted publisher** (`release.yml`): configured at
+  <https://pypi.org/manage/account/publishing/>. The publisher claim
+  set is `repo:sebastienrousseau/pain001-lsp:environment:pypi` with
+  `workflow_ref` pointing at `.github/workflows/release.yml`. A
+  Pending Publisher is auto-converted to a permanent Trusted
+  Publisher on the first successful publish.
