@@ -773,6 +773,152 @@ def test_example_scripts_run_without_error(module_path, capsys):
 
 
 # ---------------------------------------------------------------------------
+# Formatting (textDocument/formatting)
+# ---------------------------------------------------------------------------
+def _formatting_params(uri: str = "file:///x.json") -> SimpleNamespace:
+    """Build a minimal ``DocumentFormattingParams`` stand-in."""
+    return SimpleNamespace(text_document=SimpleNamespace(uri=uri))
+
+
+def test_formatting_reflows_compact_json_into_pretty_form(sample_record):
+    """A compact one-liner gets re-emitted as indented JSON + newline."""
+    source = json.dumps([sample_record])
+    ls = _StubLS(source)
+    edits = lsp_server.formatting(ls, _formatting_params())
+    assert len(edits) == 1
+    formatted = edits[0].new_text
+    assert formatted.endswith("\n")
+    assert "\n  " in formatted  # contains the two-space indent.
+    assert json.loads(formatted) == [sample_record]
+
+
+def test_formatting_returns_empty_list_for_already_formatted_doc(
+    sample_record,
+):
+    """No edit is offered when the document is already pretty-printed."""
+    source = json.dumps([sample_record], indent=2, ensure_ascii=False) + "\n"
+    ls = _StubLS(source)
+    assert lsp_server.formatting(ls, _formatting_params()) == []
+
+
+def test_formatting_returns_empty_list_for_malformed_json():
+    """Malformed JSON is left untouched - diagnostics surface the error."""
+    ls = _StubLS("[{not json}]")
+    assert lsp_server.formatting(ls, _formatting_params()) == []
+
+
+def test_formatting_handles_empty_document():
+    """An empty document yields no edits (malformed JSON path)."""
+    ls = _StubLS("")
+    assert lsp_server.formatting(ls, _formatting_params()) == []
+
+
+def test_formatting_edit_range_spans_entire_document(sample_record):
+    """The edit range covers the document end so the replace overwrites all."""
+    source = json.dumps([sample_record])
+    ls = _StubLS(source)
+    edits = lsp_server.formatting(ls, _formatting_params())
+    assert edits[0].range.start.line == 0
+    assert edits[0].range.start.character == 0
+    assert edits[0].range.end.line == 0
+    assert edits[0].range.end.character == len(source)
+
+
+# ---------------------------------------------------------------------------
+# Document symbols (textDocument/documentSymbol)
+# ---------------------------------------------------------------------------
+def _document_symbol_params(
+    uri: str = "file:///x.json",
+) -> SimpleNamespace:
+    """Build a minimal ``DocumentSymbolParams`` stand-in."""
+    return SimpleNamespace(text_document=SimpleNamespace(uri=uri))
+
+
+def test_document_symbol_returns_one_per_record(sample_record):
+    """Each top-level record becomes one ``DocumentSymbol``."""
+    record_b = dict(sample_record)
+    record_b["id"] = "MSG-0002"
+    record_b["payment_id"] = "PAY-0002"
+    source = json.dumps([sample_record, record_b], indent=2)
+    ls = _StubLS(source)
+    symbols = lsp_server.document_symbol(ls, _document_symbol_params())
+    assert len(symbols) == 2
+    assert {s.name for s in symbols} == {"MSG-0001", "MSG-0002"}
+    assert {s.detail for s in symbols} == {"PAY-0001", "PAY-0002"}
+
+
+def test_document_symbol_uses_placeholder_when_id_missing(sample_record):
+    """Records without an ``id`` get a positional placeholder name."""
+    record = dict(sample_record)
+    record.pop("id", None)
+    record.pop("payment_id", None)
+    source = json.dumps([record], indent=2)
+    ls = _StubLS(source)
+    symbols = lsp_server.document_symbol(ls, _document_symbol_params())
+    assert len(symbols) == 1
+    assert symbols[0].name == "<record 1>"
+    assert symbols[0].detail == ""
+
+
+def test_document_symbol_returns_empty_for_malformed_json():
+    """Malformed JSON yields no symbols - diagnostics handle the error."""
+    ls = _StubLS("[{not json}]")
+    assert lsp_server.document_symbol(ls, _document_symbol_params()) == []
+
+
+def test_document_symbol_returns_empty_for_empty_array():
+    """An empty array yields no symbols."""
+    ls = _StubLS("[]")
+    assert lsp_server.document_symbol(ls, _document_symbol_params()) == []
+
+
+def test_document_symbol_marks_non_dict_records_with_placeholder(
+    monkeypatch,
+):
+    """Non-dict records (e.g. lists) still get a positional placeholder."""
+    # The real scanner only tracks ``{`` / ``}``, so non-dict records
+    # never produce a close-position naturally. Inject one via the
+    # helpers to exercise the placeholder branch end-to-end.
+    monkeypatch.setattr(
+        lsp_server, "_normalise_records", lambda parsed: [[1, 2, 3]]
+    )
+    monkeypatch.setattr(lsp_server, "_record_line_offsets", lambda text: [0])
+    monkeypatch.setattr(
+        lsp_server,
+        "_record_close_positions",
+        lambda text: [lsp.Position(line=0, character=8)],
+    )
+    ls = _StubLS("[[1, 2, 3]]")
+    symbols = lsp_server.document_symbol(ls, _document_symbol_params())
+    assert len(symbols) == 1
+    assert symbols[0].name == "<record 1>"
+    assert symbols[0].detail == ""
+    assert symbols[0].kind == lsp.SymbolKind.Object
+
+
+def test_document_symbol_range_spans_full_record(sample_record):
+    """The symbol range covers the record opening through its closing brace."""
+    source = json.dumps([sample_record], indent=2)
+    ls = _StubLS(source)
+    symbols = lsp_server.document_symbol(ls, _document_symbol_params())
+    # Pretty-printed JSON wraps the array, so the record itself starts
+    # on line 1 (after the opening ``[``); the close brace is later.
+    assert symbols[0].range.start.line >= 0
+    assert symbols[0].range.end.line > symbols[0].range.start.line
+    assert symbols[0].selection_range == symbols[0].range
+
+
+def test_document_symbol_stops_when_close_positions_missing(
+    sample_record, monkeypatch
+):
+    """If close-position scanning drops a record, the loop bails gracefully."""
+    monkeypatch.setattr(lsp_server, "_record_close_positions", lambda text: [])
+    source = json.dumps([sample_record], indent=2)
+    ls = _StubLS(source)
+    assert lsp_server.document_symbol(ls, _document_symbol_params()) == []
+
+
+# ---------------------------------------------------------------------------
 # Server entry point
 # ---------------------------------------------------------------------------
 def test_main_starts_the_pygls_server(monkeypatch):

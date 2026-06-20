@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.53] - 2026-06-19
+
+### Added
+
+Two new editor features that surface previously-missing IDE
+ergonomics for pain.001 payment-data JSON files:
+
+- `textDocument/formatting` - pretty-print the document as a
+  two-space-indented JSON array with a trailing newline. The handler
+  re-serialises via `json.dumps(parsed, indent=2)`, leaves malformed
+  JSON untouched (diagnostics already flag the syntax error), and
+  returns no edits when the document is already formatted (so the
+  editor's "format on save" stays idempotent).
+- `textDocument/documentSymbol` - return one `DocumentSymbol` per
+  top-level record so editors can populate the outline pane, jump
+  to a specific payment, and code-fold individual records. Each
+  symbol uses the record's `id` field as its name (falling back to
+  `<record N>`) and `payment_id` as its detail; the range spans the
+  record's opening `{` through its closing `}`.
+
+### Changed
+
+- Pinned to `pain001 >= 0.0.53` so the new public-API symbols
+  (`sanitize_to_charset`, the SEPA B2B profile) are available.
+- Mypy: added an `ignore_missing_imports` override for the
+  `jsonschema.*` module so `poetry run mypy pain001_lsp` is clean
+  out of the box (no `types-jsonschema` install needed).
+
+### Quality gates
+
+- pytest: **81 tests**, 100% line + branch coverage (was 79, +2 new
+  feature handlers exercised by 13 new tests).
+- interrogate: 100% docstring coverage.
+- ruff + mypy all clean.
+
 ## [0.0.52] - 2026-06-18
 
 ### Added
