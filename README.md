@@ -85,7 +85,7 @@ behaviour stays in lockstep with the CLI, REST API, and MCP server.
 
 | Channel | Command | Notes |
 | :--- | :--- | :--- |
-| PyPI | `pip install pain001-lsp` | Pulls in `pain001 >= 0.0.53` + `pygls` |
+| PyPI | `pip install pain001-lsp` | Pulls in `pain001 >= 0.0.55` + `pygls` |
 | Source | `git clone https://github.com/sebastienrousseau/pain001-lsp && cd pain001-lsp && poetry install` | For development |
 | Docker (GHCR) | `docker pull ghcr.io/sebastienrousseau/pain001-lsp:latest` | Multi-arch (linux/amd64, linux/arm64); runs `pain001-lsp` over stdio |
 
@@ -95,7 +95,7 @@ Verify the installation:
 
 ```sh
 python -c "import pain001_lsp; print('pain001-lsp', pain001_lsp.__version__)"
-# -> pain001-lsp 0.0.53
+# -> pain001-lsp 0.0.54
 ```
 
 <details>
@@ -349,7 +349,7 @@ A `Makefile` orchestrates the quality gates (kept in lockstep with CI):
 | `make type-check` | `mypy --strict` |
 | `make examples` | Run the three example scripts |
 
-Current state (v0.0.53): **81 tests passing, 100% line + branch
+Current state (v0.0.54): **81 tests passing, 100% line + branch
 coverage** against a 100% enforced floor, mypy `--strict` clean,
 interrogate 100% docstring coverage.
 
