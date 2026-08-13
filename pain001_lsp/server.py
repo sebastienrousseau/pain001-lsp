@@ -72,7 +72,7 @@ from lsprotocol import types as lsp
 from pain001.constants import SCHEMAS_DIR, valid_xml_types
 from pain001.lsp.diagnostics import Severity, diagnostics_for_csv
 from pain001.validation import validate_bic, validate_iban
-from pygls.server import LanguageServer
+from pygls.lsp.server import LanguageServer
 
 from pain001_lsp import __version__
 
@@ -544,7 +544,11 @@ def _validate_and_publish(ls: LanguageServer, uri: str) -> None:
         raw = compute_diagnostics_csv(document.source, message_type)
     else:
         raw = compute_diagnostics(document.source, message_type)
-    ls.publish_diagnostics(uri, _to_lsp_diagnostics(raw))
+    ls.text_document_publish_diagnostics(
+        lsp.PublishDiagnosticsParams(
+            uri=uri, diagnostics=_to_lsp_diagnostics(raw)
+        )
+    )
 
 
 @server.feature(lsp.INITIALIZE)

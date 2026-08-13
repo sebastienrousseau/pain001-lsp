@@ -17,7 +17,7 @@ pain001-lsp = "pain001_lsp.server:main"
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
 pain001 = ">=0.0.55"
-pygls = ">=1.3,<2"
+pygls = ">=2.1,<3"
 jsonschema = ">=4.17,<5"
 
 [tool.poetry.group.dev.dependencies]

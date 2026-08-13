@@ -69,11 +69,17 @@ class _StubLS:
         self.workspace = _StubWorkspace(source, word)
         self.published: list[tuple[str, list[lsp.Diagnostic]]] = []
 
-    def publish_diagnostics(
-        self, uri: str, diagnostics: list[lsp.Diagnostic]
+    def text_document_publish_diagnostics(
+        self, params: lsp.PublishDiagnosticsParams
     ) -> None:
-        """Record the diagnostic batch the handler tried to publish."""
-        self.published.append((uri, diagnostics))
+        """Record the diagnostic batch the handler tried to publish.
+
+        pygls 2.x replaced ``publish_diagnostics(uri, diagnostics)`` with
+        ``text_document_publish_diagnostics(params)``. The stub mirrors the
+        real signature so a future rename fails here rather than only in
+        production.
+        """
+        self.published.append((params.uri, list(params.diagnostics)))
 
 
 def _did_open_params(uri: str = "file:///x.json") -> SimpleNamespace:
