@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.60] - 2026-08-20
+
+Lockstep release with `pain001` 0.0.60. No functional change in this
+package.
+
+`pain001-lsp` is a lockstep member of the suite: its version tracks the
+core so an editor integration can pair `pain001-lsp==X` with
+`pain001==X` without consulting a table. `pain001.suite` records which
+members follow that rule, and the core enforces it daily.
+
+The `pain001>=0.0.55` floor is deliberately unchanged, which is worth
+stating because the core's 0.0.60 does contain a pygls 1.x -> 2.x
+migration and this package requires `pygls>=2.1,<3`. That migration is
+confined to `pain001.lsp.server`, the core's own language-server entry
+point. This package does not import it — it imports
+`pain001.lsp.diagnostics`, which has no pygls dependency at all, plus
+`pain001.validation` and `pain001.constants`. `pain001.lsp.__init__`
+re-exports only from `diagnostics`, so importing the package does not
+pull the migrated module in either. Checked rather than assumed, because
+a floor that is too low here would surface as an import error in a
+user's editor rather than at install time.
+
 ## [0.0.59] - 2026-08-20
 
 Rejoins lockstep with `pain001`. This package sat at 0.0.54 while the
