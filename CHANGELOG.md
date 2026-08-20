@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.59] - 2026-08-20
+
+Rejoins lockstep with `pain001`. This package sat at 0.0.54 while the
+core reached 0.0.59 — five releases of silent drift, which is what
+`pain001`'s suite-consistency check now reports rather than leaving a
+user to notice.
+
+The version jumps 0.0.54 -> 0.0.59 with no intervening releases. The
+numbers in between were never published for this package; they exist
+so that a user reading `pain001==0.0.59` and `pain001-lsp==0.0.59` can
+trust the two belong together, which is the point of lockstep
+versioning.
+
+### Changed
+
+- Migrated to `pygls` 2.x (#13).
+- Dependency updates: `mypy` 2.3.0, `ruff` 0.16.2, and the grouped
+  GitHub Actions bump (#9, #10, #12).
+- Dependabot config repaired — an invalid key meant github-actions
+  updates were never grouped (#8).
+
 ## [0.0.54] - 2026-07-18
 
 ### Changed
