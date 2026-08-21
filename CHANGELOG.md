@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.62] - 2026-08-21
+
+### Performance
+
+- **The bundled JSON Schema is cached.** Every interactive entry point
+  goes through `_load_schema`, which re-read and re-parsed it from disk
+  on each call — a file read and a JSON parse per keystroke, to answer
+  from data that ships read-only inside the package and cannot change
+  at runtime.
+
+  | call | before | after |
+  |---|---|---|
+  | `completion_items` | 0.0805ms | **0.0029ms** (28x) |
+  | `hover_text` | 0.0794ms | **0.0002ms** (478x) |
+  | `missing_required_fields` | 0.0816ms | **0.0004ms** (196x) |
+
+  Not user-visible — 0.08ms is imperceptible — so this is waste removed
+  rather than latency fixed. It surfaced from benchmarking: three
+  functions measuring identically to three decimal places were not three
+  measurements, they were the same file read three times.
+
+### Added
+
+- **Benchmarks for completion, hover and the missing-field check**, the
+  per-keystroke paths the 0.0.61 set did not cover. The guard is a
+  property rather than a threshold — at microsecond scale any wall-clock
+  bound loose enough for CI would not notice the cache being removed, so
+  the test asserts the schema is not re-read across 150 interactive
+  calls.
+
+- **A `locked` CI job** that installs from `poetry.lock` and runs the
+  suite against the pinned set. 0.0.61 added `poetry check --lock` after
+  finding the lock silently stale, but nothing installed from it — so it
+  proved the lock matched `pyproject.toml` and nothing about whether the
+  pinned versions worked. The pip-based jobs still install against the
+  live range; the two answer different questions.
+
 ## [0.0.61] - 2026-08-20
 
 Suite release with `pain001` 0.0.61. No change in this package; the

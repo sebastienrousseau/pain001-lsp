@@ -19,6 +19,40 @@ jobs:
   # A lock nobody checks is worse than no lock, because anyone running
   # `poetry install` locally gets dependencies that no longer match what
   # the package declares.
+  # The pip jobs below install against the live dependency range, which
+  # is the right default for a library: it catches a new release of a
+  # dependency breaking us. But it means poetry.lock is never exercised,
+  # and a lock nobody installs from is a lock nobody can trust — which is
+  # how it came to be silently stale before the `lockfile` job existed.
+  #
+  # Checking that the lock *parses* and matches pyproject is necessary
+  # but not sufficient: it says nothing about whether the pinned set
+  # actually works. This job installs exactly what the lock pins and runs
+  # the suite against it, so the two jobs answer different questions:
+  #
+  #   locked  - do the pinned versions still work?  (reproducibility)
+  #   test    - do the newest allowed versions work? (drift detection)
+  locked:
+    name: Test against the locked dependency set
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install from poetry.lock
+        run: poetry install --no-interaction
+
+      - name: Run the suite against the pinned set
+        run: poetry run pytest -q
+
   lockfile:
     name: Lockfile matches pyproject
     runs-on: ubuntu-latest
