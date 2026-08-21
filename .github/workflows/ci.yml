@@ -10,6 +10,37 @@ permissions:
   contents: read
 
 jobs:
+  # This repo builds with poetry-core and keeps a poetry.lock, but no
+  # workflow installs from it — CI uses pip. So the lock could drift
+  # indefinitely without anything noticing, and it had: by the time this
+  # job was added it was already stale against pyproject.toml, and no
+  # job had ever gone red over it.
+  #
+  # A lock nobody checks is worse than no lock, because anyone running
+  # `poetry install` locally gets dependencies that no longer match what
+  # the package declares.
+  lockfile:
+    name: Lockfile matches pyproject
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Verify poetry.lock is current
+        run: |
+          if ! poetry check --lock; then
+            echo "::error::poetry.lock is stale. Run 'poetry lock' and commit the result."
+            exit 1
+          fi
+
   test:
     name: Test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
