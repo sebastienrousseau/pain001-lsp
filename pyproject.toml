@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pain001-lsp"
-version = "0.0.60"
+version = "0.0.61"
 description = "Language Server Protocol (LSP) server for authoring pain001 ISO 20022 Customer Credit Transfer Initiation data files."
 authors = ["Sebastien Rousseau <sebastian.rousseau@gmail.com>"]
 license = "Apache-2.0"

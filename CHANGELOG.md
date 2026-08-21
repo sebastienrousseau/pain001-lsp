@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.61] - 2026-08-20
+
+Suite release with `pain001` 0.0.61. No change in this package; the
+improvement comes from the core.
+
+### Performance
+
+- **Diagnostics are 3-6x faster**, because `pain001` 0.0.61 fixed a
+  quadratic in `pain001.lsp.diagnostics`. Each cell's character span was
+  computed by re-splitting the line and summing the lengths of every
+  preceding cell, once per cell — and eagerly, before knowing whether
+  there was anything to report, so a clean document paid the whole cost
+  to produce no diagnostics. That is the common case in an editor, on
+  every keystroke.
+
+  | rows | before | after |
+  |---|---|---|
+  | 500 | 43.4ms | **7.6ms** (5.7x) |
+  | 2000 | 102.0ms | **32.1ms** (3.2x) |
+
+  Diagnostics output is unchanged. This package's benchmark had recorded
+  the pre-fix behaviour as "sublinear (~2.4x)", which was the quadratic
+  per-row cost swamping the row count rather than a fixed overhead; the
+  ratio is now 4.23x for 4x the rows, which is what linear looks like.
+  The benchmark's documentation is corrected accordingly.
+
 ## [0.0.60] - 2026-08-20
 
 Lockstep release with `pain001` 0.0.60. No functional change in this
