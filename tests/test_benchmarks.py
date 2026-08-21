@@ -12,19 +12,23 @@ the engine against itself at two sizes rather than using a wall-clock
 threshold, so a slow or noisy runner scales both halves equally and the
 ratio holds.
 
-A note on what the ratio looks like, because it is not the ~4x that a
-4x-size step would suggest. Diagnostics are sublinear over this range
-(4x the rows costs about 2.4x the time), because a fixed per-call cost
-dominates at typical document sizes. The ceiling is still set against
-the quadratic case, which is what would actually hurt: per-row work that
-rescans the document.
+A note on the ratio, because its shape changed. Diagnostics used to
+measure *sublinear* over this range — 4x the rows cost about 2.4x the
+time — which looked like a fixed per-call cost dominating. It was not:
+`pain001.lsp.diagnostics._cell_span` in the core recomputed each cell's
+span by re-splitting the line and re-summing every preceding cell, once
+per cell, so the per-row work was quadratic in the column count and
+swamped the row count entirely.
 
-Profiling this path also found that the dominant per-cell cost lives in
-`pain001.lsp.diagnostics._cell_span` in the core, which re-sums the
-lengths of preceding cells for every cell -- O(columns^2) per row. That
-is a core issue, not one this package can fix, and it is recorded here
-so the benchmark's shape is not mistaken for the engine being
-intrinsically slow.
+pain001 0.0.61 fixed that, and the numbers moved accordingly:
+
+    500 rows    43.4ms -> 7.6ms   (5.7x)
+    2000 rows  102.0ms -> 32.1ms  (3.2x)
+
+The ratio is now 4.23x for 4x the rows, which is what linear looks like.
+The ceiling below stays at 8: it is set against the quadratic case
+(~16x), not against the current measurement, so it keeps room for a
+noisy runner.
 """
 
 from __future__ import annotations
@@ -44,7 +48,7 @@ HEADER = (
 )
 
 #: Ratio ceiling for a 4x increase in row count. Measured behaviour is
-#: sublinear (~2.4x); quadratic would be ~16x.
+#: linear (~4.2x) since pain001 0.0.61; quadratic would be ~16x.
 MAX_SCALING_RATIO = 8.0
 
 
@@ -95,6 +99,6 @@ def test_diagnostics_scale_linearly() -> None:
     assert ratio < MAX_SCALING_RATIO, (
         f"diagnostics over 2000 rows took {ratio:.1f}x the time of 500 "
         f"({large * 1000:.0f}ms vs {small * 1000:.0f}ms); measured "
-        f"behaviour is sublinear at ~2.4x, so this suggests per-row work "
+        f"behaviour is linear at ~4.2x, so this suggests per-row work "
         f"that rescans the document"
     )
