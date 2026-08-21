@@ -37,7 +37,13 @@ import time
 
 import pytest
 
-from pain001_lsp.server import compute_diagnostics_csv
+from pain001_lsp.server import (
+    _load_schema,
+    completion_items,
+    compute_diagnostics_csv,
+    hover_text,
+    missing_required_fields,
+)
 
 HEADER = (
     "id,date,nb_of_txs,initiator_name,payment_information_id,"
@@ -102,3 +108,68 @@ def test_diagnostics_scale_linearly() -> None:
         f"behaviour is linear at ~4.2x, so this suggests per-row work "
         f"that rescans the document"
     )
+
+
+class TestInteractivePaths:
+    """Completion, hover and the missing-field check.
+
+    These are the per-keystroke paths. Diagnostics get recomputed on
+    change; these get called while someone is typing, so what matters is
+    that they do no avoidable work at all rather than that they finish
+    within some budget.
+
+    All three go through ``_load_schema``, which used to read and parse
+    the bundled JSON schema from disk on every call. That was ~97% of
+    each of them, and made all three measure identically at ~0.08ms —
+    they were really measuring the same file read. Caching it took them
+    to 0.003ms, 0.0002ms and 0.0004ms respectively (28x, 478x, 196x).
+    """
+
+    @pytest.mark.benchmark
+    def test_completion_items(self, benchmark) -> None:
+        """Benchmark building the completion list."""
+        items = benchmark(completion_items)
+
+        assert items
+        assert all("label" in item for item in items)
+
+    @pytest.mark.benchmark
+    def test_missing_required_fields(self, benchmark) -> None:
+        """Benchmark the missing-field check on a sparse record."""
+        record = {"id": "1", "payment_amount": "100.00", "currency": "EUR"}
+
+        missing = benchmark(missing_required_fields, record)
+
+        assert missing, "a near-empty record must report missing fields"
+
+    @pytest.mark.benchmark
+    def test_the_schema_is_not_reread_per_call(self) -> None:
+        """The schema load must stay cached.
+
+        A wall-clock threshold is the wrong guard here: these calls are
+        now microseconds, so any threshold loose enough to survive CI
+        would not notice the cache being removed. The property that
+        actually matters is that repeated calls do not touch the disk
+        again, and ``lru_cache`` reports that directly.
+
+        Written because removing the decorator is an easy, invisible
+        regression: nothing would fail, editors would just get slower.
+        """
+        _load_schema.cache_clear()
+
+        hover_text("debtor_account_IBAN")
+        first = _load_schema.cache_info()
+
+        for _ in range(50):
+            hover_text("debtor_account_IBAN")
+            completion_items()
+            missing_required_fields({"id": "1"})
+
+        later = _load_schema.cache_info()
+
+        assert later.misses == first.misses, (
+            f"_load_schema went to disk {later.misses - first.misses} extra "
+            f"times across 150 interactive calls — the cache is gone, and "
+            f"every keystroke is paying a file read and a JSON parse"
+        )
+        assert later.hits > first.hits
