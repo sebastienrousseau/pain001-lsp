@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pain001-lsp"
-version = "0.0.62"
+version = "0.0.63"
 description = "Language Server Protocol (LSP) server for authoring pain001 ISO 20022 Customer Credit Transfer Initiation data files."
 authors = ["Sebastien Rousseau <sebastian.rousseau@gmail.com>"]
 license = "Apache-2.0 OR MIT"
@@ -65,6 +65,14 @@ python_functions = "test_*"
 addopts = [
     "-ra",
     "--strict-markers",
+    # Coverage runs on a plain local `pytest`, not only in CI. Without
+    # these a developer sees green and learns otherwise from the build.
+    # The floor itself is NOT restated here: pytest-cov honours
+    # fail_under from [tool.coverage.report], so the number lives in
+    # exactly one place.
+    "--cov=pain001_lsp",
+    "--cov-branch",
+    "--cov-report=term-missing",
 ]
 
 [tool.coverage.run]
