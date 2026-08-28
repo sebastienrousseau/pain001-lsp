@@ -45,6 +45,7 @@ import argparse
 import json
 import sys
 import time
+from functools import partial
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -98,9 +99,13 @@ def diagnose(text: str) -> list:
     return lsp_server.compute_diagnostics(text)
 
 
+# Passed as callables rather than wrapped in lambdas: CodeQL flags a
+# lambda that only forwards to a callable, and it is right -- the wrapper
+# adds a frame and says nothing. `hover_text` takes an argument, so it
+# gets a partial rather than a lambda for the same reason.
 ON_DEMAND = [
-    ("completion_items", lambda: lsp_server.completion_items()),
-    ("hover_text", lambda: lsp_server.hover_text("debtor_agent_BIC")),
+    ("completion_items", lsp_server.completion_items),
+    ("hover_text", partial(lsp_server.hover_text, "debtor_agent_BIC")),
 ]
 
 
