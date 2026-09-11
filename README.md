@@ -143,6 +143,7 @@ record object treated as one record):
 | `textDocument/codeAction` | "Add missing required fields" quick-fix on the record under the cursor, with type-appropriate placeholders (`""`, `0`, `false`, `[]`, `{}`) |
 | `textDocument/formatting` | Two-space JSON pretty-print with a trailing newline; idempotent (returns no edits when already formatted); leaves malformed JSON untouched so diagnostics still surface the error |
 | `textDocument/documentSymbol` | One `DocumentSymbol` per top-level record so editors populate the outline pane, jump-to-record, and code-fold individual records (name = `id`, detail = `payment_id`) |
+| `workspace/executeCommand` | `pain001.corpus.list` lists the validated example files pain001 ships (market scenarios per country and rail with bank variants, schema coverage sets; filter by `kind`, `country`, `version`); `pain001.corpus.get` returns one file's XML with its provenance sidecar so the editor can open a reference example beside the data file. Needs `pain001` >= 0.0.67; older libraries get an `error` payload |
 
 The default message type is `pain.001.001.09` (Customer Credit Transfer
 Initiation V09). Override per-workspace at startup with

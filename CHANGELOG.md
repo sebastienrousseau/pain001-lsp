@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Example corpus commands.** `workspace/executeCommand` gains
+  `pain001.corpus.list` (the validated example files pain001 ships:
+  market scenarios per country and rail with bank variants, and the
+  schema coverage sets, filterable by kind, country and message type)
+  and `pain001.corpus.get` (one file's XML with its provenance sidecar),
+  backed by the pure helpers `corpus_list` and `corpus_get`. They
+  delegate to `pain001.corpus`, which shipped in pain001 0.0.67; with an
+  older library they return an `error` payload rather than failing at
+  import, so the dependency floor is unchanged until the suite bumps
+  together.
+
 ## [0.0.65] - 2026-08-29
 
 Aligns the `pain001` suite on one version number, and adds the scheduled
