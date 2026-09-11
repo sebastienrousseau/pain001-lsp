@@ -20,7 +20,7 @@ Measured across document sizes, because a payment-data document is not one
 record — a real one is hundreds, and the file only ever grows while
 somebody is editing it.
 
-Also measured: **completion and hover**, which are called on demand rather
+Also measured: **completion and hover** and the **corpus.list command**, which are called on demand rather
 than on every change but block the UI while they run, and the **malformed
 path**, which is the state a document spends most of its life in while
 being typed. A linter that is fast on valid input and slow on invalid
@@ -106,6 +106,10 @@ def diagnose(text: str) -> list:
 ON_DEMAND = [
     ("completion_items", lsp_server.completion_items),
     ("hover_text", partial(lsp_server.hover_text, "debtor_agent_BIC")),
+    (
+        "corpus.list (market)",
+        partial(lsp_server.corpus_list, {"kind": "market"}),
+    ),
 ]
 
 

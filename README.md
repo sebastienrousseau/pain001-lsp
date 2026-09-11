@@ -285,8 +285,10 @@ which the server maps to `lsprotocol.Diagnostic` before publishing.
 The runnable version of this snippet lives in
 [`examples/01_lsp_helpers.py`](examples/01_lsp_helpers.py). See also
 [`02_quick_fix.py`](examples/02_quick_fix.py) (the code-action surface)
-and [`03_configure_message_type.py`](examples/03_configure_message_type.py)
-(overriding the default message type via `initializationOptions`).
+[`03_configure_message_type.py`](examples/03_configure_message_type.py)
+(overriding the default message type via `initializationOptions`) and
+[`04_corpus_commands.py`](examples/04_corpus_commands.py) (the
+example-corpus commands).
 
 ---
 
