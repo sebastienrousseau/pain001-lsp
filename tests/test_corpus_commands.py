@@ -44,12 +44,12 @@ _FILES = [
         "market",
         "pain.001.001.03",
         Path(
-            "gb.chaps.property-purchase__gb.hsbc.priority.pain.001.001.03.xml"
+            "gb.chaps.property-purchase__gb.example.priority.pain.001.001.03.xml"
         ),
         "gb.chaps.property-purchase",
         "GB",
         "priority-payment",
-        "gb.hsbc.priority",
+        "gb.example.priority",
     ),
     _File(
         "market",
@@ -120,7 +120,7 @@ def test_corpus_list_returns_every_file_with_metadata(stub):
     """No filter lists market and coverage files alike."""
     out = lsp_server.corpus_list()
     assert out["count"] == 4
-    assert out["files"][1]["variant"] == "gb.hsbc.priority"
+    assert out["files"][1]["variant"] == "gb.example.priority"
     assert out["files"][-1] == {
         "kind": "coverage",
         "scenario_id": None,
@@ -155,11 +155,13 @@ def test_corpus_get_returns_xml_and_sidecar(stub):
         {
             "scenario_id": "gb.chaps.property-purchase",
             "version": "pain.001.001.03",
-            "variant": "gb.hsbc.priority",
+            "variant": "gb.example.priority",
         }
     )
     assert generic["variant"] is None and "__" not in generic["xml"]
-    assert variant["variant"] == "gb.hsbc.priority" and "__" in variant["xml"]
+    assert (
+        variant["variant"] == "gb.example.priority" and "__" in variant["xml"]
+    )
     assert generic["provenance"]["scenario"] == "gb.chaps.property-purchase"
 
 
