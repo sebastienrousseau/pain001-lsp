@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.68] - 2026-09-12
+
+Aligns on pain001 0.0.68, the second example-corpus release: the
+`pain001.corpus.list` command now sees the tier-1 market packs and the
+coverage files named by recipe and focus.
+
+### Changed
+
+- `pain001` floor raised to `>=0.0.68`.
+- Version aligned to `0.0.68` across all five `pain001` packages.
+
 ## [0.0.67] - 2026-09-12
 
 The example corpus reaches the editor: the validated pain.001 files
