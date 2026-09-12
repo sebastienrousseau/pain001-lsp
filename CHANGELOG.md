@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.69] - 2026-09-12
+
+Aligns on pain001 0.0.69, the third example-corpus release: the tier 2
+and 3 market packs reach `pain001.corpus.list` unchanged.
+
+### Changed
+
+- `pain001` floor raised to `>=0.0.69`.
+- Version aligned to `0.0.69` across all five `pain001` packages.
+
 ## [0.0.68] - 2026-09-12
 
 Aligns on pain001 0.0.68, the second example-corpus release: the

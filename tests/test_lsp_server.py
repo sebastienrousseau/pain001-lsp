@@ -200,10 +200,10 @@ def test_missing_required_fields_lists_absent_keys(sample_record):
     """A record missing two required fields surfaces both names."""
     record = dict(sample_record)
     record.pop("id", None)
-    record.pop("debtor_account_IBAN", None)
+    record.pop("debtor_name", None)
     missing = lsp_server.missing_required_fields(record)
     assert "id" in missing
-    assert "debtor_account_IBAN" in missing
+    assert "debtor_name" in missing
 
 
 def test_missing_required_fields_empty_when_complete(sample_record):
@@ -707,7 +707,7 @@ def test_compute_diagnostics_csv_clean_input_yields_no_diagnostics():
     it rather than restated here; the core extends the list over time.
     """
     header = ",".join(lsp_server.missing_required_fields({}))
-    assert "debtor_account_IBAN" in header
+    assert "debtor_name" in header
     assert lsp_server.compute_diagnostics_csv(header + "\n") == []
 
 
