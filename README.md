@@ -258,9 +258,9 @@ print(len(diagnostics), "issue(s)")
 # -> e.g. "5 issue(s)"
 
 # 3. An invalid IBAN is flagged.
-print(compute_diagnostics(
-    json.dumps([{"debtor_account_IBAN": "INVALID"}])
-)[:1])
+print(
+    compute_diagnostics(json.dumps([{"debtor_account_IBAN": "INVALID"}]))[:1]
+)
 # -> [{"line": ..., "character": ..., "severity": "warning",
 #      "message": "debtor_account_IBAN: invalid IBAN"}]
 

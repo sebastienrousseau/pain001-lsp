@@ -701,12 +701,13 @@ def test_workspace_did_change_configuration_ignores_non_dict_section():
 # CSV linting (ported from pain001.lsp.diagnostics)
 # ---------------------------------------------------------------------------
 def test_compute_diagnostics_csv_clean_input_yields_no_diagnostics():
-    """A header-only CSV with all required columns produces no diagnostics."""
-    header = (
-        "id,date,nb_of_txs,ctrl_sum,payment_amount,currency,"
-        "debtor_name,debtor_account_IBAN,creditor_name,"
-        "creditor_account_IBAN"
-    )
+    """A header-only CSV with all required columns produces no diagnostics.
+
+    The required list is the bundled schema's, so the header is built from
+    it rather than restated here; the core extends the list over time.
+    """
+    header = ",".join(lsp_server.missing_required_fields({}))
+    assert "debtor_account_IBAN" in header
     assert lsp_server.compute_diagnostics_csv(header + "\n") == []
 
 
