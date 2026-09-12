@@ -58,9 +58,7 @@ print(
 
 bad_identifier = json.dumps([{"debtor_account_IBAN": "INVALID"}])
 identifier_issues = compute_diagnostics(bad_identifier)
-print(
-    f"bad-identifier diagnostics: {len(identifier_issues)} issue(s)"
-)
+print(f"bad-identifier diagnostics: {len(identifier_issues)} issue(s)")
 
 print("malformed JSON diagnostics:", compute_diagnostics("{not json"))
 

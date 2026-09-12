@@ -43,6 +43,7 @@ examples: ## Verify example scripts run
 	$(POETRY) run python examples/01_lsp_helpers.py
 	$(POETRY) run python examples/02_quick_fix.py
 	$(POETRY) run python examples/03_configure_message_type.py
+	$(POETRY) run python examples/04_corpus_commands.py
 
 doc-coverage: ## Enforce the 100% docstring coverage gate
 	$(POETRY) run interrogate -c pyproject.toml -v pain001_lsp

@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.67] - 2026-09-12
+
+The example corpus reaches the editor: the validated pain.001 files
+pain001 0.0.67 ships, with their provenance, are listable and readable
+through workspace commands.
+
+### Added
+
+- **Example corpus commands.** `workspace/executeCommand` gains
+  `pain001.corpus.list` (the validated example files pain001 ships:
+  market scenarios per country and rail with bank variants, and the
+  schema coverage sets, filterable by kind, country and message type)
+  and `pain001.corpus.get` (one file's XML with its provenance sidecar),
+  backed by the pure helpers `corpus_list` and `corpus_get`. They
+  delegate to `pain001.corpus`, which shipped in pain001 0.0.67; the
+  dependency floor is now 0.0.67, and with an older library they still
+  return an `error` payload rather than failing at import.
+
+### Changed
+
+- `pain001` floor raised to `>=0.0.67`, the first release with
+  `pain001.corpus`.
+- Version aligned to `0.0.67` across all five `pain001` packages.
+- Dev tools: `ruff` 0.16.6, `packaging` 26.3, `pytest-benchmark` 5.3.0;
+  GitHub Actions group bumped; the vendored conformance file refreshed
+  to the canonical copy.
+
 ## [0.0.66] - 2026-09-12
 
 Aligns the `pain001` suite on `0.0.66`, the core release that adds
