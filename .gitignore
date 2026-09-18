@@ -39,3 +39,8 @@ pain001_lsp.egg-info/
 
 # mutmut 3 working copy and results
 mutants/
+
+# VS Code extension build output
+editors/vscode/node_modules/
+editors/vscode/out/
+editors/vscode/*.vsix
