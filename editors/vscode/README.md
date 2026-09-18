@@ -25,6 +25,13 @@ checks back the editor, the CLI, and CI.
 pip install pain001-lsp   # provides the `pain001-lsp` server on PATH
 ```
 
+## Install from a release
+
+Every [pain001-lsp release](https://github.com/sebastienrousseau/pain001-lsp/releases)
+attaches `pain001-lsp-json-<version>.vsix`. In VS Code: *Extensions*,
+the `...` menu, *Install from VSIX...*. The extension version equals the
+suite version; install the matching `pip install pain001-lsp==<version>`.
+
 ## Run from source
 
 ```bash

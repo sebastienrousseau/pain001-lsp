@@ -161,6 +161,13 @@ thin glue that map plain dicts to `lsprotocol` types.
 
 ## Editor wiring
 
+**VS Code, without the Marketplace:** every
+[release](https://github.com/sebastienrousseau/pain001-lsp/releases) attaches
+`pain001-lsp-json-<version>.vsix`; in VS Code choose *Extensions*, the `...`
+menu, *Install from VSIX...*. The extension version equals the suite version.
+The source is in [`editors/vscode/`](editors/vscode/).
+
+
 Register `pain001-lsp` as the server `cmd` for JSON files in your
 editor's LSP client.
 

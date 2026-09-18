@@ -2,7 +2,7 @@
   "name": "pain001-lsp-json",
   "displayName": "Pain001 - ISO 20022 payment JSON",
   "description": "Diagnostics, completion, hover, code-fix, formatting and outline for Pain001 payment-data JSON files, powered by the pain001-lsp language server.",
-  "version": "0.0.54",
+  "version": "0.0.70",
   "publisher": "sebastienrousseau",
   "license": "Apache-2.0",
   "repository": {
@@ -12,8 +12,14 @@
   "engines": {
     "vscode": "^1.75.0"
   },
-  "categories": ["Linters", "Formatters", "Programming Languages"],
-  "activationEvents": ["onLanguage:json"],
+  "categories": [
+    "Linters",
+    "Formatters",
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:json"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
@@ -46,13 +52,27 @@
     }
   },
   "scripts": {
-    "compile": "tsc -p ./"
+    "compile": "tsc -p ./",
+    "vscode:prepublish": "npm run compile",
+    "package": "vsce package --no-dependencies"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.0"
   },
   "devDependencies": {
     "@types/vscode": "^1.75.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@vscode/vsce": "^3.0.0"
+  },
+  "keywords": [
+    "ISO 20022",
+    "pain.001",
+    "SEPA",
+    "payments",
+    "language server"
+  ],
+  "homepage": "https://pain001.com/pain001-lsp/",
+  "bugs": {
+    "url": "https://github.com/sebastienrousseau/pain001-lsp/issues"
   }
 }
