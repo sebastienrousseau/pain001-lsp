@@ -27,6 +27,7 @@ pytest-benchmark = ">=5.0.0,<6.0.0"
 black = "^26.3.1"
 ruff = ">=0.1,<0.17"
 mypy = ">=1.11,<3.0"
+mutmut = "^3.7.0"
 bandit = "^1.7.0"
 interrogate = "^1.7.0"
 # tests/test_suite_conformance.py parses pyproject.toml. tomllib is
@@ -152,3 +153,19 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "jsonschema.*"
 ignore_missing_imports = true
+
+[tool.mutmut]
+# Mutation testing (mutmut 3) over the language-server handlers and the
+# helpers they call. The stdio end-to-end run, the benchmarks and the
+# suite conformance file are excluded from the selection because they do
+# not test handler logic and dominate runtime.
+source_paths = ["pain001_lsp"]
+# The example scripts are executed by a test, so they must exist in
+# mutmut's working copy beside the tests.
+also_copy = ["examples"]
+pytest_add_cli_args = ["-q", "-p", "no:cacheprovider", "--no-cov", "--benchmark-disable"]
+pytest_add_cli_args_test_selection = [
+    "tests/test_lsp_server.py",
+    "tests/test_corpus_commands.py",
+    "tests/test_diagnostic_shapes.py",
+]
