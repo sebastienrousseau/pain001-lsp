@@ -565,7 +565,6 @@ def _validate_and_publish(ls: LanguageServer, uri: str) -> None:
     )
 
 
-@server.feature(lsp.INITIALIZE)
 def on_initialize(ls: LanguageServer, params: lsp.InitializeParams) -> None:
     """Honour ``initializationOptions.messageType`` when the client sets it."""
     global _message_type
@@ -577,7 +576,6 @@ def on_initialize(ls: LanguageServer, params: lsp.InitializeParams) -> None:
         _message_type = message_type
 
 
-@server.feature(lsp.TEXT_DOCUMENT_DID_OPEN)
 def did_open(
     ls: LanguageServer, params: lsp.DidOpenTextDocumentParams
 ) -> None:
@@ -585,7 +583,6 @@ def did_open(
     _validate_and_publish(ls, params.text_document.uri)
 
 
-@server.feature(lsp.TEXT_DOCUMENT_DID_CHANGE)
 def did_change(
     ls: LanguageServer, params: lsp.DidChangeTextDocumentParams
 ) -> None:
@@ -593,7 +590,6 @@ def did_change(
     _validate_and_publish(ls, params.text_document.uri)
 
 
-@server.feature(lsp.TEXT_DOCUMENT_COMPLETION)
 def completion(
     ls: LanguageServer, params: lsp.CompletionParams
 ) -> lsp.CompletionList:
@@ -609,7 +605,6 @@ def completion(
     return lsp.CompletionList(is_incomplete=False, items=items)
 
 
-@server.feature(lsp.TEXT_DOCUMENT_HOVER)
 def hover(ls: LanguageServer, params: lsp.HoverParams) -> lsp.Hover | None:
     """Show the schema description for the field under the cursor."""
     document = ls.workspace.get_text_document(params.text_document.uri)
@@ -692,7 +687,6 @@ def _record_index_at_position(text: str, position: lsp.Position | None) -> int:
     return chosen
 
 
-@server.feature(lsp.TEXT_DOCUMENT_CODE_ACTION)
 def code_action(
     ls: LanguageServer, params: lsp.CodeActionParams
 ) -> list[lsp.CodeAction]:
@@ -742,7 +736,6 @@ def code_action(
     ]
 
 
-@server.feature(lsp.WORKSPACE_DID_CHANGE_CONFIGURATION)
 def on_did_change_configuration(
     ls: LanguageServer, params: lsp.DidChangeConfigurationParams
 ) -> None:
@@ -768,7 +761,6 @@ def on_did_change_configuration(
         _message_type = candidate
 
 
-@server.feature(lsp.TEXT_DOCUMENT_FORMATTING)
 def formatting(
     ls: LanguageServer, params: lsp.DocumentFormattingParams
 ) -> list[lsp.TextEdit]:
@@ -810,7 +802,6 @@ def formatting(
     ]
 
 
-@server.feature(lsp.TEXT_DOCUMENT_DOCUMENT_SYMBOL)
 def document_symbol(
     ls: LanguageServer, params: lsp.DocumentSymbolParams
 ) -> list[lsp.DocumentSymbol]:
@@ -988,7 +979,6 @@ def corpus_get(options: dict[str, Any] | None = None) -> dict[str, Any]:
     }
 
 
-@server.command(CORPUS_LIST_COMMAND)
 def corpus_list_command(ls: LanguageServer, *args: Any) -> dict[str, Any]:
     """``workspace/executeCommand`` glue for :func:`corpus_list`.
 
@@ -1002,7 +992,6 @@ def corpus_list_command(ls: LanguageServer, *args: Any) -> dict[str, Any]:
     return corpus_list(_command_options(args))
 
 
-@server.command(CORPUS_GET_COMMAND)
 def corpus_get_command(ls: LanguageServer, *args: Any) -> dict[str, Any]:
     """``workspace/executeCommand`` glue for :func:`corpus_get`.
 
@@ -1014,6 +1003,25 @@ def corpus_get_command(ls: LanguageServer, *args: Any) -> dict[str, Any]:
         The :func:`corpus_get` payload.
     """
     return corpus_get(_command_options(args))
+
+
+# Handlers are registered here, in definition order, rather than with
+# decorators on each function: mutmut 3 never mutates a decorated function,
+# so the decorator form left every handler outside mutation testing. pygls
+# registers the same function, name and signature either way.
+server.feature(lsp.INITIALIZE)(on_initialize)
+server.feature(lsp.TEXT_DOCUMENT_DID_OPEN)(did_open)
+server.feature(lsp.TEXT_DOCUMENT_DID_CHANGE)(did_change)
+server.feature(lsp.TEXT_DOCUMENT_COMPLETION)(completion)
+server.feature(lsp.TEXT_DOCUMENT_HOVER)(hover)
+server.feature(lsp.TEXT_DOCUMENT_CODE_ACTION)(code_action)
+server.feature(lsp.WORKSPACE_DID_CHANGE_CONFIGURATION)(
+    on_did_change_configuration
+)
+server.feature(lsp.TEXT_DOCUMENT_FORMATTING)(formatting)
+server.feature(lsp.TEXT_DOCUMENT_DOCUMENT_SYMBOL)(document_symbol)
+server.command(CORPUS_LIST_COMMAND)(corpus_list_command)
+server.command(CORPUS_GET_COMMAND)(corpus_get_command)
 
 
 def main() -> None:
