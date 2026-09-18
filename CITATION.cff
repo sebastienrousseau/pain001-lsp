@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+cff-version: 1.2.0
+message: "If you use pain001-lsp in research or production write-ups, please cite it as below."
+type: software
+title: "pain001-lsp: language server for ISO 20022 payment data files"
+abstract: >-
+  A Language Server Protocol implementation for the pain001 library:
+  diagnostics, completions, hover, quick fixes, formatting and document
+  symbols for ISO 20022 pain.001 payment data files, plus commands that
+  reach the validated example corpus.
+authors:
+  - family-names: Rousseau
+    given-names: Sebastien
+    email: sebastian.rousseau@gmail.com
+version: "0.0.70"
+date-released: "2026-09-13"
+license: "Apache-2.0 OR MIT"
+repository-code: "https://github.com/sebastienrousseau/pain001-lsp"
+url: "https://pain001.com"
+keywords:
+  - ISO 20022
+  - pain.001
+  - Language Server Protocol
+  - LSP
+  - payments
