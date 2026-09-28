@@ -5,6 +5,9 @@ Language Server Protocol implementation for the
 diagnostics, completion, hover, quick fixes, formatting and document symbols
 for payment-data files, in any LSP-capable editor.
 
+New to the message format? [What is pain.001?](https://pain001.com/pain-001/)
+explains its structure, versions and a complete, schema-valid example.
+
 ```{toctree}
 :maxdepth: 2
 :caption: Contents

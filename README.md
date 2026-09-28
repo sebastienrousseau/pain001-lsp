@@ -388,6 +388,7 @@ rather than a public issue.
 - **Runnable examples:** [`examples/`](https://github.com/sebastienrousseau/pain001-lsp/tree/main/examples)
 - **VS Code scaffold:** [`editors/vscode/`](https://github.com/sebastienrousseau/pain001-lsp/tree/main/editors/vscode)
 - **Release history:** [CHANGELOG.md](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CHANGELOG.md)
+- **What is pain.001?:** [pain001.com/pain-001](https://pain001.com/pain-001/)
 - **Core library docs:** [docs.pain001.com](https://docs.pain001.com)
 - **LSP specification:** [microsoft.github.io/language-server-protocol](https://microsoft.github.io/language-server-protocol/)
 
