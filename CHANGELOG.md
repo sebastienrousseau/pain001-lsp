@@ -7,8 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.0.72] - 2026-09-28
+
+Aligns on pain001 0.0.72: ISO 20022 schemas and Schematron validation
+rules, enhanced CI provenance attestations, and dependency updates.
+
 ### Changed
 
+- `pain001` floor raised to `>=0.0.72`.
+- Version aligned to `0.0.72` across all `pain001` suite packages.
 - The README and the documentation index link
   [What is pain.001?](https://pain001.com/pain-001/), an explainer of the
   message's structure, versions and a schema-valid example.
