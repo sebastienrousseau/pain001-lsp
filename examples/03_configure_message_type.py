@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 """Example: switch the LSP server's default message type at runtime.
 
 Usage:

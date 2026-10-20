@@ -1,5 +1,5 @@
 // Copyright (C) 2023-2026 Sebastien Rousseau. All rights reserved.
-// Licensed under the Apache License, Version 2.0.
+// SPDX-License-Identifier: Apache-2.0 OR MIT
 //
 // VS Code client that launches the `pain001-lsp` language server (stdio)
 // for payment-data JSON files. The server itself lives in Python:

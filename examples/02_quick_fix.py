@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 """Example: render the quick-fix snippet for missing required fields.
 
 Usage:

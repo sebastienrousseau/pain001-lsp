@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: Apache-2.0 OR MIT -->
+
 # pain001-lsp Roadmap
 
 This roadmap tracks the next set of capabilities for the LSP companion

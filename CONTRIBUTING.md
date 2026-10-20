@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: Apache-2.0 OR MIT -->
+
 # Contributing to pain001-lsp
 
 Thank you for your interest in contributing to **pain001-lsp**, the Language

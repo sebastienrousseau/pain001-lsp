@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 """Example: the LSP server's editor-feature helpers.
 
 Usage:
     pip install pain001-lsp     # requires Python 3.10+
-    python examples/lsp_helpers.py
+    python examples/01_lsp_helpers.py
 
 The pain001 language server (launched as `pain001-lsp` over stdio) powers
 editor features for payment-data JSON files. Its logic lives in pure

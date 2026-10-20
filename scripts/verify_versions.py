@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 """Verify that the pain001-lsp package version is in lockstep everywhere.
 
 Single source of truth: ``pain001_lsp.__version__``. This script reads

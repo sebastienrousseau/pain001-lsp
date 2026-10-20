@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 """Shared fixtures for the pain001-lsp test suite."""
 
 import pytest
