@@ -254,3 +254,4 @@ jobs:
           python examples/01_lsp_helpers.py
           python examples/02_quick_fix.py
           python examples/03_configure_message_type.py
+          python examples/04_corpus_commands.py

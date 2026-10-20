@@ -4,7 +4,7 @@
   "description": "Diagnostics, completion, hover, code-fix, formatting and outline for Pain001 payment-data JSON files, powered by the pain001-lsp language server.",
   "version": "0.0.72",
   "publisher": "sebastienrousseau",
-  "license": "Apache-2.0",
+  "license": "(Apache-2.0 OR MIT)",
   "repository": {
     "type": "git",
     "url": "https://github.com/sebastienrousseau/pain001-lsp"

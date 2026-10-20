@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: Apache-2.0 OR MIT -->
+
 # pain001-lsp examples
 
 Runnable, self-contained examples for the **pain001-lsp** language server.

@@ -1,4 +1,4 @@
-<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- SPDX-License-Identifier: Apache-2.0 OR MIT -->
 
 # Pain001-LSP VS Code extension
 
