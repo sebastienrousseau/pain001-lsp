@@ -61,7 +61,21 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "${GITHUB_REF_NAME}" ./*.vsix --repo "${{ github.repository }}" --clobber
+          REPO: ${{ github.repository }}
+        # release.yml creates the release from the same tag push, after its
+        # build job; this job usually finishes first. Wait for the release
+        # (up to 20 minutes) instead of failing with "release not found",
+        # which left v0.0.72 without its .vsix.
+        run: |
+          for _ in $(seq 1 80); do
+            if gh release view "${GITHUB_REF_NAME}" --repo "$REPO" >/dev/null 2>&1; then
+              gh release upload "${GITHUB_REF_NAME}" ./*.vsix --repo "$REPO" --clobber
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::release ${GITHUB_REF_NAME} did not appear within 20 minutes"
+          exit 1
 
       - name: Publish to the Marketplace
         if: startsWith(github.ref, 'refs/tags/v')
