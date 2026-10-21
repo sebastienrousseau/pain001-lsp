@@ -167,6 +167,12 @@ jobs:
       - name: Mypy
         run: mypy pain001_lsp/
 
+      # Per-function ceilings (cyclomatic 10, cognitive 15, Halstead
+      # difficulty 30, 60 lines; 500 lines per file) against
+      # complexity-baseline.json, which may only shrink.
+      - name: Complexity against the baseline
+        run: python scripts/check_complexity.py
+
   examples:
     name: Examples
     runs-on: ubuntu-latest

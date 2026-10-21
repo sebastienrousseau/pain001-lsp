@@ -35,6 +35,9 @@ interrogate = "^1.7.0"
 # backport the conformance gate does not run there at all.
 tomli = { version = ">=2", python = "<3.11" }
 packaging = ">=23"
+# Complexity gate (scripts/check_complexity.py); also in requirements/ci.in.
+radon = ">=6.0.1,<7"
+complexipy = { version = ">=8.1,<9", python = "<3.16" }
 
 
 [build-system]
