@@ -7,6 +7,8 @@
 MUTATION_FLOOR ?= 85
 
 PYTHON ?= python3
+# Every directory of Python the linters and formatter cover, here and in CI.
+PY_PATHS = pain001_lsp/ tests/ benches/ scripts/ fuzz/ examples/
 POETRY ?= poetry
 
 help: ## Show this help message
@@ -25,12 +27,12 @@ test: ## Run tests with the 100% line+branch coverage gate
 		--cov-report=term-missing --cov-fail-under=100 -v
 
 lint: ## Run linters (ruff + black check)
-	$(POETRY) run ruff check pain001_lsp/ tests/
-	$(POETRY) run black --check pain001_lsp/ tests/
+	$(POETRY) run ruff check $(PY_PATHS)
+	$(POETRY) run black --check $(PY_PATHS)
 
 format: ## Auto-format code (ruff fix + black)
-	$(POETRY) run ruff check --fix pain001_lsp/ tests/
-	$(POETRY) run black pain001_lsp/ tests/
+	$(POETRY) run ruff check --fix $(PY_PATHS)
+	$(POETRY) run black $(PY_PATHS)
 
 type-check: ## Run mypy type checking
 	$(POETRY) run mypy pain001_lsp/

@@ -30,8 +30,8 @@ jobs:
 
       - name: Full gate (lint + type + tests + interrogate + bandit + audit)
         run: |
-          ruff check pain001_lsp/ tests/
-          black --check pain001_lsp/ tests/
+          ruff check pain001_lsp/ tests/ benches/ scripts/ fuzz/ examples/
+          black --check pain001_lsp/ tests/ benches/ scripts/ fuzz/ examples/
           mypy pain001_lsp/
           pytest tests/ --cov=pain001_lsp --cov-branch --cov-report=xml --cov-fail-under=100
           interrogate -c pyproject.toml pain001_lsp

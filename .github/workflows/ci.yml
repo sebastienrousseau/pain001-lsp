@@ -159,10 +159,10 @@ jobs:
         run: scripts/ci-install.sh requirements/ci.txt
 
       - name: Ruff check
-        run: ruff check pain001_lsp/ tests/ benches/ tests/
+        run: ruff check pain001_lsp/ tests/ benches/ scripts/ fuzz/ examples/
 
       - name: Black check
-        run: black --check pain001_lsp/ tests/ benches/
+        run: black --check pain001_lsp/ tests/ benches/ scripts/ fuzz/ examples/
 
       - name: Mypy
         run: mypy pain001_lsp/

@@ -28,8 +28,8 @@ jobs:
 
       - name: Lint
         run: |
-          ruff check pain001_lsp/ tests/
-          black --check pain001_lsp/ tests/
+          ruff check pain001_lsp/ tests/ benches/ scripts/ fuzz/ examples/
+          black --check pain001_lsp/ tests/ benches/ scripts/ fuzz/ examples/
 
       - name: Type check
         run: mypy pain001_lsp/
