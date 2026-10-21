@@ -62,7 +62,7 @@
   "devDependencies": {
     "@types/vscode": "^1.75.0",
     "typescript": "^5.0.0",
-    "@vscode/vsce": "^3.0.0"
+    "@vscode/vsce": "^4.0.0"
   },
   "keywords": [
     "ISO 20022",
