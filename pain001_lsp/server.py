@@ -60,11 +60,11 @@ from typing import Any
 from jsonschema import Draft7Validator
 from lsprotocol import types as lsp
 from pain001.constants import SCHEMAS_DIR, valid_xml_types
-from pain001.lsp.diagnostics import Severity, diagnostics_for_csv
 from pain001.validation import validate_bic, validate_iban
 from pygls.lsp.server import LanguageServer
 
 from pain001_lsp import __version__
+from pain001_lsp._csv import csv_diagnostics
 from pain001_lsp._names import _HUMAN_NAMES
 from pain001_lsp._parsing import (
     _PARSE_ERRORS,
@@ -298,14 +298,6 @@ def compute_diagnostics(
     ) + _identifier_diagnostics(records, line_for)
 
 
-_CSV_SEVERITY_TO_STR = {
-    Severity.ERROR: "error",
-    Severity.WARNING: "warning",
-    Severity.INFORMATION: "information",
-    Severity.HINT: "hint",
-}
-
-
 def compute_diagnostics_csv(
     text: str, message_type: str = DEFAULT_MESSAGE_TYPE
 ) -> list[dict]:
@@ -322,22 +314,10 @@ def compute_diagnostics_csv(
     Returns:
         A list of plain dicts shaped like the JSON-mode output, with
         ``col_start`` / ``col_end`` keys retained so editors can paint
-        per-cell ranges.
+        per-cell ranges. Text the ``csv`` module cannot read gets one
+        ``Invalid CSV`` error at the top instead.
     """
-    diagnostics: list[dict] = []
-    for diag in diagnostics_for_csv(text, message_type):
-        diagnostics.append(
-            {
-                "line": diag.line,
-                "character": diag.col_start,
-                "col_start": diag.col_start,
-                "col_end": diag.col_end,
-                "severity": _CSV_SEVERITY_TO_STR.get(diag.severity, "error"),
-                "message": diag.message,
-                "code": diag.code,
-            }
-        )
-    return diagnostics
+    return csv_diagnostics(text, message_type)
 
 
 def completion_items(

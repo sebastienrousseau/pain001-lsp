@@ -9,6 +9,7 @@ every branch of ``pain001_lsp.server`` without touching a real client.
 """
 
 import json
+import sys
 from types import SimpleNamespace
 from typing import Any
 
@@ -711,6 +712,31 @@ def test_compute_diagnostics_csv_flags_missing_required_column():
 def test_compute_diagnostics_csv_empty_input_returns_empty_list():
     """An empty document yields no diagnostics."""
     assert lsp_server.compute_diagnostics_csv("") == []
+
+
+def test_compute_diagnostics_csv_unreadable_text_yields_one_error():
+    """A bare carriage return inside an unquoted field is one error.
+
+    The ``csv`` module raises ``csv.Error`` on it; the input is the crash
+    the Atheris job found on the 0.0.74 release PR.
+    """
+    diagnostics = lsp_server.compute_diagnostics_csv("C\ufffd\x00\rz\ufffd")
+    assert len(diagnostics) == 1
+    diagnostic = diagnostics[0]
+    assert (diagnostic["line"], diagnostic["character"]) == (0, 0)
+    assert diagnostic["severity"] == "error"
+    assert diagnostic["message"].startswith("Invalid CSV: ")
+
+
+def test_compute_diagnostics_csv_nul_byte_never_raises():
+    """Python 3.10 rejects a NUL byte that 3.11 and later read as text."""
+    diagnostics = lsp_server.compute_diagnostics_csv("id,\x00amount\n1,2\n")
+    if sys.version_info < (3, 11):
+        assert diagnostics[0]["message"].startswith("Invalid CSV: ")
+    else:
+        assert not any(
+            d["message"].startswith("Invalid CSV") for d in diagnostics
+        )
 
 
 def test_is_csv_uri_dispatches_by_suffix():
