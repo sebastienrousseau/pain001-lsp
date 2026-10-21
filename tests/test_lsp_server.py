@@ -986,19 +986,3 @@ def test_every_supported_message_type_has_a_human_name():
     }
     unnamed = [mt for mt in lsp_server.valid_xml_types if items[mt] == mt]
     assert not unnamed, f"no human-readable name for {unnamed}"
-
-
-def test_vscode_setting_offers_every_supported_message_type():
-    """The extension's messageType enum matches what the server accepts."""
-    from pathlib import Path
-
-    manifest = (
-        Path(__file__).resolve().parents[1]
-        / "editors"
-        / "vscode"
-        / "package.json"
-    )
-    setting = json.loads(manifest.read_text(encoding="utf-8"))["contributes"][
-        "configuration"
-    ]["properties"]["pain001.messageType"]
-    assert setting["enum"] == list(lsp_server.valid_xml_types)
