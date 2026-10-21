@@ -962,7 +962,9 @@ def test_main_starts_the_pygls_server(monkeypatch):
 #: on an integer longer than sys.get_int_max_str_digits(); neither is a
 #: JSONDecodeError, so each used to escape the handlers on a keystroke.
 _UNPARSEABLE = {
-    "nested-too-deeply": "[" * 100_000,
+    # Deep enough to exhaust an 8 MiB C stack too: Python 3.14 bounds JSON
+    # nesting by stack size, and on Linux 100,000 levels fit.
+    "nested-too-deeply": "[" * 10_000_000,
     "integer-too-long": "[" + "1" * 5_000 + "]",
 }
 
