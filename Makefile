@@ -1,4 +1,4 @@
-.PHONY: help install dev test lint format type-check security complexity clean examples doc-coverage check
+.PHONY: help install dev test lint format type-check security complexity clean examples doc-coverage demo check
 
 # Mutation score floor for the language-server handlers: 87.9% (775 of
 # 882) on 2026-09-18, up from 76.5% before the diagnostic-shape tests. The
@@ -7,6 +7,7 @@
 MUTATION_FLOOR ?= 85
 
 PYTHON ?= python3
+VHS ?= vhs
 # Every directory of Python the linters and formatter cover, here and in CI.
 PY_PATHS = pain001_lsp/ tests/ benches/ scripts/ fuzz/ examples/
 POETRY ?= poetry
@@ -58,6 +59,9 @@ examples: ## Verify example scripts run
 
 doc-coverage: ## Enforce the 100% docstring coverage gate
 	$(POETRY) run interrogate -c pyproject.toml -v pain001_lsp
+
+demo: ## Render .github/demo.gif from .github/demo.tape with VHS
+	$(POETRY) run $(VHS) .github/demo.tape
 
 mutate: ## Mutation testing over the handlers (mutmut 3, config in pyproject)
 	rm -rf mutants
