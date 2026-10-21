@@ -11,6 +11,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [0.0.74] - 2026-10-21
+
+The pain001 family's 0.0.74 release, on the pain001 0.0.74 floor. The
+family skips 0.0.73, which pain001-mcp published on its own.
+
+### Fixed
+
+- A document `json.loads` rejects without a `JSONDecodeError` no longer
+  raises out of the handlers. Nesting deeper than the recursion limit
+  (about ten thousand open brackets) and an integer longer than 4300
+  digits used to leave the editor with stale diagnostics; diagnostics
+  now report one `Invalid JSON: ...` error at the top of the document,
+  and formatting, the outline and the quick fix offer nothing, as they
+  do for a syntax error.
+- Completion names `pain.001.001.13` (Customer Credit Transfer
+  Initiation V13) and `pain.008.001.08` (Customer Direct Debit
+  Initiation V08) instead of showing the bare id, and the VS Code
+  extension's `pain001.messageType` setting lists both.
+- The GitHub release is titled `pain001-lsp X.Y.Z`, and the VS Code
+  extension job waits for the release before attaching the `.vsix`
+  (v0.0.72 was published without it).
+- The scheduled suite-consistency check compares this tree with
+  pain001-lsp's own PyPI release, not the core's.
+- The Docker image installed `pain001>=0.0.52,<0.0.54` before this
+  package by default and was labelled Apache-2.0 only.
+
+### Changed
+
+- `pain001` floor raised to `>=0.0.74,<1`. The 0.0.72 entry below says
+  the floor moved to 0.0.72, but `pyproject.toml` still said `>=0.0.71`.
+- Every `pip install` in CI, the release job and the Dockerfile installs
+  from hash-pinned `requirements/*.txt`, through `scripts/ci-install.sh`
+  in CI; the base image is pinned by digest. OpenSSF Scorecard's
+  Pinned-Dependencies check goes from 2 to 10.
+- The VS Code extension is packaged with `@vscode/vsce` 4 on Node.js 22,
+  which drops braces (GHSA-vfj7-8cjw-p6xm, no fixed release) and
+  markdown-it (GHSA-gfr2-rv44-r23c, GHSA-vfgh-jcmw-g37q) from its
+  lockfile.
+- Hash-pinned build, docs and audit sets floor certifi at 2026.10.19
+  (GHSA-6q48-6c7w-9gw2), urllib3 at 2.8.0 and virtualenv at 21.14.8.
+- The README follows the portfolio template, with a VHS demo, and the
+  manual adds `docs/COMPARISON.md`, `docs/BENCHMARKS.md` and
+  `docs/POLICIES.md`; it builds without warnings and links the author
+  on every page.
+- `CITATION.cff` lists the licence as Apache-2.0 and MIT, the form CFF
+  1.2.0 accepts; `Apache-2.0 OR MIT` failed schema validation.
+
+### Added
+
+- `scripts/check_complexity.py` holds every function to the portfolio
+  ceilings against `complexity-baseline.json`, which may only shrink:
+  three offenders, down from four, after `compute_diagnostics` was
+  split into helpers within every ceiling.
+- `fuzz/fuzz_documents.py`, an Atheris harness over every document
+  handler, run on each change and weekly.
+- The Security workflow audits the `poetry.lock` environment and every
+  `requirements/*.txt` with pip-audit.
+- `scripts/verify_versions.py` checks every version source and fails
+  when the pain001 floor differs from the release version; the
+  "Version sources agree" workflow runs it on each pull request.
+- ruff and black cover `scripts/`, `fuzz/` and `examples/`.
+
 ## [0.0.72] - 2026-09-28
 
 Aligns on pain001 0.0.72: ISO 20022 schemas and Schematron validation
@@ -411,4 +473,5 @@ ergonomics for pain.001 payment-data JSON files:
 - `scripts/verify_versions.py` - pre-release script asserting
   `__version__`, `pyproject.toml`, and `CHANGELOG.md` agree.
 
+[0.0.74]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.72...v0.0.74
 [0.0.52]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.52

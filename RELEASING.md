@@ -31,17 +31,25 @@ A release is ready only when **all** of the following hold on `main`:
 
 1. `make check` is green (lint + 100% coverage + interrogate + examples).
 2. `mypy --strict`, `ruff`, `black` are clean.
-3. Every Dependabot / CodeQL / bandit / pip-audit alert is resolved or
-   has a documented, expiring suppression.
+3. Zero open Dependabot alerts, code-scanning alerts and issues, and
+   bandit and pip-audit are clean. An alert is closed by fixing it; only
+   a false positive or a finding that cannot be fixed in code is
+   dismissed, by the maintainer, with the reason written on it.
 4. `CHANGELOG.md` has a dated section for the new version describing the
    change set (this is the single source of truth for the release).
-5. The version is identical in `pyproject.toml` and
-   `pain001_lsp/__init__.py` (enforced by `scripts/verify_versions.py`).
+5. Every version source agrees and the `pain001` floor equals the
+   release version (enforced by `scripts/verify_versions.py`, which the
+   "Version sources agree" workflow runs on each pull request).
+6. `poetry.lock` and the hash-pinned `requirements/*.txt` resolve the
+   core's release: the core publishes first, then each file is
+   recompiled with the command in its header and `poetry lock`.
 
 ## Cutting the release
 
-1. Bump the version in `pyproject.toml` and `pain001_lsp/__init__.py`
-   and add the `CHANGELOG.md` section in a single PR.
+1. Bump the version in `pyproject.toml`, `pain001_lsp/__init__.py`,
+   `CITATION.cff`, the README's latest-release line and
+   `editors/vscode/package.json`, raise the `pain001` floor, and add the
+   `CHANGELOG.md` section, on `feat/vX.Y.Z` in a single PR.
 2. Merge the PR to `main` once CI is green.
 3. Push a signed tag:
 
