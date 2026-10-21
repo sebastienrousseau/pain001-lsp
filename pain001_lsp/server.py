@@ -65,9 +65,9 @@ from pygls.lsp.server import LanguageServer
 
 from pain001_lsp import __version__
 from pain001_lsp._csv import csv_diagnostics
-from pain001_lsp._names import _HUMAN_NAMES
+from pain001_lsp._names import HUMAN_NAMES
 from pain001_lsp._parsing import (
-    _PARSE_ERRORS,
+    PARSE_ERRORS,
     _diagnostic,
     _parse_error_diagnostic,
 )
@@ -274,7 +274,7 @@ def compute_diagnostics(
     """
     try:
         parsed = json.loads(text)
-    except _PARSE_ERRORS as exc:
+    except PARSE_ERRORS as exc:
         return [_parse_error_diagnostic(exc)]
 
     records = _normalise_records(parsed)
@@ -352,7 +352,7 @@ def completion_items(
         items.append(
             {
                 "label": mt,
-                "detail": _HUMAN_NAMES.get(mt, mt),
+                "detail": HUMAN_NAMES.get(mt, mt),
                 "kind": "field",
             }
         )
@@ -650,7 +650,7 @@ def code_action(
     document = ls.workspace.get_text_document(params.text_document.uri)
     try:
         parsed = json.loads(document.source)
-    except _PARSE_ERRORS:
+    except PARSE_ERRORS:
         return []
     records = _normalise_records(parsed)
     if not records:
@@ -734,7 +734,7 @@ def formatting(
     try:
         parsed = json.loads(document.source)
         formatted = json.dumps(parsed, indent=2, ensure_ascii=False) + "\n"
-    except _PARSE_ERRORS:
+    except PARSE_ERRORS:
         return []
     if formatted == document.source:
         return []
@@ -774,7 +774,7 @@ def document_symbol(
     document = ls.workspace.get_text_document(params.text_document.uri)
     try:
         parsed = json.loads(document.source)
-    except _PARSE_ERRORS:
+    except PARSE_ERRORS:
         return []
     records = _normalise_records(parsed)
     if not records:

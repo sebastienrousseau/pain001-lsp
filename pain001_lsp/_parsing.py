@@ -15,7 +15,7 @@ import json
 #: error is a ``json.JSONDecodeError`` (a ``ValueError``); an integer longer
 #: than ``sys.get_int_max_str_digits()`` is a plain ``ValueError``; nesting
 #: deeper than the interpreter's recursion limit is a ``RecursionError``.
-_PARSE_ERRORS = (ValueError, RecursionError)
+PARSE_ERRORS = (ValueError, RecursionError)
 
 
 def _diagnostic(

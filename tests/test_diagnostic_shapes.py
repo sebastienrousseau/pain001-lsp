@@ -227,7 +227,7 @@ class TestCompletionItems:
 
     def test_message_types_carry_their_human_names(self):
         items = {i["label"]: i for i in server.completion_items(MT)}
-        assert items[MT]["detail"] == server._HUMAN_NAMES[MT]
+        assert items[MT]["detail"] == server.HUMAN_NAMES[MT]
         assert items[MT]["detail"] != MT
         assert items[MT]["kind"] == "field"
 

@@ -7,7 +7,7 @@ library supports (``pain001.constants.valid_xml_types``) needs an entry; a
 test fails when the core adds one this table does not name.
 """
 
-_HUMAN_NAMES = {
+HUMAN_NAMES = {
     "pain.001.001.03": "Customer Credit Transfer Initiation V03",
     "pain.001.001.04": "Customer Credit Transfer Initiation V04",
     "pain.001.001.05": "Customer Credit Transfer Initiation V05",
