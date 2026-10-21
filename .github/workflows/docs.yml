@@ -44,6 +44,18 @@ jobs:
           cd docs
           make html
 
+      # AGENTS.md 7.1.2: every page links the author from its copyright
+      # line (docs/_templates/page.html). Checked on the built output.
+      - name: Every page carries the author link
+        run: |
+          missing=$(find docs/_build/html -name '*.html' -print0 \
+            | xargs -0 grep -L 'rel="author"' || true)
+          if [ -n "$missing" ]; then
+            echo "::error::pages without the author link:"
+            echo "$missing"
+            exit 1
+          fi
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:

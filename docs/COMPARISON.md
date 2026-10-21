@@ -28,4 +28,4 @@ validator.
 
 Every row for pain001-lsp is exercised by the test suite
 (`tests/test_lsp_server.py`, `tests/test_diagnostic_shapes.py`) and by the
-runnable scripts in [`examples/`](../examples/README.md).
+runnable scripts in [`examples/`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/examples/README.md).

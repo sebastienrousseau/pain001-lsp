@@ -60,8 +60,17 @@ def test_badges_are_28_pixel_shields_then_the_demo():
     assert (ROOT / ".github" / "demo.gif").is_file()
 
 
-def test_local_links_resolve():
-    """Every relative link in the README points at a tracked path."""
-    targets = re.findall(r"\]\((?!https?:|#|mailto:)([^)#\s]+)", _text())
-    missing = [t for t in targets if not (ROOT / t).exists()]
+def test_repository_links_resolve():
+    """Every link into this repository's main branch names a real path.
+
+    Links are absolute so they work on PyPI and in the Sphinx manual,
+    which includes this file from docs/; a renamed file must not leave
+    one dangling.
+    """
+    base = "https://github.com/sebastienrousseau/pain001-lsp/"
+    paths = re.findall(
+        re.escape(base) + r"(?:blob|tree)/main/([^)\"#\s]+)", _text()
+    )
+    assert paths
+    missing = [p for p in paths if not (ROOT / p).exists()]
     assert not missing, missing

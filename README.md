@@ -25,6 +25,8 @@
 
 ---
 
+<!-- The manual (docs/readme.md) includes this file from here on. -->
+
 ## Contents
 
 **Getting started**
@@ -40,8 +42,8 @@
 **Library reference**
 
 - [Capabilities at a glance](#capabilities-at-a-glance) — the current surface by theme
-- [Ecosystem comparison](#ecosystem-comparison) — short matrix; full table at [`docs/COMPARISON.md`](docs/COMPARISON.md)
-- [Benchmarks](#benchmarks) — headline numbers; full table at [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md)
+- [Ecosystem comparison](#ecosystem-comparison) — short matrix; full table at [`docs/COMPARISON.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/COMPARISON.md)
+- [Benchmarks](#benchmarks) — headline numbers; full table at [`docs/BENCHMARKS.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/BENCHMARKS.md)
 - [Features](#features) — module-level capability list
 - [Configuration](#configuration) — core options
 - [Examples](#examples) — runnable example index
@@ -103,14 +105,14 @@ Every [release](https://github.com/sebastienrousseau/pain001-lsp/releases)
 attaches `pain001-lsp-json-<version>.vsix`. In VS Code choose *Extensions*,
 the `...` menu, *Install from VSIX...*. The extension starts the
 `pain001-lsp` command, so install the Python package as well. Its source is
-in [`editors/vscode/`](editors/vscode/).
+in [`editors/vscode/`](https://github.com/sebastienrousseau/pain001-lsp/tree/main/editors/vscode/).
 
 ---
 
 ## Requirements
 
 - Python 3.10 or newer, tested in CI on 3.10, 3.11, 3.12, 3.13 and 3.14 on
-  Linux ([toolchain policy](docs/POLICIES.md)). The package is pure Python
+  Linux ([toolchain policy](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/POLICIES.md)). The package is pure Python
   and runs wherever its dependencies do: macOS, Linux and Windows.
 - `pain001` 0.0.74 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
   `jsonschema` 4.17 or newer (below 5), installed automatically.
@@ -185,7 +187,7 @@ command line, the REST API and an AI agent apply the same rules.
 | Outline | One document symbol per record, named by `id` | Released |
 | Formatting | Whole-document pretty-print, 2-space indent, idempotent | Released |
 | Example corpus | `pain001.corpus.list` and `pain001.corpus.get` commands | Released |
-| Targeted fixes per diagnostic, code lenses | See [`ROADMAP.md`](ROADMAP.md) | Planned |
+| Targeted fixes per diagnostic, code lenses | See [`ROADMAP.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/ROADMAP.md) | Planned |
 
 ---
 
@@ -201,7 +203,7 @@ saving.
 | A JSON Schema alone | Yes | No | No |
 | `pain001` library from a script | No | Yes | No |
 
-See [`docs/COMPARISON.md`](docs/COMPARISON.md) for the evidence and complete matrix.
+See [`docs/COMPARISON.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/COMPARISON.md) for the evidence and complete matrix.
 
 ---
 
@@ -216,7 +218,7 @@ a document stays interactive. Measured with `benches/bench_diagnostics.py`.
 | Interactive budget (under 100 ms per change) | ~1,200 records | recorded for 0.0.64 (2026-08-29) |
 | Malformed document | 0.01 ms | Apple A18 Pro, Python 3.12.15, load average above 30 (2026-10-21) |
 
-See [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md) for methodology and full results.
+See [`docs/BENCHMARKS.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/BENCHMARKS.md) for methodology and full results.
 
 ---
 
@@ -274,15 +276,15 @@ the previous one stays active.
 
 ## Examples
 
-One runnable script per surface in [`examples/`](examples/README.md), each
+One runnable script per surface in [`examples/`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/examples/README.md), each
 run in CI and by `make examples`:
 
 | Example | Demonstrates |
 | :--- | :--- |
-| [`01_lsp_helpers.py`](examples/01_lsp_helpers.py) | Diagnostics, completion and hover on sample records |
-| [`02_quick_fix.py`](examples/02_quick_fix.py) | The missing-fields quick fix and the snippet it inserts |
-| [`03_configure_message_type.py`](examples/03_configure_message_type.py) | Overriding the message type through `initializationOptions` |
-| [`04_corpus_commands.py`](examples/04_corpus_commands.py) | The example-corpus commands |
+| [`01_lsp_helpers.py`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/examples/01_lsp_helpers.py) | Diagnostics, completion and hover on sample records |
+| [`02_quick_fix.py`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/examples/02_quick_fix.py) | The missing-fields quick fix and the snippet it inserts |
+| [`03_configure_message_type.py`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/examples/03_configure_message_type.py) | Overriding the message type through `initializationOptions` |
+| [`04_corpus_commands.py`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/examples/04_corpus_commands.py) | The example-corpus commands |
 
 ```sh
 git clone https://github.com/sebastienrousseau/pain001-lsp.git && cd pain001-lsp
@@ -325,8 +327,8 @@ CI installs from hash-pinned `requirements/*.txt` (compiled from
 ruff, black, mypy in strict mode, bandit, interrogate (100% docstrings), the
 complexity ceilings, the version-source check, pip-audit over `poetry.lock`
 and every requirements file, mutation testing, Atheris fuzzing, CodeQL and
-OpenSSF Scorecard. See [`CONTRIBUTING.md`](CONTRIBUTING.md) and
-[`RELEASING.md`](RELEASING.md).
+OpenSSF Scorecard. See [`CONTRIBUTING.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CONTRIBUTING.md) and
+[`RELEASING.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/RELEASING.md).
 
 ---
 
@@ -337,12 +339,12 @@ opens no network socket, executes nothing from the document, takes no file
 path from the client, and parses JSON with the standard library; a document
 that does not parse yields one diagnostic, never an exception. The document
 handlers are fuzzed with [Atheris][atheris] on every change and weekly (see
-[`fuzz/`](fuzz/)). Actions are pinned by SHA, the container base image by
+[`fuzz/`](https://github.com/sebastienrousseau/pain001-lsp/tree/main/fuzz/)). Actions are pinned by SHA, the container base image by
 digest, every `pip` install is hash-pinned, workflow tokens are
 least-privilege, and releases carry SLSA provenance, PEP 740 attestations,
 cosign signatures and SPDX and CycloneDX SBOMs.
 
-Report vulnerabilities according to [`SECURITY.md`](SECURITY.md).
+Report vulnerabilities according to [`SECURITY.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/SECURITY.md).
 
 ---
 
@@ -350,11 +352,11 @@ Report vulnerabilities according to [`SECURITY.md`](SECURITY.md).
 
 [User manual](https://sebastienrousseau.com/pain001-lsp/) ·
 [API reference: the helpers](#features) ·
-[Developer guide](CONTRIBUTING.md) ·
+[Developer guide](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CONTRIBUTING.md) ·
 [Family map](#the-pain001-lsp-ecosystem) ·
-[Architecture](ARCHITECTURE.md) · [Releasing](RELEASING.md) ·
-[Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) ·
-[Security policy](SECURITY.md) · [Support](SUPPORT.md) ·
+[Architecture](https://github.com/sebastienrousseau/pain001-lsp/blob/main/ARCHITECTURE.md) · [Releasing](https://github.com/sebastienrousseau/pain001-lsp/blob/main/RELEASING.md) ·
+[Changelog](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CHANGELOG.md) · [Roadmap](https://github.com/sebastienrousseau/pain001-lsp/blob/main/ROADMAP.md) ·
+[Security policy](https://github.com/sebastienrousseau/pain001-lsp/blob/main/SECURITY.md) · [Support](https://github.com/sebastienrousseau/pain001-lsp/blob/main/SUPPORT.md) ·
 [What is pain.001?](https://pain001.com/pain-001/)
 
 ---
@@ -367,8 +369,8 @@ receives: the capabilities the server advertises, and the diagnostics,
 completion items, code actions, symbols and edits it returns, including the
 plain-dict shapes of the public helpers. A change to what the server
 reports for the same document is breaking even when no Python signature
-moves, and is called out in the [changelog](CHANGELOG.md). The Python floor
-moves only as described in the [toolchain policy](docs/POLICIES.md).
+moves, and is called out in the [changelog](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CHANGELOG.md). The Python floor
+moves only as described in the [toolchain policy](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/POLICIES.md).
 
 ---
 
@@ -376,8 +378,8 @@ moves only as described in the [toolchain policy](docs/POLICIES.md).
 
 This project is dual-licensed under either:
 
-* Apache License, Version 2.0 ([`LICENSE-APACHE`](LICENSE-APACHE) or <https://www.apache.org/licenses/LICENSE-2.0>)
-* MIT License ([`LICENSE-MIT`](LICENSE-MIT) or <https://opensource.org/licenses/MIT>)
+* Apache License, Version 2.0 ([`LICENSE-APACHE`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/LICENSE-APACHE) or <https://www.apache.org/licenses/LICENSE-2.0>)
+* MIT License ([`LICENSE-MIT`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/LICENSE-MIT) or <https://opensource.org/licenses/MIT>)
 
 at your option. Any contribution submitted for inclusion is licensed the same
 way, without additional terms. Dependencies keep their own licences. Built on
