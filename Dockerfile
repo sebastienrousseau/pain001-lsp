@@ -4,43 +4,51 @@
 # The container runs the pygls language server over stdio so an LSP
 # client can launch it directly with ``docker run -i --rm pain001-lsp``.
 
-FROM python:3.12-slim AS builder
+FROM python:3.12-slim@sha256:cb33f7f771ecec2ef1225cf39b159591a040391bd73e4c01f00fdfc4c47611d2 AS builder
 
 WORKDIR /build
 
 ENV PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Pin can be overridden at build-time so the GHCR pipeline can install
-# pain001 from a matching feat/* branch before the parent release hits
-# PyPI; the default resolves the published version once available. The
-# git client is needed only when the override spec is a git+ URL; it
-# stays in this build stage and never ships in the final image.
-ARG PAIN001_PIP_SPEC="pain001>=0.0.52,<0.0.54"
+# Empty by default: the image installs the pain001 release pinned in
+# requirements/runtime.txt. The GHCR pipeline sets it to a core branch
+# name (main, feat/*, fix/*) to build against an unreleased core branch
+# before that release reaches PyPI. The git client is needed only for
+# that override; it stays in this build stage and never ships in the
+# final image.
+ARG PAIN001_REF=""
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/*
 
 # pyproject.toml carries ``readme = "README.md"``, so README.md must be
-# present at build-time for ``pip install .`` to resolve the package
-# metadata.
+# present at build-time to resolve the package metadata.
+COPY requirements/runtime.txt ./requirements/runtime.txt
 COPY pyproject.toml README.md ./
 COPY pain001_lsp ./pain001_lsp
 
-# Install pain001 from PyPI (or the override spec), then layer this
-# package on top inside a self-contained virtualenv.
+# Every dependency comes hash-pinned from requirements/runtime.txt. The
+# package (and the optional core branch) are built as wheels and
+# installed with --no-deps, so nothing resolves an unpinned version.
 RUN python -m venv /opt/venv \
-    && /opt/venv/bin/pip install --upgrade pip \
-    && /opt/venv/bin/pip install "$PAIN001_PIP_SPEC" \
-    && /opt/venv/bin/pip install .
+    && /opt/venv/bin/pip install --require-hashes -r requirements/runtime.txt \
+    && if [ -n "$PAIN001_REF" ]; then \
+         git clone --quiet --depth 1 --branch "$PAIN001_REF" \
+           https://github.com/sebastienrousseau/pain001 /build/pain001-core \
+         && /opt/venv/bin/pip wheel --no-deps -w /build/wheels /build/pain001-core; \
+       fi \
+    && /opt/venv/bin/pip wheel --no-deps -w /build/wheels . \
+    && /opt/venv/bin/pip install --no-deps --force-reinstall /build/wheels/*.whl \
+    && /opt/venv/bin/pip check
 
 
-FROM python:3.12-slim
+FROM python:3.12-slim@sha256:cb33f7f771ecec2ef1225cf39b159591a040391bd73e4c01f00fdfc4c47611d2
 
 LABEL org.opencontainers.image.title="pain001-lsp" \
       org.opencontainers.image.description="Language Server Protocol server for the pain001 ISO 20022 library." \
       org.opencontainers.image.source="https://github.com/sebastienrousseau/pain001-lsp" \
-      org.opencontainers.image.licenses="Apache-2.0"
+      org.opencontainers.image.licenses="Apache-2.0 OR MIT"
 
 # Non-root user (LSP clients launch the container with stdio; no extra
 # privileges needed).
