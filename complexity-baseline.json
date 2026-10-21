@@ -1,6 +1,6 @@
 {
   "pain001_lsp/server.py": {
-    "file_lines": 1021
+    "file_lines": 1016
   },
   "pain001_lsp/server.py::_record_close_positions": {
     "cognitive": 23,
@@ -9,10 +9,5 @@
   "pain001_lsp/server.py::_record_line_offsets": {
     "cognitive": 20,
     "cyclomatic": 12
-  },
-  "pain001_lsp/server.py::compute_diagnostics": {
-    "cognitive": 28,
-    "cyclomatic": 15,
-    "lines": 117
   }
 }

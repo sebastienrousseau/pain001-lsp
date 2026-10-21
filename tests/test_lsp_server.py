@@ -927,3 +927,50 @@ def test_main_starts_the_pygls_server(monkeypatch):
     monkeypatch.setattr(lsp_server.server, "start_io", fake_start_io)
     lsp_server.main()
     assert calls == [((), {})]
+
+
+# ---------------------------------------------------------------------------
+# Documents json.loads rejects without a JSONDecodeError
+# ---------------------------------------------------------------------------
+#: json.loads raises RecursionError on deep nesting and a plain ValueError
+#: on an integer longer than sys.get_int_max_str_digits(); neither is a
+#: JSONDecodeError, so each used to escape the handlers on a keystroke.
+_UNPARSEABLE = {
+    "nested-too-deeply": "[" * 100_000,
+    "integer-too-long": "[" + "1" * 5_000 + "]",
+}
+
+
+@pytest.mark.parametrize(
+    "text", _UNPARSEABLE.values(), ids=_UNPARSEABLE.keys()
+)
+def test_unparseable_json_yields_one_syntax_diagnostic(text):
+    """The document gets one error at the top, never an exception."""
+    diagnostics = lsp_server.compute_diagnostics(text)
+    assert len(diagnostics) == 1
+    diagnostic = diagnostics[0]
+    assert (diagnostic["line"], diagnostic["character"]) == (0, 0)
+    assert diagnostic["severity"] == "error"
+    assert diagnostic["message"].startswith("Invalid JSON: ")
+
+
+@pytest.mark.parametrize(
+    "text", _UNPARSEABLE.values(), ids=_UNPARSEABLE.keys()
+)
+def test_did_open_publishes_for_unparseable_json(text):
+    """The editor is told why, through the normal publish path."""
+    ls = _StubLS(text)
+    lsp_server.did_open(ls, _did_open_params())
+    assert len(ls.published) == 1
+    assert len(ls.published[0][1]) == 1
+
+
+@pytest.mark.parametrize(
+    "text", _UNPARSEABLE.values(), ids=_UNPARSEABLE.keys()
+)
+def test_handlers_leave_unparseable_json_alone(text):
+    """Formatting, outline and quick-fix offer nothing, as for bad JSON."""
+    ls = _StubLS(text)
+    assert lsp_server.formatting(ls, _formatting_params()) == []
+    assert lsp_server.document_symbol(ls, _document_symbol_params()) == []
+    assert lsp_server.code_action(ls, _code_action_params()) == []
