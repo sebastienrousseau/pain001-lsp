@@ -65,6 +65,7 @@ from pain001.validation import validate_bic, validate_iban
 from pygls.lsp.server import LanguageServer
 
 from pain001_lsp import __version__
+from pain001_lsp._names import _HUMAN_NAMES
 from pain001_lsp._parsing import (
     _PARSE_ERRORS,
     _diagnostic,
@@ -82,20 +83,6 @@ _IDENTIFIER_FIELDS = {
     "debtor_agent_BIC": "bic",
     "creditor_agent_BIC": "bic",
     "forwarding_agent_BIC": "bic",
-}
-
-_HUMAN_NAMES = {
-    "pain.001.001.03": "Customer Credit Transfer Initiation V03",
-    "pain.001.001.04": "Customer Credit Transfer Initiation V04",
-    "pain.001.001.05": "Customer Credit Transfer Initiation V05",
-    "pain.001.001.06": "Customer Credit Transfer Initiation V06",
-    "pain.001.001.07": "Customer Credit Transfer Initiation V07",
-    "pain.001.001.08": "Customer Credit Transfer Initiation V08",
-    "pain.001.001.09": "Customer Credit Transfer Initiation V09",
-    "pain.001.001.10": "Customer Credit Transfer Initiation V10",
-    "pain.001.001.11": "Customer Credit Transfer Initiation V11",
-    "pain.001.001.12": "Customer Credit Transfer Initiation V12",
-    "pain.008.001.02": "Customer Direct Debit Initiation V02",
 }
 
 # Placeholders used by ``build_insert_text`` when offering a "fill in missing

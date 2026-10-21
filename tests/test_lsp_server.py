@@ -974,3 +974,31 @@ def test_handlers_leave_unparseable_json_alone(text):
     assert lsp_server.formatting(ls, _formatting_params()) == []
     assert lsp_server.document_symbol(ls, _document_symbol_params()) == []
     assert lsp_server.code_action(ls, _code_action_params()) == []
+
+
+# ---------------------------------------------------------------------------
+# Every message type the core supports is named and selectable
+# ---------------------------------------------------------------------------
+def test_every_supported_message_type_has_a_human_name():
+    """Completion shows a name, not the bare id, for every core type."""
+    items = {
+        item["label"]: item["detail"] for item in lsp_server.completion_items()
+    }
+    unnamed = [mt for mt in lsp_server.valid_xml_types if items[mt] == mt]
+    assert not unnamed, f"no human-readable name for {unnamed}"
+
+
+def test_vscode_setting_offers_every_supported_message_type():
+    """The extension's messageType enum matches what the server accepts."""
+    from pathlib import Path
+
+    manifest = (
+        Path(__file__).resolve().parents[1]
+        / "editors"
+        / "vscode"
+        / "package.json"
+    )
+    setting = json.loads(manifest.read_text(encoding="utf-8"))["contributes"][
+        "configuration"
+    ]["properties"]["pain001.messageType"]
+    assert setting["enum"] == list(lsp_server.valid_xml_types)
