@@ -2,7 +2,7 @@
   "name": "pain001-lsp-json",
   "displayName": "Pain001 - ISO 20022 payment JSON",
   "description": "Diagnostics, completion, hover, code-fix, formatting and outline for Pain001 payment-data JSON files, powered by the pain001-lsp language server.",
-  "version": "0.0.72",
+  "version": "0.0.74",
   "publisher": "sebastienrousseau",
   "license": "(Apache-2.0 OR MIT)",
   "repository": {
@@ -44,7 +44,9 @@
             "pain.001.001.10",
             "pain.001.001.11",
             "pain.001.001.12",
-            "pain.008.001.02"
+            "pain.001.001.13",
+            "pain.008.001.02",
+            "pain.008.001.08"
           ],
           "description": "ISO 20022 message type the server validates against."
         }
@@ -62,7 +64,7 @@
   "devDependencies": {
     "@types/vscode": "^1.75.0",
     "typescript": "^5.0.0",
-    "@vscode/vsce": "^3.0.0"
+    "@vscode/vsce": "^4.0.0"
   },
   "keywords": [
     "ISO 20022",

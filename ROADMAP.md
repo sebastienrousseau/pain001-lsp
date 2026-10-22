@@ -7,31 +7,28 @@ of the [pain001](https://github.com/sebastienrousseau/pain001) library.
 The versions are **target** windows; releases ship when the gates pass,
 not on a calendar.
 
-## v0.0.52 - Initial release (current)
+## Where we are: v0.0.74
 
-- Four LSP features: diagnostics, completion, hover, code actions.
-- Workspace-level message-type override via `initializationOptions`.
-- 100% line+branch coverage gate, 100% docstring coverage gate, signed
-  conventional commits.
-- Three runnable examples covering helpers, quick-fix snippets, and
-  runtime configuration.
+- Diagnostics (JSON Schema plus IBAN and BIC), completion, hover, the
+  missing-fields quick fix on the record under the cursor, formatting,
+  the per-record outline, CSV diagnostics through the core's engine,
+  and the example-corpus commands.
+- Live message-type switching through `initializationOptions` and
+  `workspace/didChangeConfiguration`; all thirteen core message types.
+- 100% line, branch and docstring coverage, mutation testing with an
+  85% floor, Atheris fuzzing, per-function complexity ceilings against
+  a shrinking baseline, hash-pinned CI installs.
 
-## v0.0.53 - Live configuration + formatting
-
-- `workspace/didChangeConfiguration` - live-switch the active message
-  type without restarting the server.
-- `textDocument/formatting` - pretty-print payment-data JSON in place,
-  reusing the existing JSON syntax check.
-- Multi-record quick-fix - extend the "Add missing required fields"
-  code action to act on the record under the cursor, not just the first
-  one.
-
-## v0.1.0 - Authoring-grade UX
+## Next
 
 - Targeted code actions per diagnostic (e.g. "remove invalid IBAN",
-  "uppercase BIC", "regenerate `ctrl_sum` from `payment_amount` totals").
-- `textDocument/documentSymbol` so editors can outline each record by
-  `id`.
+  "uppercase BIC", "regenerate `ctrl_sum` from `payment_amount`
+  totals").
+- Shrink the complexity baseline: `_record_close_positions`,
+  `_record_line_offsets` and the length of `server.py`.
+
+## After that
+
 - `textDocument/codeLens` showing per-record validation status inline.
 - `DiagnosticTag.Information` for purely informational hints (e.g. soft
   recommendations the schema doesn't enforce).

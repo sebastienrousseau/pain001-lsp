@@ -49,11 +49,16 @@ chooses to send.
 
 ## Continuous Integration
 
-- `ci.yml` runs the full quality matrix (ruff, mypy, pytest with the
-  100% coverage gate, interrogate).
-- `security.yml` runs `bandit` against the package on every push and
-  weekly via cron.
-- `codeql.yml` runs GitHub's CodeQL Python analysis weekly.
+- `ci.yml` runs the full quality matrix (ruff, black, mypy, pytest with
+  the 100% coverage gate, interrogate, the complexity ceilings) on
+  Python 3.10 to 3.14, installing only hash-pinned requirements.
+- `security.yml` runs `bandit` against the package, and `pip-audit`
+  over the `poetry.lock` environment and every `requirements/*.txt`,
+  on every push and pull request and weekly.
+- `fuzz.yml` fuzzes every document handler with Atheris on each change
+  and for 30 minutes weekly.
+- `codeql.yml` runs GitHub's CodeQL Python analysis; `scorecard.yml`
+  runs OpenSSF Scorecard.
 
 ## Cryptography Status
 

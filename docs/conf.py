@@ -28,6 +28,9 @@ extensions = [
 # MyST options: enable Markdown directives without breaking standard
 # CommonMark renders.
 myst_enable_extensions = ["colon_fence", "deflist", "linkify"]
+# Anchors for "##" and "###" headings, so the README's contents links
+# (#install, #features, ...) resolve in the manual as they do on GitHub.
+myst_heading_anchors = 3
 
 # Allow myst_parser to ingest the top-level README.md.
 source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
@@ -39,6 +42,10 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "furo"
 html_title = f"pain001-lsp {release}"
 html_static_path: list[str] = []
+# The footer's copyright line, with the author link, comes from
+# _templates/page.html; Furo's own line would repeat it unlinked.
+html_show_copyright = False
+html_context = {"author_year": "2026"}
 
 # Cross-link to pain001's docs and the Python stdlib.
 intersphinx_mapping = {

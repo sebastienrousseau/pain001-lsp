@@ -8,6 +8,7 @@ on:
       - ".dockerignore"
       - "pain001_lsp/**"
       - "pyproject.toml"
+      - "requirements/runtime.txt"
       - ".github/workflows/docker.yml"
     tags:
       - "v*.*.*"
@@ -17,6 +18,7 @@ on:
       - ".dockerignore"
       - "pain001_lsp/**"
       - "pyproject.toml"
+      - "requirements/runtime.txt"
       - ".github/workflows/docker.yml"
   workflow_dispatch:
 
@@ -68,32 +70,23 @@ jobs:
             org.opencontainers.image.title=pain001-lsp
             org.opencontainers.image.description=Language Server Protocol server for the pain001 ISO 20022 library.
             org.opencontainers.image.source=https://github.com/sebastienrousseau/pain001-lsp
-            org.opencontainers.image.licenses=Apache-2.0
+            org.opencontainers.image.licenses=Apache-2.0 OR MIT
 
-      - name: Resolve pain001 install spec for build
+      - name: Resolve pain001 core branch for build
         id: pin
         env:
           # Untrusted input (a fork's branch name) passed through the
           # environment, never interpolated into the script.
           REF: ${{ github.head_ref || github.ref_name }}
         run: |
-          # Coordinated development: when a feat/* branch here has a
-          # counterpart of the same name in pain001, build against it so
-          # the pair can be tested before the core is released.
-          #
-          # This used to assume every feat/* branch had a counterpart, so
-          # any feat/* branch without one died with "pathspec ... did not
-          # match any file(s)". The fallback also pinned
-          # pain001>=0.0.52,<0.0.54 while this package declares >=0.0.55.
-          # Now the branch is used only if it exists, and the fallback
-          # honours the floor in pyproject.toml.
-          CORE=https://github.com/sebastienrousseau/pain001
-          if [[ "$REF" == feat/* ]] && \
-             git ls-remote --exit-code --heads "$CORE" "$REF" >/dev/null 2>&1; then
-            echo "spec=pain001 @ git+https://github.com/sebastienrousseau/pain001@${REF}" >> "$GITHUB_OUTPUT"
+          if [[ "$REF" == main || "$REF" == feat/* || "$REF" == fix/* ]] && \
+             git ls-remote --exit-code --heads \
+               https://github.com/sebastienrousseau/pain001 "$REF" >/dev/null 2>&1; then
+            echo "ref=${REF}" >> "$GITHUB_OUTPUT"
           else
-            FLOOR=$(grep -E '^pain001 = ' pyproject.toml | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
-            echo "spec=pain001>=${FLOOR}" >> "$GITHUB_OUTPUT"
+            # No override: the image installs the pain001 release pinned
+            # in requirements/runtime.txt.
+            echo "ref=" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build (and push on non-PR events)
@@ -107,7 +100,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            PAIN001_PIP_SPEC=${{ steps.pin.outputs.spec }}
+            PAIN001_REF=${{ steps.pin.outputs.ref }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: true

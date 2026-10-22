@@ -12,9 +12,13 @@ authors:
   - family-names: Rousseau
     given-names: Sebastien
     email: sebastian.rousseau@gmail.com
-version: "0.0.72"
-date-released: "2026-09-28"
-license: "Apache-2.0 OR MIT"
+version: "0.0.74"
+date-released: "2026-10-21"
+# CFF 1.2.0 takes SPDX identifiers, not expressions; a list means the
+# work is available under any one of them (Apache-2.0 OR MIT).
+license:
+  - Apache-2.0
+  - MIT
 repository-code: "https://github.com/sebastienrousseau/pain001-lsp"
 url: "https://pain001.com"
 keywords:

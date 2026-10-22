@@ -60,11 +60,17 @@ from typing import Any
 from jsonschema import Draft7Validator
 from lsprotocol import types as lsp
 from pain001.constants import SCHEMAS_DIR, valid_xml_types
-from pain001.lsp.diagnostics import Severity, diagnostics_for_csv
 from pain001.validation import validate_bic, validate_iban
 from pygls.lsp.server import LanguageServer
 
 from pain001_lsp import __version__
+from pain001_lsp._csv import csv_diagnostics
+from pain001_lsp._names import HUMAN_NAMES
+from pain001_lsp._parsing import (
+    PARSE_ERRORS,
+    _diagnostic,
+    _parse_error_diagnostic,
+)
 
 DEFAULT_MESSAGE_TYPE = "pain.001.001.09"
 
@@ -77,20 +83,6 @@ _IDENTIFIER_FIELDS = {
     "debtor_agent_BIC": "bic",
     "creditor_agent_BIC": "bic",
     "forwarding_agent_BIC": "bic",
-}
-
-_HUMAN_NAMES = {
-    "pain.001.001.03": "Customer Credit Transfer Initiation V03",
-    "pain.001.001.04": "Customer Credit Transfer Initiation V04",
-    "pain.001.001.05": "Customer Credit Transfer Initiation V05",
-    "pain.001.001.06": "Customer Credit Transfer Initiation V06",
-    "pain.001.001.07": "Customer Credit Transfer Initiation V07",
-    "pain.001.001.08": "Customer Credit Transfer Initiation V08",
-    "pain.001.001.09": "Customer Credit Transfer Initiation V09",
-    "pain.001.001.10": "Customer Credit Transfer Initiation V10",
-    "pain.001.001.11": "Customer Credit Transfer Initiation V11",
-    "pain.001.001.12": "Customer Credit Transfer Initiation V12",
-    "pain.008.001.02": "Customer Direct Debit Initiation V02",
 }
 
 # Placeholders used by ``build_insert_text`` when offering a "fill in missing
@@ -197,16 +189,78 @@ def _identifier_valid(kind: str, value: str) -> bool:
     return bool(ok)
 
 
+def _line_mapper(text: str) -> Any:
+    """Return a function mapping a record index to its line (default 0)."""
+    line_offsets = _record_line_offsets(text)
+
+    def line_for(row: int) -> int:
+        """Map a record index to a line number (falls back to 0)."""
+        if 0 <= row < len(line_offsets):
+            return line_offsets[row]
+        return 0
+
+    return line_for
+
+
+def _schema_diagnostics(
+    records: list[Any], schema: dict[str, Any], line_for: Any
+) -> list[dict]:
+    """Validate each record against ``schema``, in record order."""
+    diagnostics: list[dict] = []
+    validator = Draft7Validator(schema)
+    for row, record in enumerate(records):
+        if not isinstance(record, dict):
+            diagnostics.append(
+                _diagnostic(
+                    line_for(row),
+                    "Expected a record object (got non-object).",
+                )
+            )
+            continue
+        for err in sorted(
+            validator.iter_errors(record), key=lambda e: list(e.path)
+        ):
+            path = ".".join(str(p) for p in err.path)
+            prefix = f"{path}: " if path else ""
+            diagnostics.append(
+                _diagnostic(line_for(row), f"{prefix}{err.message}")
+            )
+    return diagnostics
+
+
+def _identifier_diagnostics(records: list[Any], line_for: Any) -> list[dict]:
+    """Warn about every present IBAN or BIC value that does not validate."""
+    diagnostics: list[dict] = []
+    for row, record in enumerate(records):
+        if not isinstance(record, dict):
+            continue
+        for field, kind in _IDENTIFIER_FIELDS.items():
+            value = record.get(field)
+            if not value or not isinstance(value, str):
+                continue
+            if not _identifier_valid(kind, value):
+                diagnostics.append(
+                    _diagnostic(
+                        line_for(row),
+                        f"{field}: {value!r} is not a valid {kind.upper()}.",
+                        severity="warning",
+                    )
+                )
+    return diagnostics
+
+
 def compute_diagnostics(
     text: str, message_type: str = DEFAULT_MESSAGE_TYPE
 ) -> list[dict]:
     """Compute diagnostics for a pain.001 payment-data JSON document.
 
     Parses ``text`` as JSON (a list of record dicts, or a single dict
-    treated as one record). On a JSON syntax error, returns a single
-    diagnostic at the offending position. For valid JSON, runs schema
-    validation against the bundled JSON Schema and additionally checks any
-    present identifier fields with the IBAN / BIC validators.
+    treated as one record). When the text does not parse (a syntax error,
+    an integer too long to convert, or nesting too deep), returns a single
+    diagnostic, at the offending position when JSON reports one. For valid
+    JSON, runs schema validation against the bundled JSON Schema and
+    additionally checks any present identifier fields with the IBAN / BIC
+    validators.
 
     Args:
         text: The raw document text.
@@ -220,108 +274,28 @@ def compute_diagnostics(
     """
     try:
         parsed = json.loads(text)
-    except json.JSONDecodeError as exc:
-        return [
-            {
-                "line": max(0, exc.lineno - 1),
-                "character": max(0, exc.colno - 1),
-                "severity": "error",
-                "message": f"Invalid JSON: {exc.msg}",
-            }
-        ]
+    except PARSE_ERRORS as exc:
+        return [_parse_error_diagnostic(exc)]
 
     records = _normalise_records(parsed)
     if not records:
         return [
-            {
-                "line": 0,
-                "character": 0,
-                "severity": "error",
-                "message": (
-                    "Expected a JSON array of record objects "
-                    "(or a single record object)."
-                ),
-            }
+            _diagnostic(
+                0,
+                "Expected a JSON array of record objects "
+                "(or a single record object).",
+            )
         ]
 
     try:
         schema = _load_schema(message_type)
     except ValueError as exc:
-        return [
-            {
-                "line": 0,
-                "character": 0,
-                "severity": "error",
-                "message": str(exc),
-            }
-        ]
+        return [_diagnostic(0, str(exc))]
 
-    line_offsets = _record_line_offsets(text)
-
-    def line_for(row: int) -> int:
-        """Map a record index to a line number (falls back to 0)."""
-        if 0 <= row < len(line_offsets):
-            return line_offsets[row]
-        return 0
-
-    diagnostics: list[dict] = []
-
-    validator = Draft7Validator(schema)
-    for row, record in enumerate(records):
-        if not isinstance(record, dict):
-            diagnostics.append(
-                {
-                    "line": line_for(row),
-                    "character": 0,
-                    "severity": "error",
-                    "message": "Expected a record object (got non-object).",
-                }
-            )
-            continue
-        for err in sorted(
-            validator.iter_errors(record), key=lambda e: list(e.path)
-        ):
-            path = ".".join(str(p) for p in err.path)
-            prefix = f"{path}: " if path else ""
-            diagnostics.append(
-                {
-                    "line": line_for(row),
-                    "character": 0,
-                    "severity": "error",
-                    "message": f"{prefix}{err.message}",
-                }
-            )
-
-    # Identifier validation (IBAN / BIC) for any present values.
-    for row, record in enumerate(records):
-        if not isinstance(record, dict):
-            continue
-        for field, kind in _IDENTIFIER_FIELDS.items():
-            value = record.get(field)
-            if not value or not isinstance(value, str):
-                continue
-            if not _identifier_valid(kind, value):
-                diagnostics.append(
-                    {
-                        "line": line_for(row),
-                        "character": 0,
-                        "severity": "warning",
-                        "message": (
-                            f"{field}: {value!r} is not a valid "
-                            f"{kind.upper()}."
-                        ),
-                    }
-                )
-
-    return diagnostics
-
-
-_CSV_SEVERITY_TO_STR = {
-    Severity.ERROR: "error",
-    Severity.WARNING: "warning",
-    Severity.INFORMATION: "information",
-    Severity.HINT: "hint",
-}
+    line_for = _line_mapper(text)
+    return _schema_diagnostics(
+        records, schema, line_for
+    ) + _identifier_diagnostics(records, line_for)
 
 
 def compute_diagnostics_csv(
@@ -340,22 +314,10 @@ def compute_diagnostics_csv(
     Returns:
         A list of plain dicts shaped like the JSON-mode output, with
         ``col_start`` / ``col_end`` keys retained so editors can paint
-        per-cell ranges.
+        per-cell ranges. Text the ``csv`` module cannot read gets one
+        ``Invalid CSV`` error at the top instead.
     """
-    diagnostics: list[dict] = []
-    for diag in diagnostics_for_csv(text, message_type):
-        diagnostics.append(
-            {
-                "line": diag.line,
-                "character": diag.col_start,
-                "col_start": diag.col_start,
-                "col_end": diag.col_end,
-                "severity": _CSV_SEVERITY_TO_STR.get(diag.severity, "error"),
-                "message": diag.message,
-                "code": diag.code,
-            }
-        )
-    return diagnostics
+    return csv_diagnostics(text, message_type)
 
 
 def completion_items(
@@ -390,7 +352,7 @@ def completion_items(
         items.append(
             {
                 "label": mt,
-                "detail": _HUMAN_NAMES.get(mt, mt),
+                "detail": HUMAN_NAMES.get(mt, mt),
                 "kind": "field",
             }
         )
@@ -688,7 +650,7 @@ def code_action(
     document = ls.workspace.get_text_document(params.text_document.uri)
     try:
         parsed = json.loads(document.source)
-    except json.JSONDecodeError:
+    except PARSE_ERRORS:
         return []
     records = _normalise_records(parsed)
     if not records:
@@ -771,9 +733,9 @@ def formatting(
     document = ls.workspace.get_text_document(params.text_document.uri)
     try:
         parsed = json.loads(document.source)
-    except json.JSONDecodeError:
+        formatted = json.dumps(parsed, indent=2, ensure_ascii=False) + "\n"
+    except PARSE_ERRORS:
         return []
-    formatted = json.dumps(parsed, indent=2, ensure_ascii=False) + "\n"
     if formatted == document.source:
         return []
     lines = document.source.splitlines(keepends=True)
@@ -812,7 +774,7 @@ def document_symbol(
     document = ls.workspace.get_text_document(params.text_document.uri)
     try:
         parsed = json.loads(document.source)
-    except json.JSONDecodeError:
+    except PARSE_ERRORS:
         return []
     records = _normalise_records(parsed)
     if not records:

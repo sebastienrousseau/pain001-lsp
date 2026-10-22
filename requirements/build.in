@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+# Build and lockfile tooling: the release build job (build, twine) and
+# the CI lockfile jobs (poetry). Hash-pinned in build.txt.
+# Regenerate:
+#   uv pip compile --generate-hashes --universal --python-version 3.10 \
+#     requirements/build.in -o requirements/build.txt
+build
+poetry
+twine
+# Security floors for transitive dependencies of poetry and twine.
+anyio>=4.14.2,<5
+certifi>=2026.10.19
+dulwich>=1.2.9
+urllib3>=2.8.0
+virtualenv>=21.14.8

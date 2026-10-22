@@ -9,6 +9,7 @@ every branch of ``pain001_lsp.server`` without touching a real client.
 """
 
 import json
+import sys
 from types import SimpleNamespace
 from typing import Any
 
@@ -713,6 +714,31 @@ def test_compute_diagnostics_csv_empty_input_returns_empty_list():
     assert lsp_server.compute_diagnostics_csv("") == []
 
 
+def test_compute_diagnostics_csv_unreadable_text_yields_one_error():
+    """A bare carriage return inside an unquoted field is one error.
+
+    The ``csv`` module raises ``csv.Error`` on it; the input is the crash
+    the Atheris job found on the 0.0.74 release PR.
+    """
+    diagnostics = lsp_server.compute_diagnostics_csv("C\ufffd\x00\rz\ufffd")
+    assert len(diagnostics) == 1
+    diagnostic = diagnostics[0]
+    assert (diagnostic["line"], diagnostic["character"]) == (0, 0)
+    assert diagnostic["severity"] == "error"
+    assert diagnostic["message"].startswith("Invalid CSV: ")
+
+
+def test_compute_diagnostics_csv_nul_byte_never_raises():
+    """Python 3.10 rejects a NUL byte that 3.11 and later read as text."""
+    diagnostics = lsp_server.compute_diagnostics_csv("id,\x00amount\n1,2\n")
+    if sys.version_info < (3, 11):
+        assert diagnostics[0]["message"].startswith("Invalid CSV: ")
+    else:
+        assert not any(
+            d["message"].startswith("Invalid CSV") for d in diagnostics
+        )
+
+
 def test_is_csv_uri_dispatches_by_suffix():
     """The dispatcher recognises ``.csv`` (case-insensitive)."""
     assert lsp_server._is_csv_uri("file:///x.csv") is True
@@ -927,3 +953,64 @@ def test_main_starts_the_pygls_server(monkeypatch):
     monkeypatch.setattr(lsp_server.server, "start_io", fake_start_io)
     lsp_server.main()
     assert calls == [((), {})]
+
+
+# ---------------------------------------------------------------------------
+# Documents json.loads rejects without a JSONDecodeError
+# ---------------------------------------------------------------------------
+#: json.loads raises RecursionError on deep nesting and a plain ValueError
+#: on an integer longer than sys.get_int_max_str_digits(); neither is a
+#: JSONDecodeError, so each used to escape the handlers on a keystroke.
+_UNPARSEABLE = {
+    # Deep enough to exhaust an 8 MiB C stack too: Python 3.14 bounds JSON
+    # nesting by stack size, and on Linux 100,000 levels fit.
+    "nested-too-deeply": "[" * 10_000_000,
+    "integer-too-long": "[" + "1" * 5_000 + "]",
+}
+
+
+@pytest.mark.parametrize(
+    "text", _UNPARSEABLE.values(), ids=_UNPARSEABLE.keys()
+)
+def test_unparseable_json_yields_one_syntax_diagnostic(text):
+    """The document gets one error at the top, never an exception."""
+    diagnostics = lsp_server.compute_diagnostics(text)
+    assert len(diagnostics) == 1
+    diagnostic = diagnostics[0]
+    assert (diagnostic["line"], diagnostic["character"]) == (0, 0)
+    assert diagnostic["severity"] == "error"
+    assert diagnostic["message"].startswith("Invalid JSON: ")
+
+
+@pytest.mark.parametrize(
+    "text", _UNPARSEABLE.values(), ids=_UNPARSEABLE.keys()
+)
+def test_did_open_publishes_for_unparseable_json(text):
+    """The editor is told why, through the normal publish path."""
+    ls = _StubLS(text)
+    lsp_server.did_open(ls, _did_open_params())
+    assert len(ls.published) == 1
+    assert len(ls.published[0][1]) == 1
+
+
+@pytest.mark.parametrize(
+    "text", _UNPARSEABLE.values(), ids=_UNPARSEABLE.keys()
+)
+def test_handlers_leave_unparseable_json_alone(text):
+    """Formatting, outline and quick-fix offer nothing, as for bad JSON."""
+    ls = _StubLS(text)
+    assert lsp_server.formatting(ls, _formatting_params()) == []
+    assert lsp_server.document_symbol(ls, _document_symbol_params()) == []
+    assert lsp_server.code_action(ls, _code_action_params()) == []
+
+
+# ---------------------------------------------------------------------------
+# Every message type the core supports is named and selectable
+# ---------------------------------------------------------------------------
+def test_every_supported_message_type_has_a_human_name():
+    """Completion shows a name, not the bare id, for every core type."""
+    items = {
+        item["label"]: item["detail"] for item in lsp_server.completion_items()
+    }
+    unnamed = [mt for mt in lsp_server.valid_xml_types if items[mt] == mt]
+    assert not unnamed, f"no human-readable name for {unnamed}"

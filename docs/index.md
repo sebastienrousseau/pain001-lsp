@@ -16,6 +16,9 @@ explains its structure, versions and a complete, schema-valid example.
 
 readme
 api
+COMPARISON
+BENCHMARKS
+POLICIES
 adr/index
 roadmap
 changelog

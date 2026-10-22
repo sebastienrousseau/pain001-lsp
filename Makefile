@@ -1,4 +1,4 @@
-.PHONY: help install dev test lint format type-check security clean examples doc-coverage check
+.PHONY: help install dev test lint format type-check security complexity versions clean examples doc-coverage demo check
 
 # Mutation score floor for the language-server handlers: 87.9% (775 of
 # 882) on 2026-09-18, up from 76.5% before the diagnostic-shape tests. The
@@ -7,6 +7,9 @@
 MUTATION_FLOOR ?= 85
 
 PYTHON ?= python3
+VHS ?= vhs
+# Every directory of Python the linters and formatter cover, here and in CI.
+PY_PATHS = pain001_lsp/ tests/ benches/ scripts/ fuzz/ examples/
 POETRY ?= poetry
 
 help: ## Show this help message
@@ -25,18 +28,24 @@ test: ## Run tests with the 100% line+branch coverage gate
 		--cov-report=term-missing --cov-fail-under=100 -v
 
 lint: ## Run linters (ruff + black check)
-	$(POETRY) run ruff check pain001_lsp/ tests/
-	$(POETRY) run black --check pain001_lsp/ tests/
+	$(POETRY) run ruff check $(PY_PATHS)
+	$(POETRY) run black --check $(PY_PATHS)
 
 format: ## Auto-format code (ruff fix + black)
-	$(POETRY) run ruff check --fix pain001_lsp/ tests/
-	$(POETRY) run black pain001_lsp/ tests/
+	$(POETRY) run ruff check --fix $(PY_PATHS)
+	$(POETRY) run black $(PY_PATHS)
 
 type-check: ## Run mypy type checking
 	$(POETRY) run mypy pain001_lsp/
 
 security: ## Run security scan (bandit)
 	$(POETRY) run bandit -r pain001_lsp/ -ll
+
+complexity: ## Check per-function complexity against complexity-baseline.json
+	$(POETRY) run python scripts/check_complexity.py
+
+versions: ## Every version source and the pain001 floor agree
+	$(PYTHON) scripts/verify_versions.py
 
 clean: ## Remove build artifacts and caches
 	rm -rf build/ dist/ *.egg-info .eggs/
@@ -54,10 +63,13 @@ examples: ## Verify example scripts run
 doc-coverage: ## Enforce the 100% docstring coverage gate
 	$(POETRY) run interrogate -c pyproject.toml -v pain001_lsp
 
+demo: ## Render .github/demo.gif from .github/demo.tape with VHS
+	$(POETRY) run $(VHS) .github/demo.tape
+
 mutate: ## Mutation testing over the handlers (mutmut 3, config in pyproject)
 	rm -rf mutants
 	$(POETRY) run mutmut run
 	$(POETRY) run mutmut export-cicd-stats
 	$(POETRY) run python scripts/mutation_gate.py --floor $(MUTATION_FLOOR)
 
-check: lint type-check security test doc-coverage examples ## Run all gates
+check: lint type-check security complexity versions test doc-coverage examples ## Run all gates

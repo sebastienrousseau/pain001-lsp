@@ -38,3 +38,17 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+  # The Dockerfile pins python:3.12-slim by digest; this keeps the digest
+  # current.
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    reviewers:
+      - "sebastienrousseau"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "automated"
