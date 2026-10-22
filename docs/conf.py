@@ -41,7 +41,6 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # Furo theme: lightweight, modern, mobile-friendly.
 html_theme = "furo"
 html_title = f"pain001-lsp {release}"
-html_static_path: list[str] = []
 # The footer's copyright line, with the author link, comes from
 # _templates/page.html; Furo's own line would repeat it unlinked.
 html_show_copyright = False
