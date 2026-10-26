@@ -13,4 +13,4 @@ anyio>=4.14.2,<5
 certifi>=2026.10.19
 dulwich>=1.2.9
 urllib3>=2.8.0
-virtualenv>=21.14.8
+virtualenv>=21.14.13
