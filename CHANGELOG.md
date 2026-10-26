@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `build.in` floors `virtualenv >= 21.14.13` (GHSA-cx6f-vjhg-g3cc; was
   21.14.12) and `dulwich >= 1.2.19` (was 1.2.17), in place of Dependabot
   #67 and #68, whose recompiles dropped the per-Python markers.
+- The VS Code extension's dev tooling overrides `@azure/msal-node` to
+  7.1.0 (GHSA-xcx6-jx8p-x3h5; the lock held 6.0.1). `@vscode/vsce` pulls
+  it in through `@azure/identity`, whose every release still requires
+  msal-node 6.x, and all of 6.x is affected; the extension's publish step
+  signs in with `VSCE_PAT`, not an Azure credential.
 
 ## [0.0.74] - 2026-10-21
 
