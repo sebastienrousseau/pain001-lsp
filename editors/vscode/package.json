@@ -66,6 +66,9 @@
     "typescript": "^5.0.0",
     "@vscode/vsce": "^4.0.0"
   },
+  "overrides": {
+    "@azure/msal-node": "7.1.0"
+  },
   "keywords": [
     "ISO 20022",
     "pain.001",

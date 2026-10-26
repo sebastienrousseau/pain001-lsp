@@ -9,7 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Security
+
+- No advised filelock installs from any requirements tree
+  (GHSA-9vhv-jxww-xfm5, GHSA-567q-5qvw-pf92, GHSA-v4x8-3wr5-3wq8;
+  `audit.txt`, `build.txt` and `ci.txt` pinned 4.1.0 on Python 3.10,
+  which pip-audit on 3.12 skips). filelock 4.2.1 needs Python 3.11:
+  `build.txt` and `audit.txt`, installed only on 3.12, are compiled for
+  3.12 with `filelock >= 4.2.1`; `ci.in` installs pip-audit, which pulls
+  filelock in, only on 3.11+.
+- `build.in` floors `virtualenv >= 21.14.13` (GHSA-cx6f-vjhg-g3cc; was
+  21.14.12) and `dulwich >= 1.2.19` (was 1.2.17), in place of Dependabot
+  #67 and #68, whose recompiles dropped the per-Python markers.
+- The VS Code extension's dev tooling overrides `@azure/msal-node` to
+  7.1.0 (GHSA-xcx6-jx8p-x3h5; the lock held 6.0.1). `@vscode/vsce` pulls
+  it in through `@azure/identity`, whose every release still requires
+  msal-node 6.x, and all of 6.x is affected; the extension's publish step
+  signs in with `VSCE_PAT`, not an Azure credential.
 
 ## [0.0.74] - 2026-10-21
 
