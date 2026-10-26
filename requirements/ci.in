@@ -20,7 +20,12 @@ interrogate>=1.7.0,<2
 mutmut>=3.7.0,<4
 tomli>=2 ; python_version < "3.11"
 packaging>=23
-pip-audit>=2.10
+# pip-audit pulls in filelock through cachecontrol. filelock <= 4.2.0 has
+# GHSA-9vhv-jxww-xfm5, GHSA-567q-5qvw-pf92 and GHSA-v4x8-3wr5-3wq8, and 4.2.1
+# needs Python 3.11, so pip-audit installs only there; the jobs that run it
+# (nightly, Security) use 3.12.
+pip-audit>=2.10 ; python_version >= "3.11"
+filelock>=4.2.1 ; python_version >= "3.11"
 # Complexity gate: scripts/check_complexity.py.
 radon>=6.0.1,<7
 complexipy>=8.1,<9

@@ -1,9 +1,10 @@
 # SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 # Dependency vulnerability scanner for the Security workflow's audit job,
-# installed into its own virtual environment. Hash-pinned in audit.txt.
+# installed into its own virtual environment on Python 3.12, so it is
+# compiled for 3.12. Hash-pinned in audit.txt.
 # Regenerate:
-#   uv pip compile --generate-hashes --universal --python-version 3.10 \
+#   uv pip compile --generate-hashes --universal --python-version 3.12 \
 #     requirements/audit.in -o requirements/audit.txt
 pip-audit>=2.10
 # Advisory floors: pip GHSA-qwm4-qh6w-59xr, urllib3 GHSA-vxq7-64xx-v4gw
@@ -11,3 +12,6 @@ pip-audit>=2.10
 pip>=26.2
 urllib3>=2.8.0
 certifi>=2026.10.19
+# filelock <= 4.2.0 (through cachecontrol): GHSA-9vhv-jxww-xfm5,
+# GHSA-567q-5qvw-pf92 and GHSA-v4x8-3wr5-3wq8; 4.2.1 needs Python 3.11.
+filelock>=4.2.1
