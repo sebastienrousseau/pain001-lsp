@@ -105,7 +105,7 @@ async def _round_trip_initialize() -> dict:
     finally:
         try:
             await asyncio.wait_for(proc.wait(), timeout=5)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             proc.kill()
             await proc.wait()
 

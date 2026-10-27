@@ -51,7 +51,7 @@ chooses to send.
 
 - `ci.yml` runs the full quality matrix (ruff, black, mypy, pytest with
   the 100% coverage gate, interrogate, the complexity ceilings) on
-  Python 3.10 to 3.14, installing only hash-pinned requirements.
+  Python 3.11 to 3.14, installing only hash-pinned requirements.
 - `security.yml` runs `bandit` against the package, and `pip-audit`
   over the `poetry.lock` environment and every `requirements/*.txt`,
   on every push and pull request and weekly.

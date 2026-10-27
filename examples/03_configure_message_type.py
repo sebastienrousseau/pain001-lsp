@@ -3,7 +3,7 @@
 """Example: switch the LSP server's default message type at runtime.
 
 Usage:
-    pip install pain001-lsp     # requires Python 3.10+
+    pip install pain001-lsp     # requires Python 3.11+
     python examples/03_configure_message_type.py
 
 Editors override the default ``pain.001.001.09`` schema by passing

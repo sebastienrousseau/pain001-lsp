@@ -1,12 +1,12 @@
 version: 2
 updates:
   # Dependabot resolves a pip job on one Python: for "/" the lowest that
-  # pyproject.toml allows (3.10). audit.in and build.in are compiled for
-  # 3.12 and floor filelock at 4.2.1, which needs 3.11, so from "/" any
-  # update touching them fails with dependency_file_not_resolvable (as in
-  # camt053-mcp and acmt001-mcp). "/" leaves the 3.12 sets (audit, build,
-  # fuzz) to the second pip entry, which runs from /requirements, where
-  # no pyproject.toml pins the Python and Dependabot uses its newest.
+  # pyproject.toml allows (3.11). audit.in, build.in and fuzz.in are
+  # compiled for 3.12, so "/" leaves them to the second pip entry, which
+  # runs from /requirements, where no pyproject.toml pins the Python and
+  # Dependabot uses its newest. Each set then resolves on the Python it
+  # is compiled for (on a 3.10 floor, filelock 4.2.1 made "/" fail with
+  # dependency_file_not_resolvable, as in camt053-mcp and acmt001-mcp).
   - package-ecosystem: "pip"
     directory: "/"
     exclude-paths:
