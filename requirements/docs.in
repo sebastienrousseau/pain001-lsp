@@ -12,4 +12,4 @@ myst-parser[linkify]
 sphinx-autodoc-typehints
 sphinx-copybutton
 # GHSA-6q48-6c7w-9gw2; sphinx reaches certifi through requests.
-certifi>=2026.10.19
+certifi>=2026.10.23

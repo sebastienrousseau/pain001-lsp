@@ -32,4 +32,4 @@ complexipy>=8.1,<9
 # certifi before 2026.10.19 bundles the emSign roots with compromised
 # intermediate keys (GHSA-6q48-6c7w-9gw2); pip-audit reaches it through
 # requests.
-certifi>=2026.10.19
+certifi>=2026.10.23
