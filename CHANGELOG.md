@@ -27,6 +27,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   msal-node 6.x, and all of 6.x is affected; the extension's publish step
   signs in with `VSCE_PAT`, not an Azure credential.
 
+### Changed
+
+- Dependabot's weekly pip run splits by Python. It resolves the "/" job
+  on Python 3.10, the floor in `pyproject.toml`, and since
+  `requirements/audit.in` and `build.in` floor `filelock >= 4.2.1`
+  (Python 3.11+), any update touching them would end in
+  `dependency_file_not_resolvable`, as it already did in camt053-mcp and
+  acmt001-mcp. "/" now leaves the 3.12 sets (audit, build, fuzz) to a
+  second pip entry for `/requirements`, which runs on Dependabot's
+  newest Python.
+
 ## [0.0.74] - 2026-10-21
 
 The pain001 family's 0.0.74 release, on the pain001 0.0.74 floor. The
