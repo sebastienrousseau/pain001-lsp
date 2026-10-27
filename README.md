@@ -67,12 +67,11 @@
 python -m pip install pain001-lsp
 ```
 
-> **Latest release: v0.0.74**: the family's 0.0.74 release on the
-> pain001 0.0.74 floor. A document `json.loads` cannot parse (nesting too
-> deep, an integer too long) now gets one diagnostic instead of an
-> exception, pain.001.001.13 and pain.008.001.08 are named and selectable,
-> every CI and container install is hash-pinned, and the handlers are
-> fuzzed with Atheris. [See what's new →][release]
+> **Latest release: v0.0.75**: the family's 0.0.75 release on the
+> pain001 0.0.75 floor. Python 3.11 is now the minimum (3.10 reaches end
+> of life in October 2026), and no requirements tree installs an advised
+> filelock, virtualenv, dulwich, certifi or `@azure/msal-node`.
+> [See what's new →][release]
 
 The package installs a `pain001-lsp` console command and pulls in the core
 [`pain001`][pain001] library, [`pygls`][pygls] and `jsonschema`. To keep the
@@ -388,4 +387,4 @@ way, without additional terms. Dependencies keep their own licences. Built on
 [atheris]: https://github.com/google/atheris
 [pain001]: https://github.com/sebastienrousseau/pain001
 [pygls]: https://github.com/openlawlibrary/pygls
-[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.74
+[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.75

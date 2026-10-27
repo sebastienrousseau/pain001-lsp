@@ -7,7 +7,7 @@ of the [pain001](https://github.com/sebastienrousseau/pain001) library.
 The versions are **target** windows; releases ship when the gates pass,
 not on a calendar.
 
-## Where we are: v0.0.74
+## Where we are: v0.0.75
 
 - Diagnostics (JSON Schema plus IBAN and BIC), completion, hover, the
   missing-fields quick fix on the record under the cursor, formatting,

@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.0.75] - 2026-10-27
+
+The pain001 family's 0.0.75 release, on the pain001 0.0.75 floor, and
+the first on Python 3.11 or newer.
+
 ### Security
 
 - No advised filelock installs from any requirements tree
@@ -515,5 +522,6 @@ ergonomics for pain.001 payment-data JSON files:
 - `scripts/verify_versions.py` - pre-release script asserting
   `__version__`, `pyproject.toml`, and `CHANGELOG.md` agree.
 
+[0.0.75]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.74...v0.0.75
 [0.0.74]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.72...v0.0.74
 [0.0.52]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.52
