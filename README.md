@@ -113,7 +113,7 @@ in [`editors/vscode/`](https://github.com/sebastienrousseau/pain001-lsp/tree/mai
 - Python 3.11 or newer, tested in CI on 3.11, 3.12, 3.13 and 3.14 on
   Linux ([toolchain policy](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/POLICIES.md)). The package is pure Python
   and runs wherever its dependencies do: macOS, Linux and Windows.
-- `pain001` 0.0.74 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
+- `pain001` 0.0.75 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
   `jsonschema` 4.17 or newer (below 5), installed automatically.
 - An editor with a Language Server Protocol client (Neovim, VS Code, Helix,
   Emacs, Sublime Text LSP and others).
