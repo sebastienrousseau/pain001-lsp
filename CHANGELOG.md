@@ -36,6 +36,9 @@ the first on Python 3.11 or newer.
 - `certifi >= 2026.10.23` in the audit, build, CI and docs requirement
   sets (Dependabot #73 and #74, recompiled with each file's own command
   so the per-Python markers stay).
+- The VS Code extension's dev lockfile takes `qs` 6.17.0
+  (GHSA-6pq8-jhm2-2vcw; the lock held 6.16.0), Dependabot #76, which
+  arrived after the release PR merged.
 
 ### Removed
 
