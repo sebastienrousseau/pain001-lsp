@@ -16,7 +16,7 @@
   <a href="https://sebastienrousseau.com/pain001-lsp/"><img src="https://img.shields.io/badge/docs-pain001--lsp-blue?style=for-the-badge&labelColor=555555&logo=readthedocs" alt="Docs" height="28" /></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/sebastienrousseau/pain001-lsp"><img src="https://img.shields.io/ossf-scorecard/github.com/sebastienrousseau/pain001-lsp?style=for-the-badge&label=OpenSSF%20Scorecard&logo=openssf" alt="OpenSSF Scorecard" height="28" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0%20OR%20MIT-blue.svg?style=for-the-badge" alt="License: Apache-2.0 OR MIT" height="28" /></a>
-  <a href="https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/POLICIES.md"><img src="https://img.shields.io/badge/Python-3.10%2B-93450a.svg?style=for-the-badge&logo=python" alt="Python 3.10 or newer" height="28" /></a>
+  <a href="https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/POLICIES.md"><img src="https://img.shields.io/badge/Python-3.11%2B-93450a.svg?style=for-the-badge&logo=python" alt="Python 3.11 or newer" height="28" /></a>
 </p>
 
 <p align="center">
@@ -67,12 +67,11 @@
 python -m pip install pain001-lsp
 ```
 
-> **Latest release: v0.0.74**: the family's 0.0.74 release on the
-> pain001 0.0.74 floor. A document `json.loads` cannot parse (nesting too
-> deep, an integer too long) now gets one diagnostic instead of an
-> exception, pain.001.001.13 and pain.008.001.08 are named and selectable,
-> every CI and container install is hash-pinned, and the handlers are
-> fuzzed with Atheris. [See what's new →][release]
+> **Latest release: v0.0.75**: the family's 0.0.75 release on the
+> pain001 0.0.75 floor. Python 3.11 is now the minimum (3.10 reaches end
+> of life in October 2026), and no requirements tree installs an advised
+> filelock, virtualenv, dulwich, certifi or `@azure/msal-node`.
+> [See what's new →][release]
 
 The package installs a `pain001-lsp` console command and pulls in the core
 [`pain001`][pain001] library, [`pygls`][pygls] and `jsonschema`. To keep the
@@ -111,10 +110,10 @@ in [`editors/vscode/`](https://github.com/sebastienrousseau/pain001-lsp/tree/mai
 
 ## Requirements
 
-- Python 3.10 or newer, tested in CI on 3.10, 3.11, 3.12, 3.13 and 3.14 on
+- Python 3.11 or newer, tested in CI on 3.11, 3.12, 3.13 and 3.14 on
   Linux ([toolchain policy](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/POLICIES.md)). The package is pure Python
   and runs wherever its dependencies do: macOS, Linux and Windows.
-- `pain001` 0.0.74 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
+- `pain001` 0.0.75 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
   `jsonschema` 4.17 or newer (below 5), installed automatically.
 - An editor with a Language Server Protocol client (Neovim, VS Code, Helix,
   Emacs, Sublime Text LSP and others).
@@ -323,7 +322,7 @@ make demo          # re-render .github/demo.gif with VHS
 
 CI installs from hash-pinned `requirements/*.txt` (compiled from
 `requirements/*.in` with `uv pip compile --generate-hashes`, through
-`scripts/ci-install.sh`) and runs the test matrix on Python 3.10 to 3.14,
+`scripts/ci-install.sh`) and runs the test matrix on Python 3.11 to 3.14,
 ruff, black, mypy in strict mode, bandit, interrogate (100% docstrings), the
 complexity ceilings, the version-source check, pip-audit over `poetry.lock`
 and every requirements file, mutation testing, Atheris fuzzing, CodeQL and
@@ -388,4 +387,4 @@ way, without additional terms. Dependencies keep their own licences. Built on
 [atheris]: https://github.com/google/atheris
 [pain001]: https://github.com/sebastienrousseau/pain001
 [pygls]: https://github.com/openlawlibrary/pygls
-[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.74
+[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.75

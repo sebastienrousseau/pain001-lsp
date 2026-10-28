@@ -20,7 +20,7 @@ so you can call them directly to see the diagnostics, completion items,
 hover text, and code actions an editor would receive.
 
 Both `pain001-lsp` and its core dependency `pain001` must be installed
-(Python 3.10+):
+(Python 3.11+):
 
 ```sh
 pip install pain001-lsp

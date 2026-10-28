@@ -729,14 +729,9 @@ def test_compute_diagnostics_csv_unreadable_text_yields_one_error():
 
 
 def test_compute_diagnostics_csv_nul_byte_never_raises():
-    """Python 3.10 rejects a NUL byte that 3.11 and later read as text."""
+    """The csv module reads a NUL byte as text on Python 3.11 and later."""
     diagnostics = lsp_server.compute_diagnostics_csv("id,\x00amount\n1,2\n")
-    if sys.version_info < (3, 11):
-        assert diagnostics[0]["message"].startswith("Invalid CSV: ")
-    else:
-        assert not any(
-            d["message"].startswith("Invalid CSV") for d in diagnostics
-        )
+    assert not any(d["message"].startswith("Invalid CSV") for d in diagnostics)
 
 
 def test_is_csv_uri_dispatches_by_suffix():
@@ -772,7 +767,6 @@ def test_did_open_routes_csv_uri_to_csv_engine():
 def test_example_scripts_run_without_error(module_path, capsys):
     """Each example script imports and runs end-to-end."""
     import importlib.util
-    import sys
     from pathlib import Path
 
     path = Path(__file__).resolve().parents[1] / module_path

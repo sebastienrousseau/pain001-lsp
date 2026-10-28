@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.0.75] - 2026-10-27
+
+The pain001 family's 0.0.75 release, on the pain001 0.0.75 floor, and
+the first on Python 3.11 or newer.
+
 ### Security
 
 - No advised filelock installs from any requirements tree
@@ -26,11 +33,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   it in through `@azure/identity`, whose every release still requires
   msal-node 6.x, and all of 6.x is affected; the extension's publish step
   signs in with `VSCE_PAT`, not an Azure credential.
+- `certifi >= 2026.10.23` in the audit, build, CI and docs requirement
+  sets (Dependabot #73 and #74, recompiled with each file's own command
+  so the per-Python markers stay).
+
+### Removed
+
+- Python 3.10 support. The floor is 3.11 (`python = ">=3.11,<4.0"`),
+  the pain001 suite's decision for 0.0.75: 3.10 reaches end of life in
+  October 2026, and current hypothesis releases need 3.11, which broke
+  Dependabot's resolver for siblings on a 3.10 floor. CI tests 3.11 to
+  3.14; ruff, black and mypy target 3.11; the `tomli` backport and the
+  3.10 branches in `scripts/check_suite_consistency.py` and the tests
+  are gone, and `poetry.lock` and the 3.11 requirement sets are
+  re-locked (only the packages for 3.10 leave). pip keeps 3.10 users
+  on pain001-lsp 0.0.74.
 
 ### Changed
 
-- Dependabot's weekly pip run splits by Python. It resolves the "/" job
-  on Python 3.10, the floor in `pyproject.toml`, and since
+- Dependabot's weekly pip run splits by Python. It resolved the "/" job
+  on Python 3.10, then the floor in `pyproject.toml`, and since
   `requirements/audit.in` and `build.in` floor `filelock >= 4.2.1`
   (Python 3.11+), any update touching them would end in
   `dependency_file_not_resolvable`, as it already did in camt053-mcp and
@@ -500,5 +522,6 @@ ergonomics for pain.001 payment-data JSON files:
 - `scripts/verify_versions.py` - pre-release script asserting
   `__version__`, `pyproject.toml`, and `CHANGELOG.md` agree.
 
+[0.0.75]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.74...v0.0.75
 [0.0.74]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.72...v0.0.74
 [0.0.52]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.52

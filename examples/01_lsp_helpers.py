@@ -3,7 +3,7 @@
 """Example: the LSP server's editor-feature helpers.
 
 Usage:
-    pip install pain001-lsp     # requires Python 3.10+
+    pip install pain001-lsp     # requires Python 3.11+
     python examples/01_lsp_helpers.py
 
 The pain001 language server (launched as `pain001-lsp` over stdio) powers

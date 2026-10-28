@@ -3,7 +3,7 @@
 """Example: render the quick-fix snippet for missing required fields.
 
 Usage:
-    pip install pain001-lsp     # requires Python 3.10+
+    pip install pain001-lsp     # requires Python 3.11+
     python examples/02_quick_fix.py
 
 Shows what the LSP server's "Add missing required fields" code action

@@ -5,7 +5,7 @@
 # so every `pip install` in .github/workflows is pinned (OpenSSF
 # Scorecard Pinned-Dependencies); scripts/ci-install.sh installs it.
 # Regenerate:
-#   uv pip compile --generate-hashes --universal --python-version 3.10 \
+#   uv pip compile --generate-hashes --universal --python-version 3.11 \
 #     requirements/ci.in -o requirements/ci.txt
 -r runtime.in
 pytest>=9.0.3,<10.0.0
@@ -18,18 +18,16 @@ types-jsonschema>=4,<5
 bandit>=1.7.0,<2
 interrogate>=1.7.0,<2
 mutmut>=3.7.0,<4
-tomli>=2 ; python_version < "3.11"
 packaging>=23
 # pip-audit pulls in filelock through cachecontrol. filelock <= 4.2.0 has
-# GHSA-9vhv-jxww-xfm5, GHSA-567q-5qvw-pf92 and GHSA-v4x8-3wr5-3wq8, and 4.2.1
-# needs Python 3.11, so pip-audit installs only there; the jobs that run it
-# (nightly, Security) use 3.12.
-pip-audit>=2.10 ; python_version >= "3.11"
-filelock>=4.2.1 ; python_version >= "3.11"
+# GHSA-9vhv-jxww-xfm5, GHSA-567q-5qvw-pf92 and GHSA-v4x8-3wr5-3wq8; the
+# floor keeps every affected release from resolving.
+pip-audit>=2.10
+filelock>=4.2.1
 # Complexity gate: scripts/check_complexity.py.
 radon>=6.0.1,<7
 complexipy>=8.1,<9
 # certifi before 2026.10.19 bundles the emSign roots with compromised
 # intermediate keys (GHSA-6q48-6c7w-9gw2); pip-audit reaches it through
 # requests.
-certifi>=2026.10.19
+certifi>=2026.10.23
