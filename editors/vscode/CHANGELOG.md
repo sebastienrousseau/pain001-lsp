@@ -4,6 +4,12 @@
 
 The extension ships at the pain001 suite's version.
 
+## 0.0.76
+
+- Version aligned with the suite.
+- minimatch is overridden to 11 (GHSA-g3hv-75wg-m249); the
+  language client's 5.1.9 is gone from the bundle.
+
 ## 0.0.75
 
 - Version aligned with the suite.

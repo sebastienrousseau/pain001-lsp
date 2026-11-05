@@ -11,6 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [0.0.76] - 2026-11-05
+
+The pain001 family's 0.0.76 release, on the pain001 0.0.76 floor.
+
+### Security
+
+- The VS Code extension overrides minimatch to `^11.0.1`
+  (GHSA-g3hv-75wg-m249): vscode-languageclient 9.0.1 resolved 5.1.9.
+- `requirements/build.txt` floors dulwich at 1.2.20 and virtualenv at
+  21.15.1.
+
+### Changed
+
+- Requires `pain001 >= 0.0.76, < 1` (`pyproject.toml` and
+  `requirements/runtime.in`); `poetry.lock` and the hash-pinned runtime,
+  ci, docs and fuzz sets move pain001 to 0.0.76.
+- Development tools: ruff 0.17.3, complexipy 8.3.0, pytest 9.2.0,
+  pytest-benchmark 5.3.1, mypy 2.4.1 and mutmut 3.8.1.
+- CI: one stable required check per versioned matrix.
+
 ## [0.0.75] - 2026-10-27
 
 The pain001 family's 0.0.75 release, on the pain001 0.0.75 floor, and
@@ -525,6 +545,7 @@ ergonomics for pain.001 payment-data JSON files:
 - `scripts/verify_versions.py` - pre-release script asserting
   `__version__`, `pyproject.toml`, and `CHANGELOG.md` agree.
 
+[0.0.76]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.75...v0.0.76
 [0.0.75]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.74...v0.0.75
 [0.0.74]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.72...v0.0.74
 [0.0.52]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.52
