@@ -206,9 +206,9 @@ mdurl==0.1.2 \
     --hash=sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8 \
     --hash=sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba
     # via markdown-it-py
-pain001==0.0.76 \
-    --hash=sha256:3487034635abe1f86f87ef01af6b3dd5dacf410032e4bd742145e8fa772b7036 \
-    --hash=sha256:a15454e0e8cbc54b17215c7947c796c99ffd18e6a2b0ddd3ca1be833ec93bdd6
+pain001==0.0.77 \
+    --hash=sha256:a5bda90f36b45f495366735c0244409047fd5874b03073833541fdd3adad79ea \
+    --hash=sha256:df66eda2ff8493378a2cefb41f6ec1207d4e63292146aeac18ac6fdc4c25ba5d
     # via -r requirements/runtime.in
 pygls==2.1.1 \
     --hash=sha256:1da03ba9053201bb337dcdd8d121df70feb2a91e1a0dcc74de5da79755b1a201 \

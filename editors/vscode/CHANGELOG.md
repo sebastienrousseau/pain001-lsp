@@ -4,7 +4,12 @@
 
 The extension ships at the pain001 suite's version.
 
-## 0.0.76
+## 0.0.77
+
+- Version aligned with the suite. 0.0.76 was prepared but never
+  published; its changes ship in 0.0.77.
+
+## 0.0.76 (not published)
 
 - Version aligned with the suite.
 - minimatch is overridden to 11 (GHSA-g3hv-75wg-m249); the
