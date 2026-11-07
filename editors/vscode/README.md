@@ -44,7 +44,11 @@ npm run compile
 Open any pain.001 payment-data `.json` file; diagnostics appear
 inline and in the Problems panel. The active message type is
 controlled by the `pain001.messageType` setting; the server command
-by `pain001.serverCommand`.
+by `pain001.serverCommand`; which JSON files reach the server by
+`pain001.filePattern` (default `**/*.json`, for example
+`**/*.pain.json`). Other JSON files, such as `package.json`, get no
+payment diagnostics: the server only reports on documents shaped like
+payment records.
 
 ## Packaging / publishing
 

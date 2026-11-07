@@ -4,6 +4,14 @@
 
 The extension ships at the pain001 suite's version.
 
+## 0.0.79
+
+- Version aligned with the suite.
+- New `pain001.filePattern` setting (default `**/*.json`): the glob of
+  JSON files sent to the language server, for example `**/*.pain.json`.
+- With pain001-lsp 0.0.79, files such as `package.json` and
+  `tsconfig.json` no longer get payment diagnostics.
+
 ## 0.0.78
 
 - Version aligned with the suite.
