@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.80] - 2026-11-07
+
+The pain001 family's 0.0.80 release, on the pain001 0.0.80 floor
+(`pyproject.toml` and `requirements/runtime.in`). pain001 0.0.80 is a
+security release of the core's REST API
+([GHSA-vv3x-jpvc-w468](https://github.com/sebastienrousseau/pain001/security/advisories/GHSA-vv3x-jpvc-w468)).
+Nothing in the language server changed beyond the version and the
+floor.
+
+### Changed
+
+- Requires `pain001 >= 0.0.80, < 1`; `poetry.lock` and the hash-pinned
+  runtime, ci, docs and fuzz sets move pain001 to 0.0.80.
+
 ## [0.0.79] - 2026-11-07
 
 The pain001 family's 0.0.79 release, on the pain001 0.0.79 floor
@@ -617,6 +631,7 @@ ergonomics for pain.001 payment-data JSON files:
 - `scripts/verify_versions.py` - pre-release script asserting
   `__version__`, `pyproject.toml`, and `CHANGELOG.md` agree.
 
+[0.0.80]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.79...v0.0.80
 [0.0.79]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.78...v0.0.79
 [0.0.78]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.77...v0.0.78
 [0.0.77]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.75...v0.0.77

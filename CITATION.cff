@@ -12,7 +12,7 @@ authors:
   - family-names: Rousseau
     given-names: Sebastien
     email: sebastian.rousseau@gmail.com
-version: "0.0.79"
+version: "0.0.80"
 date-released: "2026-11-07"
 # CFF 1.2.0 takes SPDX identifiers, not expressions; a list means the
 # work is available under any one of them (Apache-2.0 OR MIT).
