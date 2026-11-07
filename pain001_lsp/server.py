@@ -63,7 +63,8 @@ from pain001.constants import SCHEMAS_DIR, valid_xml_types
 from pain001.validation import validate_bic, validate_iban
 from pygls.lsp.server import LanguageServer
 
-from pain001_lsp import __version__
+from pain001_lsp import __version__, _faces
+from pain001_lsp._commands import command_options
 from pain001_lsp._csv import csv_diagnostics
 from pain001_lsp._names import HUMAN_NAMES
 from pain001_lsp._parsing import (
@@ -837,13 +838,6 @@ def _corpus_api() -> Any | None:
         return None
 
 
-def _command_options(args: tuple[Any, ...]) -> dict[str, Any]:
-    """The first ``executeCommand`` argument as a dict, else empty."""
-    if args and isinstance(args[0], dict):
-        return dict(args[0])
-    return {}
-
-
 def corpus_list(options: dict[str, Any] | None = None) -> dict[str, Any]:
     """List the validated example files pain001 ships.
 
@@ -939,7 +933,7 @@ def corpus_list_command(ls: LanguageServer, *args: Any) -> dict[str, Any]:
     Returns:
         The :func:`corpus_list` payload.
     """
-    return corpus_list(_command_options(args))
+    return corpus_list(command_options(args))
 
 
 def corpus_get_command(ls: LanguageServer, *args: Any) -> dict[str, Any]:
@@ -952,7 +946,7 @@ def corpus_get_command(ls: LanguageServer, *args: Any) -> dict[str, Any]:
     Returns:
         The :func:`corpus_get` payload.
     """
-    return corpus_get(_command_options(args))
+    return corpus_get(command_options(args))
 
 
 # Handlers are registered here, in definition order, rather than with
@@ -972,6 +966,8 @@ server.feature(lsp.TEXT_DOCUMENT_FORMATTING)(formatting)
 server.feature(lsp.TEXT_DOCUMENT_DOCUMENT_SYMBOL)(document_symbol)
 server.command(CORPUS_LIST_COMMAND)(corpus_list_command)
 server.command(CORPUS_GET_COMMAND)(corpus_get_command)
+server.command(_faces.FACES_LIST_COMMAND)(_faces.faces_list_command)
+server.command(_faces.FACES_PROJECT_COMMAND)(_faces.faces_project_command)
 
 
 def main() -> None:

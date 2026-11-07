@@ -169,5 +169,6 @@ pytest_add_cli_args = ["-q", "-p", "no:cacheprovider", "--no-cov", "--benchmark-
 pytest_add_cli_args_test_selection = [
     "tests/test_lsp_server.py",
     "tests/test_corpus_commands.py",
+    "tests/test_faces_commands.py",
     "tests/test_diagnostic_shapes.py",
 ]

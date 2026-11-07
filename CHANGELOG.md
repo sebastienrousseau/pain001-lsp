@@ -9,7 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Faces commands (pain001 >= 0.0.78): `pain001.faces.list` names each
+  face, its target and the binding keys it accepts;
+  `pain001.faces.project` takes a pain.001 document as XML text (the
+  editor's buffer) with a `face`, an optional `version` and optional
+  `bindings`, and returns the payload for UK Open Banking v4.0.1,
+  Berlin Group NextGenPSD2 v1.3.16 or ISO 20022 element names with a
+  loss report of every source element not carried. A refusal, a file
+  path instead of XML or an entity declaration is an `{"error": ...}`
+  payload; with an older pain001 both commands say which version they
+  need. The pure helpers are `faces_list` and `faces_project` in
+  `pain001_lsp._faces`.
+- `examples/05_faces_commands.py`, run by `make examples` and CI.
+
+### Changed
+
+- The `executeCommand` argument helper moved to
+  `pain001_lsp/_commands.py`, shared by the corpus and faces commands;
+  `server.py` shrinks from 983 to 979 lines.
 
 ## [0.0.77] - 2026-11-06
 

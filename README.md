@@ -186,6 +186,7 @@ command line, the REST API and an AI agent apply the same rules.
 | Outline | One document symbol per record, named by `id` | Released |
 | Formatting | Whole-document pretty-print, 2-space indent, idempotent | Released |
 | Example corpus | `pain001.corpus.list` and `pain001.corpus.get` commands | Released |
+| Faces | `pain001.faces.list` and `pain001.faces.project` commands (pain001 0.0.78) | Unreleased |
 | Targeted fixes per diagnostic, code lenses | See [`ROADMAP.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/ROADMAP.md) | Planned |
 
 ---
@@ -248,11 +249,18 @@ to the core's CSV engine instead.
 - **Corpus commands**: `pain001.corpus.list` lists the validated example
   files the core ships (filter by `kind`, `country`, `version`);
   `pain001.corpus.get` returns one file's XML with its provenance.
+- **Faces commands** (unreleased, pain001 0.0.78): `pain001.faces.list`
+  names each face and the binding keys it accepts;
+  `pain001.faces.project` takes `{"xml", "face", "version"?, "bindings"?}`
+  with the open buffer's text as `xml` and returns the UK Open Banking,
+  Berlin Group or ISO 20022-named payload with a loss report of every
+  element not carried, or `{"error": ...}` when the face refuses.
 
 The logic lives in pure helpers in `pain001_lsp.server`:
 `compute_diagnostics`, `compute_diagnostics_csv`, `completion_items`,
 `hover_text`, `missing_required_fields`, `build_insert_text`, `corpus_list`
-and `corpus_get`. The LSP handlers map their plain dicts to `lsprotocol`
+and `corpus_get`, and in `pain001_lsp._faces`: `faces_list` and
+`faces_project`. The LSP handlers map their plain dicts to `lsprotocol`
 types. Each diagnostic is
 `{"line": int, "character": int, "severity": "error" | "warning", "message": str}`.
 
