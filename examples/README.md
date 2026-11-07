@@ -27,3 +27,4 @@ pip install pain001-lsp
 ```
 
 - `04_corpus_commands.py` — the `pain001.corpus.list` and `pain001.corpus.get` commands and their pure helpers, including the error payload an older pain001 returns
+- `05_faces_commands.py` - the `pain001.faces.list` and `pain001.faces.project` commands through their pure helpers: a corpus file projected into the Berlin Group shape with its loss report, and a refusal returned as data

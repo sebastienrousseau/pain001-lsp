@@ -4,6 +4,10 @@
 
 The extension ships at the pain001 suite's version.
 
+## 0.0.78
+
+- Version aligned with the suite.
+
 ## 0.0.77
 
 - Version aligned with the suite. 0.0.76 was prepared but never

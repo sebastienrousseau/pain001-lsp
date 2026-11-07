@@ -1,6 +1,6 @@
 {
   "pain001_lsp/server.py": {
-    "file_lines": 983
+    "file_lines": 979
   },
   "pain001_lsp/server.py::_record_close_positions": {
     "cognitive": 23,

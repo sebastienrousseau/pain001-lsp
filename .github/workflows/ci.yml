@@ -215,3 +215,4 @@ jobs:
           python examples/02_quick_fix.py
           python examples/03_configure_message_type.py
           python examples/04_corpus_commands.py
+          python examples/05_faces_commands.py

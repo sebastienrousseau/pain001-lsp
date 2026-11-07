@@ -762,6 +762,7 @@ def test_did_open_routes_csv_uri_to_csv_engine():
         "examples/02_quick_fix.py",
         "examples/03_configure_message_type.py",
         "examples/04_corpus_commands.py",
+        "examples/05_faces_commands.py",
     ],
 )
 def test_example_scripts_run_without_error(module_path, capsys):

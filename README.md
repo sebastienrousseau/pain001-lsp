@@ -67,10 +67,10 @@
 python -m pip install pain001-lsp
 ```
 
-> **Latest release: v0.0.77**: the family's 0.0.77 release on the
-> pain001 0.0.77 floor. The VS Code extension no longer bundles an
-> advised minimatch, and the hash-pinned trees floor dulwich and
-> virtualenv at their patched releases.
+> **Latest release: v0.0.78**: the family's 0.0.78 release on the
+> pain001 0.0.78 floor. Two new commands, `pain001.faces.list` and
+> `pain001.faces.project`, project the editor's pain.001 document into
+> UK Open Banking, Berlin Group or ISO 20022 element names.
 > [See what's new →][release]
 
 The package installs a `pain001-lsp` console command and pulls in the core
@@ -113,7 +113,7 @@ in [`editors/vscode/`](https://github.com/sebastienrousseau/pain001-lsp/tree/mai
 - Python 3.11 or newer, tested in CI on 3.11, 3.12, 3.13 and 3.14 on
   Linux ([toolchain policy](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/POLICIES.md)). The package is pure Python
   and runs wherever its dependencies do: macOS, Linux and Windows.
-- `pain001` 0.0.77 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
+- `pain001` 0.0.78 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
   `jsonschema` 4.17 or newer (below 5), installed automatically.
 - An editor with a Language Server Protocol client (Neovim, VS Code, Helix,
   Emacs, Sublime Text LSP and others).
@@ -186,6 +186,7 @@ command line, the REST API and an AI agent apply the same rules.
 | Outline | One document symbol per record, named by `id` | Released |
 | Formatting | Whole-document pretty-print, 2-space indent, idempotent | Released |
 | Example corpus | `pain001.corpus.list` and `pain001.corpus.get` commands | Released |
+| Faces | `pain001.faces.list` and `pain001.faces.project` commands (pain001 0.0.78) | Unreleased |
 | Targeted fixes per diagnostic, code lenses | See [`ROADMAP.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/ROADMAP.md) | Planned |
 
 ---
@@ -248,11 +249,18 @@ to the core's CSV engine instead.
 - **Corpus commands**: `pain001.corpus.list` lists the validated example
   files the core ships (filter by `kind`, `country`, `version`);
   `pain001.corpus.get` returns one file's XML with its provenance.
+- **Faces commands** (unreleased, pain001 0.0.78): `pain001.faces.list`
+  names each face and the binding keys it accepts;
+  `pain001.faces.project` takes `{"xml", "face", "version"?, "bindings"?}`
+  with the open buffer's text as `xml` and returns the UK Open Banking,
+  Berlin Group or ISO 20022-named payload with a loss report of every
+  element not carried, or `{"error": ...}` when the face refuses.
 
 The logic lives in pure helpers in `pain001_lsp.server`:
 `compute_diagnostics`, `compute_diagnostics_csv`, `completion_items`,
 `hover_text`, `missing_required_fields`, `build_insert_text`, `corpus_list`
-and `corpus_get`. The LSP handlers map their plain dicts to `lsprotocol`
+and `corpus_get`, and in `pain001_lsp._faces`: `faces_list` and
+`faces_project`. The LSP handlers map their plain dicts to `lsprotocol`
 types. Each diagnostic is
 `{"line": int, "character": int, "severity": "error" | "warning", "message": str}`.
 
@@ -387,4 +395,4 @@ way, without additional terms. Dependencies keep their own licences. Built on
 [atheris]: https://github.com/google/atheris
 [pain001]: https://github.com/sebastienrousseau/pain001
 [pygls]: https://github.com/openlawlibrary/pygls
-[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.77
+[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.78
