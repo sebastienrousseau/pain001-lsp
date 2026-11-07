@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.0.78] - 2026-11-07
+
+The pain001 family's 0.0.78 release, on the pain001 0.0.78 floor
+(`pyproject.toml` and `requirements/runtime.in`), which adds faces.
+
 ### Added
 
 - Faces commands (pain001 >= 0.0.78): `pain001.faces.list` names each
@@ -566,6 +573,7 @@ ergonomics for pain.001 payment-data JSON files:
 - `scripts/verify_versions.py` - pre-release script asserting
   `__version__`, `pyproject.toml`, and `CHANGELOG.md` agree.
 
+[0.0.78]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.77...v0.0.78
 [0.0.77]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.75...v0.0.77
 [0.0.75]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.74...v0.0.75
 [0.0.74]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.72...v0.0.74

@@ -7,12 +7,12 @@ of the [pain001](https://github.com/sebastienrousseau/pain001) library.
 The versions are **target** windows; releases ship when the gates pass,
 not on a calendar.
 
-## Where we are: v0.0.77
+## Where we are: v0.0.78
 
 - Diagnostics (JSON Schema plus IBAN and BIC), completion, hover, the
   missing-fields quick fix on the record under the cursor, formatting,
   the per-record outline, CSV diagnostics through the core's engine,
-  and the example-corpus commands.
+  the example-corpus commands and the faces commands.
 - Live message-type switching through `initializationOptions` and
   `workspace/didChangeConfiguration`; all thirteen core message types.
 - 100% line, branch and docstring coverage, mutation testing with an
