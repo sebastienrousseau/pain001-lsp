@@ -9,7 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Changed
+
+- The release page is written by the release workflow in the suite's
+  shape. A last `release-notes` job, once the SBOMs and the `.vsix`
+  are attached, runs `scripts/release_notes.py publish`: the title is
+  `pain001-lsp X.Y.Z`, the Highlights come from `releases/vX.Y.Z.md`,
+  What's Changed lists the pull requests merged since the previous
+  release, and Checksums gives the SHA-256 of every asset. The 0.0.77
+  and 0.0.78 pages had to be rewritten by hand.
+- Release notes live in `releases/vX.Y.Z.md`, starting with
+  `releases/v0.0.78.md` (the published 0.0.78 Highlights).
+  `tests/test_release_notes.py` fails a pull request whose CHANGELOG
+  dates the version while that note is missing or has other than 2 to
+  4 highlights. Both files are vendored byte-identical from `pain001`.
+
+### Fixed
+
+- The README still called the faces commands unreleased; they shipped
+  in 0.0.78.
 
 ## [0.0.78] - 2026-11-07
 
