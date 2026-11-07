@@ -20,6 +20,10 @@ export function activate(_context: ExtensionContext): void {
   const config = workspace.getConfiguration("pain001");
   const command = config.get<string>("serverCommand", "pain001-lsp");
   const messageType = config.get<string>("messageType", "pain.001.001.09");
+  // Which JSON files reach the server. The server also skips any document
+  // that is not shaped like payment records, so package.json and
+  // tsconfig.json get no payment diagnostics either way.
+  const pattern = config.get<string>("filePattern", "**/*.json");
 
   const serverOptions: ServerOptions = {
     command,
@@ -27,7 +31,7 @@ export function activate(_context: ExtensionContext): void {
   };
 
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [{ scheme: "file", language: "json" }],
+    documentSelector: [{ scheme: "file", language: "json", pattern }],
     initializationOptions: { messageType },
     synchronize: {
       configurationSection: "pain001",

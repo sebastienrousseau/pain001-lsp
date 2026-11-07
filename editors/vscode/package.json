@@ -30,6 +30,11 @@
           "default": "pain001-lsp",
           "description": "Command that starts the Pain001 language server (install with: pip install pain001-lsp)."
         },
+        "pain001.filePattern": {
+          "type": "string",
+          "default": "**/*.json",
+          "description": "Glob of the JSON files sent to the language server, for example **/*.pain.json. The server only reports diagnostics for documents shaped like payment records."
+        },
         "pain001.messageType": {
           "type": "string",
           "default": "pain.001.001.09",

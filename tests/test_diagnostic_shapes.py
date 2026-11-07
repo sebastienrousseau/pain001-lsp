@@ -13,6 +13,8 @@ braces and escaped quotes, and completion detail text.
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 pytest.importorskip("pygls")
@@ -235,3 +237,154 @@ class TestCompletionItems:
         for item in server.completion_items(MT):
             assert set(item) == {"label", "detail", "kind"}
             assert isinstance(item["detail"], str)
+
+
+class _Doc:
+    def __init__(self, source: str) -> None:
+        self.source = source
+
+
+class _Server:
+    """Records what the publish path tells the editor about one document."""
+
+    def __init__(self, source: str) -> None:
+        self.workspace = self
+        self._doc = _Doc(source)
+        self.published: list[list[lsp.Diagnostic]] = []
+
+    def get_text_document(self, uri: str) -> _Doc:
+        return self._doc
+
+    def text_document_publish_diagnostics(self, params) -> None:
+        self.published.append(list(params.diagnostics))
+
+
+def _published(text: str) -> list[lsp.Diagnostic]:
+    ls = _Server(text)
+    server._validate_and_publish(ls, "file:///w/doc.json")
+    (diagnostics,) = ls.published
+    return diagnostics
+
+
+class TestOnlyPaymentDocumentsAreDiagnosed:
+    """Editors send every JSON file; only payment records get diagnostics.
+
+    The VS Code extension selected every JSON document, so package.json
+    and tsconfig.json were told "'id' is a required property". A document
+    that is neither an array of records nor an object naming a payment
+    field is published with no diagnostics, which also clears old ones.
+    """
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            '{"name": "x", "version": "1.0.0", "private": true}',
+            '{"compilerOptions": {"strict": true}}',
+            "{}",
+            '"hello"',
+            "42",
+            "null",
+            "",
+            '{"name": "x",',
+            '{"compilerOptions": {',
+        ],
+        ids=[
+            "package-json",
+            "tsconfig-json",
+            "empty-object",
+            "string",
+            "number",
+            "null",
+            "empty-text",
+            "broken-package-json",
+            "broken-tsconfig-json",
+        ],
+    )
+    def test_other_json_gets_no_diagnostics(self, text):
+        assert _published(text) == []
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "[{}]",
+            "[]",
+            "[42]",
+            '{"id": "MSG-1"}',
+            '{"name": "x", "currency": "EUR"}',
+            '[{"id": ',
+            '  {"id": "MSG-1",',
+            '{"x": 1, "debtor_name": "A"',
+        ],
+        ids=[
+            "empty-record",
+            "empty-array",
+            "array-of-non-records",
+            "single-record",
+            "one-payment-field-is-enough",
+            "broken-array",
+            "broken-single-record",
+            "broken-record-later-field",
+        ],
+    )
+    def test_payment_records_are_still_diagnosed(self, text):
+        assert _published(text) != []
+
+    def test_a_valid_record_object_is_clean(self):
+        assert _published(json.dumps(_record())) == []
+
+    def test_a_record_object_is_validated_like_an_array(self):
+        text = json.dumps({"id": "MSG-1"})
+        assert [d.message for d in _published(text)] == [
+            d["message"] for d in server.compute_diagnostics(text, MT)
+        ]
+
+    def test_csv_documents_are_not_shape_checked(self):
+        ls = _Server("not,a,payment\n")
+        server._validate_and_publish(ls, "file:///w/doc.csv")
+        (diagnostics,) = ls.published
+        assert diagnostics != []
+
+    def test_the_helper_never_raises_on_unparseable_text(self):
+        assert _shape("[" * 100_000) is True
+        assert _shape("{" * 100_000) is False
+
+    def test_the_helper_reads_only_object_keys(self):
+        assert _shape('{"x": "id"}') is False
+        assert _shape('{"x": "id",') is False
+        assert _shape('{"id" : 1') is True
+        assert _shape('{"ID": 1}') is False
+
+    def test_the_fields_come_from_the_message_type_schema(self):
+        seen: list[str] = []
+
+        def load(message_type: str) -> dict:
+            seen.append(message_type)
+            return {"properties": {"amount": {}}}
+
+        assert server.is_payment_document('{"amount": 1}', "t", load)
+        assert not server.is_payment_document('{"id": 1}', "t", load)
+        assert seen == ["t", "t"]
+
+    def test_without_a_schema_only_an_array_counts(self):
+        def load(message_type: str) -> dict:
+            raise ValueError(f"No JSON Schema bundled for {message_type}")
+
+        assert server.is_payment_document("[{}]", "t", load) is True
+        assert server.is_payment_document('{"id": 1}', "t", load) is False
+        assert server.is_payment_document('{"id": 1', "t", load) is False
+
+    def test_a_schema_without_properties_names_no_fields(self):
+        def load(message_type: str) -> dict:
+            return {}
+
+        assert server.is_payment_document("[{}]", "t", load) is True
+        assert server.is_payment_document('{"id": 1}', "t", load) is False
+
+    def test_an_indented_broken_array_still_counts(self):
+        assert _shape('\n  [{"x": ') is True
+
+
+def _shape(text: str) -> bool:
+    return server.is_payment_document(
+        text, "t", lambda _mt: {"properties": {"id": {}}}
+    )

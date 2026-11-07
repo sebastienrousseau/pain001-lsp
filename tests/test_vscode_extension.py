@@ -25,3 +25,22 @@ def test_vscode_setting_offers_every_supported_message_type():
         "configuration"
     ]["properties"]["pain001.messageType"]
     assert setting["enum"] == list(lsp_server.valid_xml_types)
+
+
+def test_vscode_selects_files_by_the_configured_pattern():
+    """Users can narrow the JSON files the extension sends to the server.
+
+    The selector used to be every JSON file; the server now skips
+    documents that are not payment records, and ``pain001.filePattern``
+    lets a workspace narrow the selection further (``**/*.pain.json``).
+    """
+    root = Path(__file__).resolve().parents[1] / "editors" / "vscode"
+    manifest = json.loads((root / "package.json").read_text(encoding="utf-8"))
+    setting = manifest["contributes"]["configuration"]["properties"][
+        "pain001.filePattern"
+    ]
+    assert setting["type"] == "string"
+    assert setting["default"] == "**/*.json"
+    source = (root / "src" / "extension.ts").read_text(encoding="utf-8")
+    assert 'config.get<string>("filePattern", "**/*.json")' in source
+    assert '{ scheme: "file", language: "json", pattern }' in source
