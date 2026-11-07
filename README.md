@@ -186,7 +186,7 @@ command line, the REST API and an AI agent apply the same rules.
 | Outline | One document symbol per record, named by `id` | Released |
 | Formatting | Whole-document pretty-print, 2-space indent, idempotent | Released |
 | Example corpus | `pain001.corpus.list` and `pain001.corpus.get` commands | Released |
-| Faces | `pain001.faces.list` and `pain001.faces.project` commands (pain001 0.0.78) | Unreleased |
+| Faces | `pain001.faces.list` and `pain001.faces.project` commands (pain001 0.0.78) | Released |
 | Targeted fixes per diagnostic, code lenses | See [`ROADMAP.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/ROADMAP.md) | Planned |
 
 ---
@@ -249,7 +249,7 @@ to the core's CSV engine instead.
 - **Corpus commands**: `pain001.corpus.list` lists the validated example
   files the core ships (filter by `kind`, `country`, `version`);
   `pain001.corpus.get` returns one file's XML with its provenance.
-- **Faces commands** (unreleased, pain001 0.0.78): `pain001.faces.list`
+- **Faces commands** (pain001 0.0.78): `pain001.faces.list`
   names each face and the binding keys it accepts;
   `pain001.faces.project` takes `{"xml", "face", "version"?, "bindings"?}`
   with the open buffer's text as `xml` and returns the UK Open Banking,

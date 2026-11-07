@@ -36,7 +36,10 @@ A release is ready only when **all** of the following hold on `main`:
    a false positive or a finding that cannot be fixed in code is
    dismissed, by the maintainer, with the reason written on it.
 4. `CHANGELOG.md` has a dated section for the new version describing the
-   change set (this is the single source of truth for the release).
+   change set (this is the single source of truth for the release), and
+   `releases/vX.Y.Z.md` has a `## Highlights` section of two to four
+   bullets for the release page (`tests/test_release_notes.py` fails
+   without it once the CHANGELOG dates the version).
 5. Every version source agrees and the `pain001` floor equals the
    release version (enforced by `scripts/verify_versions.py`, which the
    "Version sources agree" workflow runs on each pull request).
@@ -61,7 +64,14 @@ A release is ready only when **all** of the following hold on `main`:
 4. The tag triggers the `publish` job in `release.yml`, which fails fast
    if the tag does not match the package version, then builds, runs
    `twine check`, creates the GitHub release from the `CHANGELOG.md`
-   section, and publishes to PyPI via OIDC trusted publishing.
+   section, and publishes to PyPI via OIDC trusted publishing. Its last
+   job, `release-notes`, waits for the `.vsix` that
+   `vscode-extension.yml` attaches, then sets the title to
+   `pain001-lsp X.Y.Z` and rewrites the body with
+   `scripts/release_notes.py publish`: the note's Highlights, the pull
+   requests merged since the previous release, the SHA-256 of every
+   attached asset and the Full Changelog link. Preview it with
+   `--dry-run`.
 
 ## After releasing
 
