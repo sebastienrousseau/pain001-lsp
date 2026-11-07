@@ -2,7 +2,7 @@
   "name": "pain001-lsp-json",
   "displayName": "Pain001 - ISO 20022 payment JSON",
   "description": "Diagnostics, completion, hover, code-fix, formatting and outline for Pain001 payment-data JSON files, powered by the pain001-lsp language server.",
-  "version": "0.0.78",
+  "version": "0.0.79",
   "publisher": "sebastienrousseau",
   "license": "(Apache-2.0 OR MIT)",
   "repository": {
@@ -29,6 +29,11 @@
           "type": "string",
           "default": "pain001-lsp",
           "description": "Command that starts the Pain001 language server (install with: pip install pain001-lsp)."
+        },
+        "pain001.filePattern": {
+          "type": "string",
+          "default": "**/*.json",
+          "description": "Glob of the JSON files sent to the language server, for example **/*.pain.json. The server only reports diagnostics for documents shaped like payment records."
         },
         "pain001.messageType": {
           "type": "string",

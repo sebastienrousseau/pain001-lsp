@@ -736,9 +736,9 @@ def test_compute_diagnostics_csv_nul_byte_never_raises():
 
 def test_is_csv_uri_dispatches_by_suffix():
     """The dispatcher recognises ``.csv`` (case-insensitive)."""
-    assert lsp_server._is_csv_uri("file:///x.csv") is True
-    assert lsp_server._is_csv_uri("file:///x.CSV") is True
-    assert lsp_server._is_csv_uri("file:///x.json") is False
+    assert lsp_server.is_csv_uri("file:///x.csv") is True
+    assert lsp_server.is_csv_uri("file:///x.CSV") is True
+    assert lsp_server.is_csv_uri("file:///x.json") is False
 
 
 def test_did_open_routes_csv_uri_to_csv_engine():

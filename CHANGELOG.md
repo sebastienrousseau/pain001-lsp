@@ -9,7 +9,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+## [0.0.79] - 2026-11-07
+
+The pain001 family's 0.0.79 release, on the pain001 0.0.79 floor
+(`pyproject.toml` and `requirements/runtime.in`).
+
+### Fixed
+
+- Only payment documents get diagnostics. The VS Code extension sends
+  every JSON file to the server, and the server read every non-CSV
+  document as payment records, so `package.json` and `tsconfig.json`
+  were told "'id' is a required property". A JSON document is now
+  diagnosed only when it is an array, or an object with at least one
+  field of the active message type's schema as a key; text that does
+  not parse yet counts when it opens an array or quotes one of those
+  fields as a key. Any other document is published with no
+  diagnostics, which clears what an earlier version left.
+  `compute_diagnostics` itself is unchanged. The check is
+  `is_payment_document` in `pain001_lsp._documents`, where
+  `is_csv_uri` (formerly `server._is_csv_uri`) also moved.
+- The README still called the faces commands unreleased; they shipped
+  in 0.0.78.
+
+### Added
+
+- VS Code: a `pain001.filePattern` setting, the glob of JSON files sent
+  to the server. The default, `**/*.json`, keeps the files reached
+  before; set it to, for example, `**/*.pain.json` to stop completion,
+  hover and formatting in other JSON files too.
+
+### Changed
+
+- Requires `pain001 >= 0.0.79, < 1`; `poetry.lock` and the hash-pinned
+  runtime, ci, docs and fuzz sets move pain001 to 0.0.79.
+- The release page is written by the release workflow in the suite's
+  shape. A last `release-notes` job, once the SBOMs and the `.vsix`
+  are attached, runs `scripts/release_notes.py publish`: the title is
+  `pain001-lsp X.Y.Z`, the Highlights come from `releases/vX.Y.Z.md`,
+  What's Changed lists the pull requests merged since the previous
+  release, and Checksums gives the SHA-256 of every asset. The 0.0.77
+  and 0.0.78 pages had to be rewritten by hand.
+- Release notes live in `releases/vX.Y.Z.md`, starting with
+  `releases/v0.0.78.md` (the published 0.0.78 Highlights).
+  `tests/test_release_notes.py` fails a pull request whose CHANGELOG
+  dates the version while that note is missing or has other than 2 to
+  4 highlights. Both files are vendored byte-identical from `pain001`.
 
 ## [0.0.78] - 2026-11-07
 
@@ -573,6 +617,7 @@ ergonomics for pain.001 payment-data JSON files:
 - `scripts/verify_versions.py` - pre-release script asserting
   `__version__`, `pyproject.toml`, and `CHANGELOG.md` agree.
 
+[0.0.79]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.78...v0.0.79
 [0.0.78]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.77...v0.0.78
 [0.0.77]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.75...v0.0.77
 [0.0.75]: https://github.com/sebastienrousseau/pain001-lsp/compare/v0.0.74...v0.0.75

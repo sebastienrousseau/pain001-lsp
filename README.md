@@ -67,10 +67,11 @@
 python -m pip install pain001-lsp
 ```
 
-> **Latest release: v0.0.78**: the family's 0.0.78 release on the
-> pain001 0.0.78 floor. Two new commands, `pain001.faces.list` and
-> `pain001.faces.project`, project the editor's pain.001 document into
-> UK Open Banking, Berlin Group or ISO 20022 element names.
+> **Latest release: v0.0.79**: the family's 0.0.79 release on the
+> pain001 0.0.79 floor. Only payment documents get diagnostics now, so
+> `package.json` and `tsconfig.json` no longer show "'id' is a required
+> property", and the VS Code extension gains a `pain001.filePattern`
+> setting.
 > [See what's new →][release]
 
 The package installs a `pain001-lsp` console command and pulls in the core
@@ -113,7 +114,7 @@ in [`editors/vscode/`](https://github.com/sebastienrousseau/pain001-lsp/tree/mai
 - Python 3.11 or newer, tested in CI on 3.11, 3.12, 3.13 and 3.14 on
   Linux ([toolchain policy](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/POLICIES.md)). The package is pure Python
   and runs wherever its dependencies do: macOS, Linux and Windows.
-- `pain001` 0.0.78 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
+- `pain001` 0.0.79 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
   `jsonschema` 4.17 or newer (below 5), installed automatically.
 - An editor with a Language Server Protocol client (Neovim, VS Code, Helix,
   Emacs, Sublime Text LSP and others).
@@ -186,7 +187,7 @@ command line, the REST API and an AI agent apply the same rules.
 | Outline | One document symbol per record, named by `id` | Released |
 | Formatting | Whole-document pretty-print, 2-space indent, idempotent | Released |
 | Example corpus | `pain001.corpus.list` and `pain001.corpus.get` commands | Released |
-| Faces | `pain001.faces.list` and `pain001.faces.project` commands (pain001 0.0.78) | Unreleased |
+| Faces | `pain001.faces.list` and `pain001.faces.project` commands (pain001 0.0.78) | Released |
 | Targeted fixes per diagnostic, code lenses | See [`ROADMAP.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/ROADMAP.md) | Planned |
 
 ---
@@ -228,6 +229,13 @@ For payment-data files: a JSON array of flat payment records, or a single
 record object treated as one record. Documents whose URI ends in `.csv` go
 to the core's CSV engine instead.
 
+Editors send the server other JSON files too (`package.json`,
+`tsconfig.json`). A JSON document gets diagnostics only when it is an
+array, or an object with at least one field of the active message type as
+a key; text that does not parse yet counts when it opens an array or
+quotes one of those fields as a key. Any other document is published with
+no diagnostics.
+
 - **Diagnostics**: schema validation reports missing required fields, wrong
   types, and pattern or length violations. `debtor_account_IBAN`,
   `creditor_account_IBAN`, `charge_account_IBAN` and the `*_agent_BIC`
@@ -249,7 +257,7 @@ to the core's CSV engine instead.
 - **Corpus commands**: `pain001.corpus.list` lists the validated example
   files the core ships (filter by `kind`, `country`, `version`);
   `pain001.corpus.get` returns one file's XML with its provenance.
-- **Faces commands** (unreleased, pain001 0.0.78): `pain001.faces.list`
+- **Faces commands** (pain001 0.0.78): `pain001.faces.list`
   names each face and the binding keys it accepts;
   `pain001.faces.project` takes `{"xml", "face", "version"?, "bindings"?}`
   with the open buffer's text as `xml` and returns the UK Open Banking,
@@ -274,6 +282,7 @@ types. Each diagnostic is
 | `pain001.messageType` (or `messageType`) | `workspace/didChangeConfiguration` | Switch the message type without a restart. |
 | `pain001.serverCommand` | VS Code setting | Command that starts the server (default `pain001-lsp`). |
 | `pain001.messageType` | VS Code setting | Message type, one of the thirteen the core supports. |
+| `pain001.filePattern` | VS Code setting | Glob of the JSON files sent to the server (default `**/*.json`); `**/*.pain.json`, for example, keeps completion, hover and formatting out of other JSON files. |
 
 `pain001-lsp` takes no command-line options: it speaks LSP over stdio from
 the first byte. A message type the core does not support is ignored, and
@@ -395,4 +404,4 @@ way, without additional terms. Dependencies keep their own licences. Built on
 [atheris]: https://github.com/google/atheris
 [pain001]: https://github.com/sebastienrousseau/pain001
 [pygls]: https://github.com/openlawlibrary/pygls
-[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.78
+[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.79

@@ -66,6 +66,7 @@ from pygls.lsp.server import LanguageServer
 from pain001_lsp import __version__, _faces
 from pain001_lsp._commands import command_options
 from pain001_lsp._csv import csv_diagnostics
+from pain001_lsp._documents import is_csv_uri, is_payment_document
 from pain001_lsp._names import HUMAN_NAMES
 from pain001_lsp._parsing import (
     PARSE_ERRORS,
@@ -492,23 +493,21 @@ def _to_lsp_diagnostics(raw: list[dict]) -> list[lsp.Diagnostic]:
     return diagnostics
 
 
-def _is_csv_uri(uri: str) -> bool:
-    """Return whether ``uri`` should be linted as a CSV (vs. JSON)."""
-    return uri.lower().endswith(".csv")
-
-
 def _validate_and_publish(ls: LanguageServer, uri: str) -> None:
     """Compute diagnostics for ``uri`` and publish them to the client.
 
     Routes to :func:`compute_diagnostics_csv` for ``.csv`` files and to
-    :func:`compute_diagnostics` (the JSON engine) for everything else.
+    :func:`compute_diagnostics` (the JSON engine) for payment records;
+    any other JSON document is published with no diagnostics.
     """
     document = ls.workspace.get_text_document(uri)
     message_type = _current_message_type()
-    if _is_csv_uri(uri):
+    if is_csv_uri(uri):
         raw = compute_diagnostics_csv(document.source, message_type)
-    else:
+    elif is_payment_document(document.source, message_type, _load_schema):
         raw = compute_diagnostics(document.source, message_type)
+    else:
+        raw = []
     ls.text_document_publish_diagnostics(
         lsp.PublishDiagnosticsParams(
             uri=uri, diagnostics=_to_lsp_diagnostics(raw)
