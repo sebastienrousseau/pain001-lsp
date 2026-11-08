@@ -67,9 +67,10 @@
 python -m pip install pain001-lsp
 ```
 
-> **Latest release: v0.0.80**: the family's 0.0.80 release on the
-> pain001 0.0.80 floor, a security release of the core's REST API. The
-> language server itself is unchanged.
+> **Latest release: v0.0.81**: the family's 0.0.81 release on the
+> pain001 0.0.81 floor, which checks IBANs and BICs on every load and
+> refuses files that mix payment batches. The language server itself
+> is unchanged.
 > [See what's new →][release]
 
 The package installs a `pain001-lsp` console command and pulls in the core
@@ -112,7 +113,7 @@ in [`editors/vscode/`](https://github.com/sebastienrousseau/pain001-lsp/tree/mai
 - Python 3.11 or newer, tested in CI on 3.11, 3.12, 3.13 and 3.14 on
   Linux ([toolchain policy](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/POLICIES.md)). The package is pure Python
   and runs wherever its dependencies do: macOS, Linux and Windows.
-- `pain001` 0.0.80 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
+- `pain001` 0.0.81 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
   `jsonschema` 4.17 or newer (below 5), installed automatically.
 - An editor with a Language Server Protocol client (Neovim, VS Code, Helix,
   Emacs, Sublime Text LSP and others).
@@ -402,4 +403,4 @@ way, without additional terms. Dependencies keep their own licences. Built on
 [atheris]: https://github.com/google/atheris
 [pain001]: https://github.com/sebastienrousseau/pain001
 [pygls]: https://github.com/openlawlibrary/pygls
-[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.80
+[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.81

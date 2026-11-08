@@ -4,6 +4,11 @@
 
 The extension ships at the pain001 suite's version.
 
+## 0.0.81
+
+- Version aligned with the suite (pain001 0.0.81; nothing in the
+  extension changed).
+
 ## 0.0.80
 
 - Version aligned with the suite (pain001 0.0.80, a security release
