@@ -25,7 +25,7 @@ RUN apt-get update \
 # pyproject.toml carries ``readme = "README.md"``, so README.md must be
 # present at build-time to resolve the package metadata.
 COPY requirements/runtime.txt ./requirements/runtime.txt
-COPY pyproject.toml README.md ./
+COPY pyproject.toml README.md LICENSE LICENSE-APACHE LICENSE-MIT ./
 COPY pain001_lsp ./pain001_lsp
 
 # Every dependency comes hash-pinned from requirements/runtime.txt. The
