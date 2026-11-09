@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Audit all nine suite repositories and their publication channels daily and after publishing workflows, using the shared checker pinned to a core commit.
+
+
 ## [0.0.83] - 2026-11-09
 
 The pain001 family's 0.0.83 release, on the pain001 0.0.83 floor
