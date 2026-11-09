@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.82] - 2026-11-09
+
+The pain001 family's 0.0.82 release, on the pain001 0.0.82 floor
+(`pyproject.toml` and `requirements/runtime.in`). Nothing in the
+language server changed beyond the version and the floor: the core
+functions it calls (`pain001.lsp.diagnostics`, `validate_iban`,
+`validate_bic`) behave the same in [pain001 0.0.82](https://github.com/sebastienrousseau/pain001/releases/tag/v0.0.82).
+
+### Changed
+
+- Requires `pain001 >= 0.0.82, < 1`; `poetry.lock` and the hash-pinned
+  runtime, ci, docs and fuzz sets move pain001 to 0.0.82.
+- Development tools: ruff 0.17.4 and filelock 4.2.9 (Dependabot #93
+  and #94).
+
 ## [0.0.81] - 2026-11-08
 
 The pain001 family's 0.0.81 release, on the pain001 0.0.81 floor
