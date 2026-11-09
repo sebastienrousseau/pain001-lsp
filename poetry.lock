@@ -1134,14 +1134,14 @@ files = [
 
 [[package]]
 name = "pain001"
-version = "0.0.82"
+version = "0.0.83"
 description = "Pain001 is a Python Library for Automating ISO 20022-Compliant Payment Files Using CSV Data."
 optional = false
 python-versions = "<4.0,>=3.11"
 groups = ["main"]
 files = [
-    {file = "pain001-0.0.82-py3-none-any.whl", hash = "sha256:599ce60fe84ed9d660ba159b4df014cd17a0ca576b45b26e9e91c04eac108dba"},
-    {file = "pain001-0.0.82.tar.gz", hash = "sha256:6cf16395a9b94a327d336f71d08d38bfdb7586af3d8b99d4550015b8b8abd014"},
+    {file = "pain001-0.0.83-py3-none-any.whl", hash = "sha256:f2ca4cec29dffd8e796a1a2bd23acf26de5c600c6f5635310cd6edafb685b799"},
+    {file = "pain001-0.0.83.tar.gz", hash = "sha256:b91d7584fb965efebd0573a0968e8ceb6d50843a83ea3470f2f604eadf62aa23"},
 ]
 
 [package.dependencies]
@@ -1160,10 +1160,10 @@ gpg = ["python-gnupg (>=0.5.7,<1)"]
 lsp = ["pygls (>=2.1,<3)"]
 mcp = ["mcp (>=2.3.0,<3)"]
 otel = ["certifi (>=2026.10.19)", "opentelemetry-api (>=1.27,<2)", "opentelemetry-exporter-otlp-proto-http (>=1.27,<2)", "opentelemetry-sdk (>=1.27,<2)"]
-parquet = ["pyarrow (>=25.0.1,<26.0.0)"]
+parquet = ["pyarrow (>=26.0.1,<27.0.0)"]
 redis = ["redis (>=8.1.0,<9)"]
-rules = ["cel-python (>=0.5,<0.6)", "holidays (>=0.106,<1)"]
-sign = ["cryptography (>=50.0.0,<51)"]
+rules = ["cel-python (>=0.5,<0.6)", "holidays (>=0.108,<1)"]
+sign = ["cryptography (>=50.0.2,<51)", "lxml (>=6.1.3,<7)"]
 upload = ["paramiko (>=5.1.0,<6)"]
 
 [[package]]
@@ -1929,4 +1929,4 @@ docs = ["jinja2", "sphinx", "sphinx_rtd_theme"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "5a4d21096c67b51ccbda5f385813ca46bb73ebbed042f324b02b9322a64dbdaf"
+content-hash = "04dc915e1f34d2ec22bd526217b9b7b90ad614cdf1b02327a6c9c286366efda0"
