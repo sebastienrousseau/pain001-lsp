@@ -9,7 +9,7 @@
 pip-audit>=2.10
 # Advisory floors: pip GHSA-qwm4-qh6w-59xr, urllib3 GHSA-vxq7-64xx-v4gw
 # and GHSA-gh4c-6fx4-qh6g, certifi GHSA-6q48-6c7w-9gw2.
-pip>=26.2
+pip>=26.3
 urllib3>=2.8.0
 certifi>=2026.10.23
 # filelock <= 4.2.0 (through cachecontrol): GHSA-9vhv-jxww-xfm5,
