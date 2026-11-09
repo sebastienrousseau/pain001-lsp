@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.83] - 2026-11-09
+
+The pain001 family's 0.0.83 release, on the pain001 0.0.83 floor
+(`pyproject.toml` and `requirements/runtime.in`). Nothing in the
+language server changed beyond the version and the floor: the core
+functions it calls (`pain001.lsp.diagnostics`, `validate_iban`,
+`validate_bic`) did not change in [pain001 0.0.83](https://github.com/sebastienrousseau/pain001/releases/tag/v0.0.83),
+whose work is XML signing and signature verification.
+
+### Changed
+
+- Requires `pain001 >= 0.0.83, < 1`; `poetry.lock` and the hash-pinned
+  runtime, ci, docs and fuzz sets move pain001 to 0.0.83.
+- Build and audit tools: virtualenv 21.15.6, dulwich 1.2.21, anyio
+  4.16.0 and pip 26.3 (Dependabot #95, #97, #98 and #99).
+- CI actions: github/codeql-action 4.39.3, docker/login-action 4.8.0,
+  sigstore/cosign-installer 4.1.3 and softprops/action-gh-release 3.0.4
+  (Dependabot #102).
+
 ## [0.0.82] - 2026-11-09
 
 The pain001 family's 0.0.82 release, on the pain001 0.0.82 floor
