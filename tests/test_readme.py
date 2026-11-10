@@ -60,6 +60,24 @@ def test_badges_are_28_pixel_shields_then_the_demo():
     assert (ROOT / ".github" / "demo.gif").is_file()
 
 
+def _python_snippets() -> list[str]:
+    return re.findall(r"^```python\n(.*?)^```$", _text(), re.M | re.S)
+
+
+def test_python_snippets_run(capsys):
+    """Every Python block in the README runs as written.
+
+    The Quick Start promises code a reader can paste; running it here
+    means a renamed helper or a changed return shape fails the suite
+    instead of leaving the README wrong.
+    """
+    snippets = _python_snippets()
+    assert snippets
+    for snippet in snippets:
+        exec(compile(snippet, "README.md", "exec"), {})
+    assert capsys.readouterr().out.strip()
+
+
 def test_repository_links_resolve():
     """Every link into this repository's main branch names a real path.
 

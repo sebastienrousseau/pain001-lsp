@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   suite's shared text) and a markdownlint CI job (`docs-lint.yml`,
   configured in `.markdownlint-cli2.jsonc`); fix the Markdown it
   flagged.
+- Run every Python block in the README as part of the test suite, so
+  the Quick Start cannot drift from the helpers it calls.
 
 ## [0.0.85] - 2026-11-10
 
