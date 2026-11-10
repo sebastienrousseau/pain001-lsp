@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.85] - 2026-11-10
+
+### Changed
+
+- Release 0.0.85 in lockstep with the pain001 suite and require core
+  pain001 0.0.85; the locks resolve its published artifacts.
+- Point usage questions at this repository's GitHub issues: SUPPORT.md, SECURITY.md, GOVERNANCE.md, CODEOWNERS and the issue-template contact link no longer send them to GitHub Discussions, which the suite does not use.
+
 ## [0.0.84] - 2026-11-09
 
 ### Added
