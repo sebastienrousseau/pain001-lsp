@@ -17,6 +17,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   flagged.
 - Run every Python block in the README as part of the test suite, so
   the Quick Start cannot drift from the helpers it calls.
+- Add `DEVELOPMENT.md`, mapping every CI job to the local command that
+  reproduces it, and a devcontainer that installs the project and runs
+  `make check`.
+- Spell-check the tree with codespell in the docs-lint workflow, the
+  pre-commit hooks and `make check` (`make spelling`, configured in
+  `pyproject.toml`).
+
+### Changed
+
+- Align the pre-commit ruff and black hooks with the locked versions,
+  drop the `ruff-format` hook that fought black, and keep black off the
+  vendored `tests/test_suite_conformance.py`, which the old hooks
+  rewrote.
+- CONTRIBUTING.md points at `make check` and DEVELOPMENT.md, asks for
+  the DCO sign-off, and states the dual Apache-2.0 OR MIT licence.
+
+### Removed
+
+- `CODE-OF-CONDUCT.md`, a second copy of the code of conduct;
+  `CODE_OF_CONDUCT.md` is the one GitHub and GOVERNANCE.md link to.
 
 ## [0.0.85] - 2026-11-10
 

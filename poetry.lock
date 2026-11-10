@@ -195,6 +195,22 @@ files = [
 ]
 
 [[package]]
+name = "codespell"
+version = "2.4.3"
+description = "Fix common misspellings in text files"
+optional = false
+python-versions = ">=3.9"
+groups = ["dev"]
+files = [
+    {file = "codespell-2.4.3-py3-none-any.whl", hash = "sha256:af2505b335e8573dbd2d384d1c4ef498f4006f4ba2d6fceca01e55b91f52628a"},
+    {file = "codespell-2.4.3.tar.gz", hash = "sha256:cbe085e331227b37bb86ef8bddd08dc768c704ee9a07ca869852c093fa2793e2"},
+]
+
+[package.extras]
+hard-encoding-detection = ["chardet"]
+toml = ["tomli ; python_version < \"3.11\""]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -1930,4 +1946,4 @@ docs = ["jinja2", "sphinx", "sphinx_rtd_theme"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "276fac7ed63198f431fe0c2608122ed65cadde27e59ce399e844c1635f7f9392"
+content-hash = "09b16c9f74be9440bee280351609536e6e5d077311742af4ef9c579d19d90b32"

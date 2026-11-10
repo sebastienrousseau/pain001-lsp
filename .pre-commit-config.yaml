@@ -14,18 +14,28 @@ repos:
         args: ['--fix=lf']
       - id: detect-private-key
 
+  # ruff and black match the versions poetry.lock pins, so the hooks
+  # agree with `make lint`.
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.4
+    rev: v0.17.4
     hooks:
-      - id: ruff
+      - id: ruff-check
         args: [--fix]
-      - id: ruff-format
 
-  - repo: https://github.com/psf/black
-    rev: 24.4.2
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 26.10.1
     hooks:
       - id: black
-        args: ['--line-length=79']
+        # Vendored and checksummed (see [tool.black] in pyproject.toml).
+        exclude: ^tests/test_suite_conformance\.py$
+
+  # Spelling, configured in pyproject.toml [tool.codespell]; the
+  # docs-lint workflow runs the same check.
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.3
+    hooks:
+      - id: codespell
+        additional_dependencies: ['tomli; python_version < "3.11"']
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.10.0
