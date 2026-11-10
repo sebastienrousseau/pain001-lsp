@@ -67,9 +67,9 @@
 python -m pip install pain001-lsp
 ```
 
-> **Latest release: v0.0.84**: coordinated with pain001 0.0.84.
-> Publication workflows now verify every required channel across all nine
-> suite repositories. This component's payment-data behavior is unchanged.
+> **Latest release: v0.0.85**: released with pain001 0.0.85. Diagnostics,
+> completion and the editor commands are unchanged; support questions now
+> go to this repository's GitHub issues.
 
 The package installs a `pain001-lsp` console command and pulls in the core
 [`pain001`][pain001] library, [`pygls`][pygls] and `jsonschema`. To keep the
@@ -401,4 +401,4 @@ way, without additional terms. Dependencies keep their own licences. Built on
 [atheris]: https://github.com/google/atheris
 [pain001]: https://github.com/sebastienrousseau/pain001
 [pygls]: https://github.com/openlawlibrary/pygls
-[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.84
+[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.85
