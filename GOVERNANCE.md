@@ -31,7 +31,7 @@ clarity over feature breadth.
   objects and CI is green, a maintainer merges it.
 - **Significant changes** (new public APIs, breaking changes, new
   dependencies, new LSP features) need explicit approval from a
-  maintainer in the PR, and should start as an issue or discussion.
+  maintainer in the PR, and should start as an issue.
 - **Disagreement** is resolved by discussion aiming for consensus; if
   none is reached, the lead maintainer decides and records the rationale.
 
@@ -57,7 +57,7 @@ would de-risk the project.
    ([`ARCHITECTURE.md`](ARCHITECTURE.md) is the map; good first areas:
    new diagnostic rules, code actions, examples).
 2. Help triage issues and review others' PRs.
-3. Open a discussion (or email the lead maintainer) expressing interest.
+3. Open an issue (or email the lead maintainer) expressing interest.
 
 A maintainer proposes you; with no objection from existing maintainers
 within a week, you are added to `MAINTAINERS.md` for your area.

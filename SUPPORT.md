@@ -13,9 +13,9 @@ need.
   [`pain001`](https://github.com/sebastienrousseau/pain001) repo for
   message-type / scheme background.
 - **Still stuck?** Open a
-  [GitHub Discussion](https://github.com/sebastienrousseau/pain001/discussions)
-  on the parent repo (shared with pain001 and pain001-mcp) or a question
-  issue here. Include your Python version, `pain001-lsp` version
+  [GitHub issue](https://github.com/sebastienrousseau/pain001-lsp/issues/new) here
+  (the pain001 suite does not use GitHub Discussions). Include your
+  Python version, `pain001-lsp` version
   (`python -c "import pain001_lsp; print(pain001_lsp.__version__)"`), your
   editor + LSP client, and a minimal reproducer.
 
