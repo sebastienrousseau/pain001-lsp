@@ -391,8 +391,8 @@ moves only as described in the [toolchain policy](https://github.com/sebastienro
 
 This project is dual-licensed under either:
 
-* Apache License, Version 2.0 ([`LICENSE-APACHE`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/LICENSE-APACHE) or <https://www.apache.org/licenses/LICENSE-2.0>)
-* MIT License ([`LICENSE-MIT`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/LICENSE-MIT) or <https://opensource.org/licenses/MIT>)
+- Apache License, Version 2.0 ([`LICENSE-APACHE`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/LICENSE-APACHE) or <https://www.apache.org/licenses/LICENSE-2.0>)
+- MIT License ([`LICENSE-MIT`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/LICENSE-MIT) or <https://opensource.org/licenses/MIT>)
 
 at your option. Any contribution submitted for inclusion is licensed the same
 way, without additional terms. Dependencies keep their own licences. Built on
@@ -401,4 +401,3 @@ way, without additional terms. Dependencies keep their own licences. Built on
 [atheris]: https://github.com/google/atheris
 [pain001]: https://github.com/sebastienrousseau/pain001
 [pygls]: https://github.com/openlawlibrary/pygls
-[release]: https://github.com/sebastienrousseau/pain001-lsp/releases/tag/v0.0.85
