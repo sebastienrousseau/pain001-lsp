@@ -78,6 +78,27 @@ def test_python_snippets_run(capsys):
     assert capsys.readouterr().out.strip()
 
 
+def test_every_example_is_listed():
+    """The Examples table names every runnable script in examples/."""
+    text = _text()
+    scripts = sorted(p.name for p in (ROOT / "examples").glob("[0-9]*.py"))
+    assert scripts
+    missing = [name for name in scripts if f"examples/{name})" not in text]
+    assert not missing, missing
+
+
+def test_documentation_links_the_four_entry_points():
+    """User manual, API reference, developer docs and the family map."""
+    section = _text().split("## Documentation", 1)[1].split("\n## ", 1)[0]
+    for target in (
+        "https://sebastienrousseau.com/pain001-lsp/)",
+        "https://sebastienrousseau.com/pain001-lsp/api.html)",
+        "/DEVELOPMENT.md)",
+        "(#the-pain001-lsp-ecosystem)",
+    ):
+        assert target in section, target
+
+
 def test_repository_links_resolve():
     """Every link into this repository's main branch names a real path.
 

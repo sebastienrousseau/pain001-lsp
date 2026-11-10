@@ -37,7 +37,7 @@
 
 **The pain001-lsp ecosystem**
 
-- [The pain001-lsp ecosystem](#the-pain001-lsp-ecosystem) — the pain001 core library and its four companion packages
+- [The pain001-lsp ecosystem](#the-pain001-lsp-ecosystem) — the core library and the other eight members of the pain001 suite
 
 **Library reference**
 
@@ -156,11 +156,12 @@ print(missing_required_fields({"id": "MSG-0001"})[:3])
 
 ## The pain001-lsp ecosystem
 
-`pain001-lsp` is one of five packages built around the [`pain001`][pain001]
-library for ISO 20022 customer credit transfer initiation (`pain.001`)
-files. They release together at one version, the core first, and every
-interface calls the core's validators and schemas, so the editor, the
-command line, the REST API and an AI agent apply the same rules.
+`pain001-lsp` is one of the nine repositories of the pain001 suite, built
+around the [`pain001`][pain001] library for ISO 20022 customer credit
+transfer initiation (`pain.001`) files. Every member ships the same version,
+the core first, and every interface calls the core's validators and
+schemas, so the editor, the command line, the REST API and an AI agent
+apply the same rules.
 
 | Component | Purpose | Use case |
 | :--- | :--- | :--- |
@@ -169,6 +170,10 @@ command line, the REST API and an AI agent apply the same rules.
 | [`pain001-mcp`](https://github.com/sebastienrousseau/pain001-mcp) | Model Context Protocol server exposing the library as agent tools | You work with payment data from an AI assistant |
 | [`pain001-loader-mt101`](https://github.com/sebastienrousseau/pain001-loader-mt101) | SWIFT MT101 requests for transfer to `pain.001` flat records | Your transfers still arrive as MT101 |
 | [`pain001-loader-xlsx`](https://github.com/sebastienrousseau/pain001-loader-xlsx) | Excel `.xlsx` reader for flat-record payment data | Finance teams keep payments in a spreadsheet |
+| [`pain001-mockbank`](https://github.com/sebastienrousseau/pain001-mockbank) | Synthetic SFTP bank-response test service | Generate pain.002 replies in integration tests |
+| [`pain001-plugin-template`](https://github.com/sebastienrousseau/pain001-plugin-template) | Cookiecutter plugin scaffold | Develop an external loader or validator |
+| [`pain001-fast`](https://github.com/sebastienrousseau/pain001-fast) | Experimental native validation extension | Optional IBAN, BIC and character-set helpers |
+| [pain001.com](https://github.com/sebastienrousseau/pain001.github.io) | Website and browser demo | Browse documentation and try the library |
 
 ---
 
@@ -298,10 +303,11 @@ run in CI and by `make examples`:
 | [`02_quick_fix.py`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/examples/02_quick_fix.py) | The missing-fields quick fix and the snippet it inserts |
 | [`03_configure_message_type.py`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/examples/03_configure_message_type.py) | Overriding the message type through `initializationOptions` |
 | [`04_corpus_commands.py`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/examples/04_corpus_commands.py) | The example-corpus commands |
+| [`05_faces_commands.py`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/examples/05_faces_commands.py) | The faces commands: list the faces, project a document, and a refusal |
 
 ```sh
 git clone https://github.com/sebastienrousseau/pain001-lsp.git && cd pain001-lsp
-poetry install
+poetry install --all-extras
 poetry run python examples/01_lsp_helpers.py
 ```
 
@@ -326,8 +332,8 @@ poetry run python examples/01_lsp_helpers.py
 
 ```bash
 git clone https://github.com/sebastienrousseau/pain001-lsp.git && cd pain001-lsp
-poetry install
-make check         # lint, mypy, bandit, complexity, tests, docstrings, examples
+poetry install --all-extras
+make check         # lint, mypy, bandit, complexity, versions, tests, docstrings, examples, spelling
 make test          # pytest, 100% line and branch coverage enforced
 make complexity    # per-function ceilings against complexity-baseline.json
 make mutate        # mutation testing of the handlers, 85% floor
@@ -339,8 +345,10 @@ CI installs from hash-pinned `requirements/*.txt` (compiled from
 `scripts/ci-install.sh`) and runs the test matrix on Python 3.11 to 3.14,
 ruff, black, mypy in strict mode, bandit, interrogate (100% docstrings), the
 complexity ceilings, the version-source check, pip-audit over `poetry.lock`
-and every requirements file, mutation testing, Atheris fuzzing, CodeQL and
-OpenSSF Scorecard. See [`CONTRIBUTING.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CONTRIBUTING.md) and
+and every requirements file, codespell and markdownlint, mutation testing,
+Atheris fuzzing, CodeQL and OpenSSF Scorecard.
+[`DEVELOPMENT.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/DEVELOPMENT.md)
+maps each CI job to the command that reproduces it locally. See [`CONTRIBUTING.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CONTRIBUTING.md) and
 [`RELEASING.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/RELEASING.md).
 
 ---
@@ -364,10 +372,11 @@ Report vulnerabilities according to [`SECURITY.md`](https://github.com/sebastien
 ## Documentation
 
 [User manual](https://sebastienrousseau.com/pain001-lsp/) ·
-[API reference: the helpers](#features) ·
-[Developer guide](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CONTRIBUTING.md) ·
+[API reference](https://sebastienrousseau.com/pain001-lsp/api.html) ·
+[Developer docs](https://github.com/sebastienrousseau/pain001-lsp/blob/main/DEVELOPMENT.md) ·
 [Family map](#the-pain001-lsp-ecosystem) ·
 [Architecture](https://github.com/sebastienrousseau/pain001-lsp/blob/main/ARCHITECTURE.md) · [Releasing](https://github.com/sebastienrousseau/pain001-lsp/blob/main/RELEASING.md) ·
+[Contributing](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CONTRIBUTING.md) ·
 [Changelog](https://github.com/sebastienrousseau/pain001-lsp/blob/main/CHANGELOG.md) · [Roadmap](https://github.com/sebastienrousseau/pain001-lsp/blob/main/ROADMAP.md) ·
 [Security policy](https://github.com/sebastienrousseau/pain001-lsp/blob/main/SECURITY.md) · [Support](https://github.com/sebastienrousseau/pain001-lsp/blob/main/SUPPORT.md) ·
 [What is pain.001?](https://pain001.com/pain-001/)

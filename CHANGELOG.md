@@ -32,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   rewrote.
 - CONTRIBUTING.md points at `make check` and DEVELOPMENT.md, asks for
   the DCO sign-off, and states the dual Apache-2.0 OR MIT licence.
+- README: the ecosystem table lists all nine suite repositories, the
+  Examples table lists `05_faces_commands.py`, and Documentation links
+  the manual's API reference and DEVELOPMENT.md; `tests/test_readme.py`
+  now checks both tables' sources and the four documentation links.
 
 ### Removed
 
