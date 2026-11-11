@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <img src=".github/demo.gif" alt="pain001-lsp demo: the diagnostics, completion and hover helpers the server runs on every edit, then the missing-fields quick fix, against sample payment records" width="100%" />
+  <img src="https://raw.githubusercontent.com/sebastienrousseau/pain001-lsp/main/.github/demo.gif" alt="pain001-lsp demo: the diagnostics, completion and hover helpers the server runs on every edit, then the missing-fields quick fix, against sample payment records" width="100%" />
 </p>
 
 ---

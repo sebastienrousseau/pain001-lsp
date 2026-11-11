@@ -58,8 +58,21 @@ def test_badges_are_28_pixel_shields_then_the_demo():
     assert len(badges) >= 6
     assert {height for _, height in badges} == {"28"}
     assert all("style=for-the-badge" in src for src, _ in badges)
-    assert text.index('src=".github/demo.gif"') > text.index("height=")
+    assert text.index(f'src="{RAW}.github/demo.gif"') > text.index("height=")
     assert (ROOT / ".github" / "demo.gif").is_file()
+
+
+RAW = "https://raw.githubusercontent.com/sebastienrousseau/pain001-lsp/main/"
+
+
+def test_every_image_is_an_absolute_https_url():
+    """PyPI does not resolve relative image paths in the README."""
+    sources = re.findall(r'<img src="([^"]+)"', _text())
+    assert sources
+    assert [src for src in sources if not src.startswith("https://")] == []
+    for src in sources:
+        if src.startswith(RAW):
+            assert (ROOT / src.removeprefix(RAW)).is_file(), src
 
 
 def _python_snippets() -> list[str]:

@@ -68,6 +68,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   out, and `server.py` imports them back, so every name it exposed is
   still importable from `pain001_lsp.server`. `complexity-baseline.json`
   is now empty.
+- The README demo is served from `raw.githubusercontent.com` on
+  `main` instead of a relative path, which PyPI does not resolve;
+  `tests/test_readme.py` fails on any relative README image.
 
 ### Removed
 
