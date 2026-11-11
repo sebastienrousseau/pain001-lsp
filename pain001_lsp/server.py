@@ -51,43 +51,52 @@ types.
 
 from __future__ import annotations
 
-import importlib
 import json
-import re
-from collections.abc import Iterator
-from functools import lru_cache
-from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft7Validator
 from lsprotocol import types as lsp
-from pain001.constants import SCHEMAS_DIR, valid_xml_types
-from pain001.validation import validate_bic, validate_iban
+from pain001.constants import valid_xml_types
 from pygls.lsp.server import LanguageServer
 
 from pain001_lsp import __version__, _faces
-from pain001_lsp._commands import command_options
-from pain001_lsp._csv import csv_diagnostics
+from pain001_lsp._corpus import _CORPUS_MISSING as _CORPUS_MISSING
+from pain001_lsp._corpus import (
+    CORPUS_GET_COMMAND,
+    CORPUS_LIST_COMMAND,
+    corpus_get_command,
+    corpus_list_command,
+)
+from pain001_lsp._corpus import _corpus_api as _corpus_api
+from pain001_lsp._corpus import corpus_get as corpus_get
+from pain001_lsp._corpus import corpus_list as corpus_list
+from pain001_lsp._csv import compute_diagnostics_csv
+from pain001_lsp._diagnostics import _IDENTIFIER_FIELDS as _IDENTIFIER_FIELDS
+from pain001_lsp._diagnostics import _SEVERITY as _SEVERITY
+from pain001_lsp._diagnostics import (
+    _identifier_diagnostics,
+    _schema_diagnostics,
+    _to_lsp_diagnostics,
+)
+from pain001_lsp._diagnostics import _identifier_valid as _identifier_valid
 from pain001_lsp._documents import is_csv_uri, is_payment_document
+from pain001_lsp._layout import document_symbol, formatting
 from pain001_lsp._names import HUMAN_NAMES
 from pain001_lsp._parsing import (
     PARSE_ERRORS,
     _diagnostic,
     _parse_error_diagnostic,
 )
-
-DEFAULT_MESSAGE_TYPE = "pain.001.001.09"
-
-# Flat-record fields whose values are financial identifiers, mapped to the
-# identifier kind understood by the pain001 validators.
-_IDENTIFIER_FIELDS = {
-    "debtor_account_IBAN": "iban",
-    "creditor_account_IBAN": "iban",
-    "charge_account_IBAN": "iban",
-    "debtor_agent_BIC": "bic",
-    "creditor_agent_BIC": "bic",
-    "forwarding_agent_BIC": "bic",
-}
+from pain001_lsp._records import (
+    _line_mapper,
+    _normalise_records,
+    _record_close_positions,
+    _record_index_at_position,
+)
+from pain001_lsp._records import (
+    _record_close_position as _record_close_position,
+)
+from pain001_lsp._records import _record_line_offsets as _record_line_offsets
+from pain001_lsp._schema import DEFAULT_MESSAGE_TYPE, _load_schema
 
 # Placeholders used by ``build_insert_text`` when offering a "fill in missing
 # required fields" quick-fix. Values map to JSON Schema ``type`` keys.
@@ -104,171 +113,6 @@ _PLACEHOLDERS: dict[str, Any] = {
 # ---------------------------------------------------------------------------
 # Pure helpers (no LSP/server I/O - directly unit-testable)
 # ---------------------------------------------------------------------------
-@lru_cache(maxsize=16)
-def _load_schema(message_type: str) -> dict[str, Any]:
-    """Load the bundled JSON schema for ``message_type``.
-
-    Cached. The schemas ship inside the installed package and are
-    read-only, so re-reading and re-parsing them cannot pick up a
-    change — it only repeats work. That mattered because every
-    interactive entry point here goes through this function, and an
-    editor calls them on each keystroke: completion, hover and the
-    missing-field check were each paying a disk read plus a JSON parse
-    to answer from data that never changes.
-
-    ``pain001.xml.validate_via_xsd`` caches its compiled XSD the same
-    way and for the same reason.
-
-    Raises ``ValueError`` if the message type is unsupported or no schema
-    file is bundled (for example, ``pain.001.001.12`` and
-    ``pain.008.001.02`` are listed but only ship XML templates).
-    """
-    if message_type not in valid_xml_types:
-        raise ValueError(f"Invalid XML message type: {message_type}")
-    path = Path(SCHEMAS_DIR) / f"{message_type}.schema.json"
-    if (
-        not path.is_file()
-    ):  # pragma: no cover - all bundled types ship a schema
-        raise ValueError(f"No JSON Schema bundled for {message_type}")
-    with path.open("r", encoding="utf-8") as fh:
-        loaded: dict[str, Any] = json.load(fh)
-        return loaded
-
-
-def _normalise_records(parsed: Any) -> list[dict[str, Any]]:
-    """Coerce parsed JSON into a list of record dicts.
-
-    A single dict is treated as one record; a list is returned as-is.
-    """
-    if isinstance(parsed, dict):
-        return [parsed]
-    if isinstance(parsed, list):
-        return parsed
-    return []
-
-
-# A whole string (to its closing quote, or to the end of the text when it
-# never closes, with a backslash escaping any next character, newlines
-# included), or one brace outside a string.
-_STRING_OR_BRACE = re.compile(r'"[^"\\]*(?:\\.[^"\\]*)*"?|[{}]', re.DOTALL)
-
-
-def _braces(text: str) -> Iterator[tuple[str, int, int]]:
-    """Yield ``(brace, line, character)`` for each brace outside a string.
-
-    The one walk behind the record helpers below. Strings are skipped
-    whole, so a brace inside one is not structure; lines count every
-    newline before the brace, in a string or not. The scan and the
-    newline counts run in C, and each newline is counted once, so the
-    walk stays linear in the length of the text.
-    """
-    line = 0
-    line_start = 0
-    scanned = 0
-    for match in _STRING_OR_BRACE.finditer(text):
-        token = match.group()
-        if token not in ("{", "}"):
-            continue
-        at = match.start()
-        newlines = text.count("\n", scanned, at)
-        if newlines:
-            line += newlines
-            line_start = text.rfind("\n", scanned, at) + 1
-        scanned = at
-        yield token, line, at - line_start
-
-
-def _record_line_offsets(text: str) -> list[int]:
-    """Best-effort mapping of record index -> line number.
-
-    Uses the position of each top-level ``{`` opening brace. This is a
-    heuristic (stdlib ``json`` does not expose offsets), but it lets
-    diagnostics point at roughly the right record. Falls back to line 0
-    when a record cannot be located.
-    """
-    offsets: list[int] = []
-    depth = 0
-    for brace, line, _ in _braces(text):
-        if brace == "}":
-            depth = max(0, depth - 1)
-            continue
-        if depth == 0:
-            offsets.append(line)
-        depth += 1
-    return offsets
-
-
-def _identifier_valid(kind: str, value: str) -> bool:
-    """Return whether ``value`` is a valid IBAN or BIC."""
-    if kind == "iban":
-        ok, _ = validate_iban(value, strict=False)
-    elif kind == "bic":
-        ok, _ = validate_bic(value, strict=False)
-    else:
-        return True
-    return bool(ok)
-
-
-def _line_mapper(text: str) -> Any:
-    """Return a function mapping a record index to its line (default 0)."""
-    line_offsets = _record_line_offsets(text)
-
-    def line_for(row: int) -> int:
-        """Map a record index to a line number (falls back to 0)."""
-        if 0 <= row < len(line_offsets):
-            return line_offsets[row]
-        return 0
-
-    return line_for
-
-
-def _schema_diagnostics(
-    records: list[Any], schema: dict[str, Any], line_for: Any
-) -> list[dict]:
-    """Validate each record against ``schema``, in record order."""
-    diagnostics: list[dict] = []
-    validator = Draft7Validator(schema)
-    for row, record in enumerate(records):
-        if not isinstance(record, dict):
-            diagnostics.append(
-                _diagnostic(
-                    line_for(row),
-                    "Expected a record object (got non-object).",
-                )
-            )
-            continue
-        for err in sorted(
-            validator.iter_errors(record), key=lambda e: list(e.path)
-        ):
-            path = ".".join(str(p) for p in err.path)
-            prefix = f"{path}: " if path else ""
-            diagnostics.append(
-                _diagnostic(line_for(row), f"{prefix}{err.message}")
-            )
-    return diagnostics
-
-
-def _identifier_diagnostics(records: list[Any], line_for: Any) -> list[dict]:
-    """Warn about every present IBAN or BIC value that does not validate."""
-    diagnostics: list[dict] = []
-    for row, record in enumerate(records):
-        if not isinstance(record, dict):
-            continue
-        for field, kind in _IDENTIFIER_FIELDS.items():
-            value = record.get(field)
-            if not value or not isinstance(value, str):
-                continue
-            if not _identifier_valid(kind, value):
-                diagnostics.append(
-                    _diagnostic(
-                        line_for(row),
-                        f"{field}: {value!r} is not a valid {kind.upper()}.",
-                        severity="warning",
-                    )
-                )
-    return diagnostics
-
-
 def compute_diagnostics(
     text: str, message_type: str = DEFAULT_MESSAGE_TYPE
 ) -> list[dict]:
@@ -316,28 +160,6 @@ def compute_diagnostics(
     return _schema_diagnostics(
         records, schema, line_for
     ) + _identifier_diagnostics(records, line_for)
-
-
-def compute_diagnostics_csv(
-    text: str, message_type: str = DEFAULT_MESSAGE_TYPE
-) -> list[dict]:
-    """Compute diagnostics for a pain.001 payment-data CSV document.
-
-    Wraps :func:`pain001.lsp.diagnostics.diagnostics_for_csv` and returns
-    the same plain-dict shape as :func:`compute_diagnostics` so the LSP
-    handlers can route by URI suffix without caring which engine ran.
-
-    Args:
-        text: The raw CSV document text.
-        message_type: The pain message type to validate against.
-
-    Returns:
-        A list of plain dicts shaped like the JSON-mode output, with
-        ``col_start`` / ``col_end`` keys retained so editors can paint
-        per-cell ranges. Text the ``csv`` module cannot read gets one
-        ``Invalid CSV`` error at the top instead.
-    """
-    return csv_diagnostics(text, message_type)
 
 
 def completion_items(
@@ -479,38 +301,6 @@ def _current_message_type() -> str:
     return _message_type
 
 
-_SEVERITY = {
-    "error": lsp.DiagnosticSeverity.Error,
-    "warning": lsp.DiagnosticSeverity.Warning,
-    "information": lsp.DiagnosticSeverity.Information,
-    "hint": lsp.DiagnosticSeverity.Hint,
-}
-
-
-def _to_lsp_diagnostics(raw: list[dict]) -> list[lsp.Diagnostic]:
-    """Map plain diagnostic dicts to ``lsprotocol`` ``Diagnostic`` objects."""
-    diagnostics: list[lsp.Diagnostic] = []
-    for item in raw:
-        line = item["line"]
-        col_start = item.get("col_start", item["character"])
-        col_end = item.get("col_end", col_start)
-        diagnostics.append(
-            lsp.Diagnostic(
-                range=lsp.Range(
-                    start=lsp.Position(line=line, character=col_start),
-                    end=lsp.Position(line=line, character=col_end),
-                ),
-                message=item["message"],
-                severity=_SEVERITY.get(
-                    item["severity"], lsp.DiagnosticSeverity.Error
-                ),
-                source="pain001-lsp",
-                code=item.get("code"),
-            )
-        )
-    return diagnostics
-
-
 def _validate_and_publish(ls: LanguageServer, uri: str) -> None:
     """Compute diagnostics for ``uri`` and publish them to the client.
 
@@ -585,56 +375,6 @@ def hover(ls: LanguageServer, params: lsp.HoverParams) -> lsp.Hover | None:
     return lsp.Hover(contents=text)
 
 
-def _record_close_position(text: str) -> lsp.Position | None:
-    """Locate the closing ``}`` of the first top-level record object.
-
-    The quick-fix inserts placeholders just before this position, which
-    keeps the document syntactically valid after the edit.
-    """
-    positions = _record_close_positions(text)
-    return positions[0] if positions else None
-
-
-def _record_close_positions(text: str) -> list[lsp.Position]:
-    """Locate the closing ``}`` of every top-level record object.
-
-    Used by the multi-record code action so the quick-fix can be offered
-    on the record under the cursor, not just the first one.
-    """
-    depth = 0
-    positions: list[lsp.Position] = []
-    for brace, line, char in _braces(text):
-        if brace == "{":
-            depth += 1
-            continue
-        if depth == 1:
-            positions.append(lsp.Position(line=line, character=char))
-        depth = max(0, depth - 1)
-    return positions
-
-
-def _record_index_at_position(text: str, position: lsp.Position | None) -> int:
-    """Return the top-level record index covering ``position``.
-
-    Used by the multi-record code action to know which record the user
-    is editing. Falls back to ``0`` when the position is missing or no
-    record covers it.
-    """
-    if position is None:
-        return 0
-    line_offsets = _record_line_offsets(text)
-    if not line_offsets:
-        return 0
-    target = position.line
-    chosen = 0
-    for idx, offset in enumerate(line_offsets):
-        if offset <= target:
-            chosen = idx
-        else:
-            break
-    return chosen
-
-
 def code_action(
     ls: LanguageServer, params: lsp.CodeActionParams
 ) -> list[lsp.CodeAction]:
@@ -707,243 +447,6 @@ def on_did_change_configuration(
         candidate = settings.get("messageType")
     if candidate and candidate in valid_xml_types:
         _message_type = candidate
-
-
-def formatting(
-    ls: LanguageServer, params: lsp.DocumentFormattingParams
-) -> list[lsp.TextEdit]:
-    """Pretty-print the document as a JSON array of records.
-
-    Re-serialises with two-space indentation and a trailing newline so
-    diffs against the previously-saved version stay minimal. Malformed
-    JSON is left untouched (no edits returned) - the diagnostics
-    handler already surfaces the syntax error.
-
-    Args:
-        ls: The active language server instance.
-        params: The LSP formatting parameters identifying the document.
-
-    Returns:
-        A single ``TextEdit`` replacing the document with its formatted
-        text, or an empty list when the document is malformed or
-        already formatted.
-    """
-    document = ls.workspace.get_text_document(params.text_document.uri)
-    try:
-        parsed = json.loads(document.source)
-        formatted = json.dumps(parsed, indent=2, ensure_ascii=False) + "\n"
-    except PARSE_ERRORS:
-        return []
-    if formatted == document.source:
-        return []
-    lines = document.source.splitlines(keepends=True)
-    end_line = max(0, len(lines) - 1)
-    end_char = len(lines[-1]) if lines else 0
-    return [
-        lsp.TextEdit(
-            range=lsp.Range(
-                start=lsp.Position(line=0, character=0),
-                end=lsp.Position(line=end_line, character=end_char),
-            ),
-            new_text=formatted,
-        )
-    ]
-
-
-def document_symbol(
-    ls: LanguageServer, params: lsp.DocumentSymbolParams
-) -> list[lsp.DocumentSymbol]:
-    """Return an outline of every top-level record in the document.
-
-    Each record becomes one ``DocumentSymbol`` whose name is the
-    record's ``id`` field (or ``<record N>`` when absent) and whose
-    detail is the ``payment_id`` field (or empty when absent). The
-    range covers the record's opening ``{`` through its closing ``}``
-    so editors can jump-to / collapse on the record under the cursor.
-
-    Args:
-        ls: The active language server instance.
-        params: The LSP document-symbol parameters.
-
-    Returns:
-        One ``DocumentSymbol`` per top-level record, or an empty list
-        when the document is malformed or has no records.
-    """
-    document = ls.workspace.get_text_document(params.text_document.uri)
-    try:
-        parsed = json.loads(document.source)
-    except PARSE_ERRORS:
-        return []
-    records = _normalise_records(parsed)
-    if not records:
-        return []
-    line_offsets = _record_line_offsets(document.source)
-    close_positions = _record_close_positions(document.source)
-    symbols: list[lsp.DocumentSymbol] = []
-    for index, record in enumerate(records):
-        if index >= len(line_offsets) or index >= len(close_positions):
-            break
-        start_line = line_offsets[index]
-        close_position = close_positions[index]
-        if isinstance(record, dict):
-            name = str(record.get("id") or f"<record {index + 1}>")
-            detail = str(record.get("payment_id") or "")
-        else:
-            name = f"<record {index + 1}>"
-            detail = ""
-        record_range = lsp.Range(
-            start=lsp.Position(line=start_line, character=0),
-            end=lsp.Position(
-                line=close_position.line,
-                character=close_position.character + 1,
-            ),
-        )
-        symbols.append(
-            lsp.DocumentSymbol(
-                name=name,
-                detail=detail,
-                kind=lsp.SymbolKind.Object,
-                range=record_range,
-                selection_range=record_range,
-            )
-        )
-    return symbols
-
-
-# ---------------------------------------------------------------------------
-# Example corpus commands (pain001 >= 0.0.67)
-# ---------------------------------------------------------------------------
-
-CORPUS_LIST_COMMAND = "pain001.corpus.list"
-CORPUS_GET_COMMAND = "pain001.corpus.get"
-_CORPUS_MISSING = (
-    "the example corpus needs pain001 >= 0.0.67; the installed pain001 "
-    "has no pain001.corpus module"
-)
-
-
-def _corpus_api() -> Any | None:
-    """Return :mod:`pain001.corpus`, or ``None`` when the library predates it.
-
-    The corpus shipped in pain001 0.0.67; older releases remain valid
-    peers of this server, so the corpus commands answer with an error
-    payload instead of failing at import time.
-    """
-    try:
-        return importlib.import_module("pain001.corpus")
-    except ImportError:
-        return None
-
-
-def corpus_list(options: dict[str, Any] | None = None) -> dict[str, Any]:
-    """List the validated example files pain001 ships.
-
-    Pure helper behind :data:`CORPUS_LIST_COMMAND`. Market files are
-    realistic payments per country and rail, each with a scenario id
-    and an optional bank-overlay ``variant``; coverage files exercise
-    every element and choice branch of one message type.
-
-    Args:
-        options: Optional filters: ``kind`` (``market`` or ``coverage``),
-            ``country`` (two letters, any case) and ``version`` (a
-            message type such as ``pain.001.001.09``).
-
-    Returns:
-        ``{"count", "files": [...]}`` or ``{"error": ...}`` when the
-        installed pain001 has no corpus.
-    """
-    corpus = _corpus_api()
-    if corpus is None:
-        return {"error": _CORPUS_MISSING}
-    options = options or {}
-    country = options.get("country")
-    wanted_country = str(country).upper() if country else None
-    version = options.get("version")
-    files = []
-    for entry in corpus.list_files(options.get("kind")):
-        if wanted_country and entry.country != wanted_country:
-            continue
-        if version and entry.version != version:
-            continue
-        files.append(
-            {
-                "kind": entry.kind,
-                "scenario_id": entry.scenario_id,
-                "version": entry.version,
-                "country": entry.country,
-                "family": entry.family,
-                "variant": entry.variant,
-                "file": entry.path.name,
-            }
-        )
-    return {"count": len(files), "files": files}
-
-
-def corpus_get(options: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Return one market file's XML and its provenance sidecar.
-
-    Pure helper behind :data:`CORPUS_GET_COMMAND`. Editors use it to open
-    a reference example next to the data file being authored: the XML a
-    correct ``scenario_id`` produces in ``version``, and the sidecar
-    that says which sources it rests on, how confident the evidence is
-    and how every validation rung judged it.
-
-    Args:
-        options: ``scenario_id`` and ``version`` (required) and an
-            optional ``variant`` overlay id for a bank variant.
-
-    Returns:
-        ``{"scenario_id", "version", "variant", "xml", "provenance"}`` or
-        ``{"error": ...}`` when the arguments are incomplete, the file
-        does not exist, or the installed pain001 has no corpus.
-    """
-    corpus = _corpus_api()
-    if corpus is None:
-        return {"error": _CORPUS_MISSING}
-    options = options or {}
-    scenario_id = options.get("scenario_id")
-    version = options.get("version")
-    variant = options.get("variant") or None
-    if not scenario_id or not version:
-        return {"error": "scenario_id and version are required"}
-    try:
-        xml = corpus.get_file(scenario_id, version, variant)
-        record = corpus.provenance(scenario_id, version, variant)
-    except FileNotFoundError as exc:
-        return {"error": str(exc)}
-    return {
-        "scenario_id": scenario_id,
-        "version": version,
-        "variant": variant,
-        "xml": xml,
-        "provenance": record,
-    }
-
-
-def corpus_list_command(ls: LanguageServer, *args: Any) -> dict[str, Any]:
-    """``workspace/executeCommand`` glue for :func:`corpus_list`.
-
-    Args:
-        ls: The language server (unused; pygls passes it first).
-        *args: The command arguments; the first may be a filter dict.
-
-    Returns:
-        The :func:`corpus_list` payload.
-    """
-    return corpus_list(command_options(args))
-
-
-def corpus_get_command(ls: LanguageServer, *args: Any) -> dict[str, Any]:
-    """``workspace/executeCommand`` glue for :func:`corpus_get`.
-
-    Args:
-        ls: The language server (unused; pygls passes it first).
-        *args: The command arguments; the first is the request dict.
-
-    Returns:
-        The :func:`corpus_get` payload.
-    """
-    return corpus_get(command_options(args))
 
 
 # Handlers are registered here, in definition order, rather than with

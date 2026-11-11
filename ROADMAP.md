@@ -24,8 +24,6 @@ not on a calendar.
 - Targeted code actions per diagnostic (e.g. "remove invalid IBAN",
   "uppercase BIC", "regenerate `ctrl_sum` from `payment_amount`
   totals").
-- Shrink the complexity baseline: `_record_close_positions`,
-  `_record_line_offsets` and the length of `server.py`.
 
 ## After that
 

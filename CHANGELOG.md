@@ -60,6 +60,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   are within every complexity ceiling and leave the baseline; their
   output is unchanged on 300,000 random documents and pinned by
   `tests/test_record_scanning.py`.
+- `server.py` (976 lines) is split under the 500-line ceiling: the
+  schema loader (`_schema.py`), the record checks and their `lsprotocol`
+  mapping (`_diagnostics.py`), the record walkers (`_records.py`),
+  formatting and the outline (`_layout.py`), the corpus commands
+  (`_corpus.py`) and `compute_diagnostics_csv` (into `_csv.py`) move
+  out, and `server.py` imports them back, so every name it exposed is
+  still importable from `pain001_lsp.server`. `complexity-baseline.json`
+  is now empty.
 
 ### Removed
 

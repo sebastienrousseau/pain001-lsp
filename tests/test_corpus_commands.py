@@ -99,7 +99,7 @@ def stub(monkeypatch):
             return fake
         return real(name, package)
 
-    monkeypatch.setattr(lsp_server.importlib, "import_module", fake_import)
+    monkeypatch.setattr(importlib, "import_module", fake_import)
     return fake
 
 
@@ -113,7 +113,7 @@ def absent(monkeypatch):
             raise ImportError("No module named 'pain001.corpus'")
         return real(name, package)
 
-    monkeypatch.setattr(lsp_server.importlib, "import_module", fake_import)
+    monkeypatch.setattr(importlib, "import_module", fake_import)
 
 
 def test_corpus_list_returns_every_file_with_metadata(stub):

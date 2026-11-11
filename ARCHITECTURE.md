@@ -32,10 +32,15 @@ are thin glue that maps the helpers' plain-dict diagnostics into
 
 | Area | Module | Responsibility |
 | :--- | :--- | :--- |
-| **Server** | `pain001_lsp/server.py` | pygls `LanguageServer` instance, feature handlers, the corpus commands, plus the pure helpers |
+| **Server** | `pain001_lsp/server.py` | pygls `LanguageServer` instance, the configured message type, the diagnostics, completion, hover and quick-fix handlers and their pure helpers, and every handler and command registration; it imports and re-exports the helpers of the modules below, so `pain001_lsp.server` stays the import path |
+| **Schemas** | `pain001_lsp/_schema.py` | Loads (and caches) the core's bundled input JSON Schema for a message type; the default message type |
+| **Record diagnostics** | `pain001_lsp/_diagnostics.py` | Schema and IBAN/BIC checks per record, and the mapping of plain-dict diagnostics to `lsprotocol` |
+| **Record positions** | `pain001_lsp/_records.py` | Walks the raw text for braces outside strings: each record's first line, its closing brace, the record under a cursor |
+| **Formatting and outline** | `pain001_lsp/_layout.py` | The `formatting` and `document_symbol` handlers |
+| **Corpus** | `pain001_lsp/_corpus.py` | The `pain001.corpus.list` and `pain001.corpus.get` commands |
 | **Document routing** | `pain001_lsp/_documents.py` | Which documents get diagnostics, and from which engine (JSON or CSV) |
 | **Parse errors** | `pain001_lsp/_parsing.py` | Turns whatever `json.loads` raises on editor text into one diagnostic |
-| **CSV** | `pain001_lsp/_csv.py` | Wraps the core's CSV diagnostic engine into the server's plain-dict diagnostics |
+| **CSV** | `pain001_lsp/_csv.py` | Wraps the core's CSV diagnostic engine into the server's plain-dict diagnostics (`compute_diagnostics_csv`) |
 | **Faces** | `pain001_lsp/_faces.py` | The `pain001.faces.list` and `pain001.faces.project` commands |
 | **Names** | `pain001_lsp/_names.py` | Human-readable names of the message types offered in completion |
 | **Command arguments** | `pain001_lsp/_commands.py` | Reads the arguments of a `workspace/executeCommand` request as one dict |

@@ -20,6 +20,7 @@ pytest.importorskip("pygls")
 from lsprotocol import types as lsp  # noqa: E402
 
 import pain001_lsp.server as lsp_server  # noqa: E402
+from pain001_lsp import _layout  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -897,11 +898,11 @@ def test_document_symbol_marks_non_dict_records_with_placeholder(
     # never produce a close-position naturally. Inject one via the
     # helpers to exercise the placeholder branch end-to-end.
     monkeypatch.setattr(
-        lsp_server, "_normalise_records", lambda parsed: [[1, 2, 3]]
+        _layout, "_normalise_records", lambda parsed: [[1, 2, 3]]
     )
-    monkeypatch.setattr(lsp_server, "_record_line_offsets", lambda text: [0])
+    monkeypatch.setattr(_layout, "_record_line_offsets", lambda text: [0])
     monkeypatch.setattr(
-        lsp_server,
+        _layout,
         "_record_close_positions",
         lambda text: [lsp.Position(line=0, character=8)],
     )
@@ -929,7 +930,7 @@ def test_document_symbol_stops_when_close_positions_missing(
     sample_record, monkeypatch
 ):
     """If close-position scanning drops a record, the loop bails gracefully."""
-    monkeypatch.setattr(lsp_server, "_record_close_positions", lambda text: [])
+    monkeypatch.setattr(_layout, "_record_close_positions", lambda text: [])
     source = json.dumps([sample_record], indent=2)
     ls = _StubLS(source)
     assert lsp_server.document_symbol(ls, _document_symbol_params()) == []

@@ -16,6 +16,7 @@ import csv
 from pain001.lsp.diagnostics import Severity, diagnostics_for_csv
 
 from pain001_lsp._parsing import _diagnostic
+from pain001_lsp._schema import DEFAULT_MESSAGE_TYPE
 
 _CSV_SEVERITY_TO_STR = {
     Severity.ERROR: "error",
@@ -43,3 +44,25 @@ def csv_diagnostics(text: str, message_type: str) -> list[dict]:
         }
         for diag in found
     ]
+
+
+def compute_diagnostics_csv(
+    text: str, message_type: str = DEFAULT_MESSAGE_TYPE
+) -> list[dict]:
+    """Compute diagnostics for a pain.001 payment-data CSV document.
+
+    Wraps :func:`pain001.lsp.diagnostics.diagnostics_for_csv` and returns
+    the same plain-dict shape as :func:`compute_diagnostics` so the LSP
+    handlers can route by URI suffix without caring which engine ran.
+
+    Args:
+        text: The raw CSV document text.
+        message_type: The pain message type to validate against.
+
+    Returns:
+        A list of plain dicts shaped like the JSON-mode output, with
+        ``col_start`` / ``col_end`` keys retained so editors can paint
+        per-cell ranges. Text the ``csv`` module cannot read gets one
+        ``Invalid CSV`` error at the top instead.
+    """
+    return csv_diagnostics(text, message_type)
