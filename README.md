@@ -31,30 +31,30 @@
 
 **Getting started**
 
-- [Install](#install) — pip, pipx or uv, Docker, the VS Code extension
-- [Requirements](#requirements) — toolchain floor, platforms
-- [Quick Start](#quick-start) — point your editor at `pain001-lsp`, or call the helpers directly
+- [Install](#install): pip, pipx or uv, Docker, the VS Code extension
+- [Requirements](#requirements): toolchain floor, platforms
+- [Quick Start](#quick-start): point your editor at `pain001-lsp`, or call the helpers directly
 
 **The pain001-lsp ecosystem**
 
-- [The pain001-lsp ecosystem](#the-pain001-lsp-ecosystem) — the core library and the other eight members of the pain001 suite
+- [The pain001-lsp ecosystem](#the-pain001-lsp-ecosystem): the core library and the other eight members of the pain001 suite
 
 **Library reference**
 
-- [Capabilities at a glance](#capabilities-at-a-glance) — the current surface by theme
-- [Ecosystem comparison](#ecosystem-comparison) — short matrix; full table at [`docs/COMPARISON.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/COMPARISON.md)
-- [Benchmarks](#benchmarks) — headline numbers; full table at [`docs/BENCHMARKS.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/BENCHMARKS.md)
-- [Features](#features) — module-level capability list
-- [Configuration](#configuration) — core options
-- [Examples](#examples) — runnable example index
+- [Capabilities at a glance](#capabilities-at-a-glance): the current surface by theme
+- [Ecosystem comparison](#ecosystem-comparison): short matrix; full table at [`docs/COMPARISON.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/COMPARISON.md)
+- [Benchmarks](#benchmarks): headline numbers; full table at [`docs/BENCHMARKS.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/BENCHMARKS.md)
+- [Features](#features): module-level capability list
+- [Configuration](#configuration): core options
+- [Examples](#examples): runnable example index
 
 **Operational**
 
-- [When not to use pain001-lsp](#when-not-to-use-pain001-lsp) — limitations
-- [Development](#development) — make targets, fuzzing, CI
-- [Security](#security) — guarantees and compliance
-- [Documentation](#documentation) — all reference docs
-- [Stability guarantees](#stability-guarantees) — SemVer axis, output stability, minimum toolchain discipline
+- [When not to use pain001-lsp](#when-not-to-use-pain001-lsp): limitations
+- [Development](#development): make targets, fuzzing, CI
+- [Security](#security): guarantees and compliance
+- [Documentation](#documentation): all reference docs
+- [Stability guarantees](#stability-guarantees): SemVer axis, output stability, minimum toolchain discipline
 - [License](#license)
 
 ---
