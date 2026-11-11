@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The README's Security section names the project's
+  [OpenSSF Best Practices passing badge](https://www.bestpractices.dev/projects/15786),
+  meeting the OpenSSF Best Practices silver criterion
+  `documentation_achievements`.
+
 ### Fixed
 
 - Suite Consistency pins the core's ecosystem check at `febcd0a`, which

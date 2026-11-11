@@ -364,6 +364,8 @@ handlers are fuzzed with [Atheris][atheris] on every change and weekly (see
 digest, every `pip` install is hash-pinned, workflow tokens are
 least-privilege, and releases carry SLSA provenance, PEP 740 attestations,
 cosign signatures and SPDX and CycloneDX SBOMs.
+The project holds the
+[OpenSSF Best Practices passing badge](https://www.bestpractices.dev/projects/15786).
 
 Report vulnerabilities according to [`SECURITY.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/SECURITY.md).
 
