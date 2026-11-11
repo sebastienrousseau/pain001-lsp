@@ -53,6 +53,8 @@ from __future__ import annotations
 
 import importlib
 import json
+import re
+from collections.abc import Iterator
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -145,6 +147,37 @@ def _normalise_records(parsed: Any) -> list[dict[str, Any]]:
     return []
 
 
+# A whole string (to its closing quote, or to the end of the text when it
+# never closes, with a backslash escaping any next character, newlines
+# included), or one brace outside a string.
+_STRING_OR_BRACE = re.compile(r'"[^"\\]*(?:\\.[^"\\]*)*"?|[{}]', re.DOTALL)
+
+
+def _braces(text: str) -> Iterator[tuple[str, int, int]]:
+    """Yield ``(brace, line, character)`` for each brace outside a string.
+
+    The one walk behind the record helpers below. Strings are skipped
+    whole, so a brace inside one is not structure; lines count every
+    newline before the brace, in a string or not. The scan and the
+    newline counts run in C, and each newline is counted once, so the
+    walk stays linear in the length of the text.
+    """
+    line = 0
+    line_start = 0
+    scanned = 0
+    for match in _STRING_OR_BRACE.finditer(text):
+        token = match.group()
+        if token not in ("{", "}"):
+            continue
+        at = match.start()
+        newlines = text.count("\n", scanned, at)
+        if newlines:
+            line += newlines
+            line_start = text.rfind("\n", scanned, at) + 1
+        scanned = at
+        yield token, line, at - line_start
+
+
 def _record_line_offsets(text: str) -> list[int]:
     """Best-effort mapping of record index -> line number.
 
@@ -155,28 +188,13 @@ def _record_line_offsets(text: str) -> list[int]:
     """
     offsets: list[int] = []
     depth = 0
-    in_string = False
-    escaped = False
-    line = 0
-    for ch in text:
-        if escaped:
-            escaped = False
-        elif ch == "\\" and in_string:
-            escaped = True
-        elif ch == '"':
-            in_string = not in_string
-        elif not in_string:
-            if ch == "\n":
-                line += 1
-                continue
-            if ch == "{":
-                if depth == 0:
-                    offsets.append(line)
-                depth += 1
-            elif ch == "}":
-                depth = max(0, depth - 1)
-        if ch == "\n":
-            line += 1
+    for brace, line, _ in _braces(text):
+        if brace == "}":
+            depth = max(0, depth - 1)
+            continue
+        if depth == 0:
+            offsets.append(line)
+        depth += 1
     return offsets
 
 
@@ -583,35 +601,15 @@ def _record_close_positions(text: str) -> list[lsp.Position]:
     Used by the multi-record code action so the quick-fix can be offered
     on the record under the cursor, not just the first one.
     """
-    line = 0
-    char = 0
     depth = 0
-    in_string = False
-    escaped = False
     positions: list[lsp.Position] = []
-    record_close: lsp.Position | None = None
-    for ch in text:
-        if escaped:
-            escaped = False
-        elif ch == "\\" and in_string:
-            escaped = True
-        elif ch == '"':
-            in_string = not in_string
-        elif not in_string:
-            if ch == "{":
-                depth += 1
-            elif ch == "}":
-                if depth == 1:
-                    record_close = lsp.Position(line=line, character=char)
-                depth = max(0, depth - 1)
-                if record_close is not None and depth == 0:
-                    positions.append(record_close)
-                    record_close = None
-        if ch == "\n":
-            line += 1
-            char = 0
-        else:
-            char += 1
+    for brace, line, char in _braces(text):
+        if brace == "{":
+            depth += 1
+            continue
+        if depth == 1:
+            positions.append(lsp.Position(line=line, character=char))
+        depth = max(0, depth - 1)
     return positions
 
 

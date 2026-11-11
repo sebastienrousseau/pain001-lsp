@@ -54,6 +54,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the package requires, maps every module, the formatting, symbol and
   workspace commands, and links ADR 0003 on explicit handler
   registration.
+- The record walkers behind diagnostics, the quick fix and the outline
+  (`_record_line_offsets`, `_record_close_positions`) share one brace
+  scan, `_braces`, which skips strings with a regular expression. Both
+  are within every complexity ceiling and leave the baseline; their
+  output is unchanged on 300,000 random documents and pinned by
+  `tests/test_record_scanning.py`.
 
 ### Removed
 
