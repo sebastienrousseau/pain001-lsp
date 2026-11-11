@@ -23,6 +23,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Spell-check the tree with codespell in the docs-lint workflow, the
   pre-commit hooks and `make check` (`make spelling`, configured in
   `pyproject.toml`).
+- A Docs check workflow (`docs-check.yml`) builds the manual with every
+  Sphinx warning an error and runs Sphinx's link check on every push
+  and pull request (`make docs`, `make linkcheck`); the deploy build in
+  `docs.yml` uses the same warnings-as-errors flags. Links into this
+  repository's `main` are skipped by the link check and checked offline
+  instead, for `README.md`, `ARCHITECTURE.md` and `DEVELOPMENT.md`, by
+  `tests/test_readme.py`.
+- The manual includes `ARCHITECTURE.md` and `DEVELOPMENT.md`, and its API
+  reference documents the faces helpers (`faces_list`,
+  `faces_project`).
 
 ### Changed
 
@@ -30,17 +40,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drop the `ruff-format` hook that fought black, and keep black off the
   vendored `tests/test_suite_conformance.py`, which the old hooks
   rewrote.
-- CONTRIBUTING.md points at `make check` and DEVELOPMENT.md, asks for
+- `CONTRIBUTING.md` points at `make check` and `DEVELOPMENT.md`, asks for
   the DCO sign-off, and states the dual Apache-2.0 OR MIT licence.
 - README: the ecosystem table lists all nine suite repositories, the
   Examples table lists `05_faces_commands.py`, and Documentation links
-  the manual's API reference and DEVELOPMENT.md; `tests/test_readme.py`
+  the manual's API reference and `DEVELOPMENT.md`; `tests/test_readme.py`
   now checks both tables' sources and the four documentation links.
+- `ARCHITECTURE.md` described pygls 1.x (`pygls >=1.3,<2`) and a
+  six-helper, single-module server; it now states the pygls 2.x range
+  the package requires, maps every module, the formatting, symbol and
+  workspace commands, and links ADR 0003 on explicit handler
+  registration.
 
 ### Removed
 
 - `CODE-OF-CONDUCT.md`, a second copy of the code of conduct;
-  `CODE_OF_CONDUCT.md` is the one GitHub and GOVERNANCE.md link to.
+  `CODE_OF_CONDUCT.md` is the one GitHub and `GOVERNANCE.md` link to.
 
 ## [0.0.85] - 2026-11-10
 

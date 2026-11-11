@@ -1,4 +1,4 @@
-.PHONY: help install dev test lint format type-check security complexity versions clean examples doc-coverage spelling demo check
+.PHONY: help install dev test lint format type-check security complexity versions clean examples doc-coverage spelling docs linkcheck demo check
 
 # Mutation score floor for the language-server handlers: 87.9% (775 of
 # 882) on 2026-09-18, up from 76.5% before the diagnostic-shape tests. The
@@ -66,6 +66,12 @@ doc-coverage: ## Enforce the 100% docstring coverage gate
 
 spelling: ## Spell-check the tree (codespell, config in pyproject.toml)
 	$(POETRY) run codespell
+
+docs: ## Build the manual, warnings as errors (needs requirements/docs.txt)
+	$(PYTHON) -m sphinx -W --keep-going -b html docs docs/_build/html
+
+linkcheck: ## Check every link in the manual (needs requirements/docs.txt)
+	$(PYTHON) -m sphinx -W --keep-going -b linkcheck docs docs/_build/linkcheck
 
 demo: ## Render .github/demo.gif from .github/demo.tape with VHS
 	$(POETRY) run $(VHS) .github/demo.tape

@@ -24,7 +24,7 @@ poetry install --all-extras
 make check
 ```
 
-`pre-commit install` (with [pre-commit](https://pre-commit.com) on your
+`pre-commit install` (with [pre-commit](https://github.com/pre-commit/pre-commit) on your
 `PATH`) runs the hygiene hooks, ruff, black, codespell and mypy on each
 commit; `.pre-commit-config.yaml` pins every hook by exact release.
 
@@ -56,10 +56,17 @@ without reading YAML. `make check` runs every gate in the first block.
 | Dependency advisories | `pip-audit` over the Poetry environment and each `requirements/*.txt` (commands in `security.yml`) | `security.yml` |
 | Fuzzing (Atheris) | `python fuzz/fuzz_documents.py -max_total_time=60` after `pip install --require-hashes -r requirements/fuzz.txt` | `fuzz.yml` |
 | Mutation testing (85 % floor) | `make mutate` | `mutation.yml` |
-| Docs build | `cd docs && make html` after `pip install --require-hashes -r requirements/docs.txt` and `pip install --no-deps -e .` | `docs.yml` |
+| Manual build, Sphinx warnings as errors | `make docs` | `docs-check.yml`, `docs.yml` (deploy from `main`) |
+| Link check of the manual | `make linkcheck` | `docs-check.yml` |
 | VS Code extension | `cd editors/vscode && npm ci && npm run compile` | `vscode-extension.yml` |
 | Container image | `docker build .` | `docker.yml` |
 | Sign-off on every commit | `git commit -s` | `dco.yml` |
+
+`make docs` and `make linkcheck` need the Sphinx toolchain, which is
+not in the Poetry environment: in a separate virtual environment, run
+`pip install --require-hashes -r requirements/docs.txt` and
+`pip install --no-deps -e .`, then pass its interpreter as
+`make docs PYTHON=<venv>/bin/python`.
 
 The coverage floor is 100 % line and branch, set once in
 `[tool.coverage.report]` in `pyproject.toml`, so a plain `pytest`
@@ -89,6 +96,18 @@ examples/                       numbered scripts; every one runs in CI
 benches/                        the diagnostics benchmark
 fuzz/                           Atheris harness for the document handlers
 ```
+
+## Documentation
+
+Sphinx with MyST under `docs/` is the only documentation root. Root
+Markdown files (`README.md`, `ARCHITECTURE.md`, this file,
+`CHANGELOG.md`, `ROADMAP.md`) are included into the manual by thin
+chapter files under `docs/`, so each is edited in one place. Write a
+file name in backticks or as a link: MyST's linkify turns a bare
+`NAME.md` into a link to a host under the `.md` domain, which the link
+check then reports as broken. Decisions that will be
+questioned later get an ADR in `docs/adr/`. `docs.yml` deploys the
+manual to GitHub Pages from `main`.
 
 ## Versioning and release
 

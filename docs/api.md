@@ -20,3 +20,10 @@ going through the LSP transport).
    :undoc-members:
    :show-inheritance:
 ```
+
+## Faces commands
+
+```{eval-rst}
+.. automodule:: pain001_lsp._faces
+   :members: faces_list, faces_project
+```

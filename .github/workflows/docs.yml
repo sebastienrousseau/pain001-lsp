@@ -42,7 +42,7 @@ jobs:
       - name: Build Sphinx documentation
         run: |
           cd docs
-          make html
+          make html SPHINXOPTS="-W --keep-going"
 
       # AGENTS.md 7.1.2: every page links the author from its copyright
       # line (docs/_templates/page.html). Checked on the built output.

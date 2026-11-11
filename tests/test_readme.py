@@ -13,6 +13,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parent.parent
 README = ROOT / "README.md"
 
@@ -99,16 +101,23 @@ def test_documentation_links_the_four_entry_points():
         assert target in section, target
 
 
-def test_repository_links_resolve():
+#: Root Markdown the manual includes from docs/, so its links are absolute.
+INCLUDED = ["README.md", "ARCHITECTURE.md", "DEVELOPMENT.md"]
+
+
+@pytest.mark.parametrize("name", INCLUDED)
+def test_repository_links_resolve(name):
     """Every link into this repository's main branch names a real path.
 
     Links are absolute so they work on PyPI and in the Sphinx manual,
-    which includes this file from docs/; a renamed file must not leave
-    one dangling.
+    which includes these files from docs/; a renamed file must not leave
+    one dangling. The manual's link check skips these URLs (a file added
+    on a branch is not on main yet), so this test is their check.
     """
     base = "https://github.com/sebastienrousseau/pain001-lsp/"
+    text = (ROOT / name).read_text(encoding="utf-8")
     paths = re.findall(
-        re.escape(base) + r"(?:blob|tree)/main/([^)\"#\s]+)", _text()
+        re.escape(base) + r"(?:blob|tree)/main/([^)\"#\s]+)", text
     )
     assert paths
     missing = [p for p in paths if not (ROOT / p).exists()]
