@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The manual includes `ARCHITECTURE.md` and `DEVELOPMENT.md`, and its API
   reference documents the faces helpers (`faces_list`,
   `faces_project`).
+- `KEYS.asc`: the maintainer's SSH signing keys in allowed-signers
+  format, the same keys the core, MCP server and mockbank publish, so
+  a signed commit or tag can be checked with
+  `git config gpg.ssh.allowedSignersFile KEYS.asc`.
 
 ### Changed
 
