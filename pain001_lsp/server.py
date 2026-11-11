@@ -58,26 +58,19 @@ from lsprotocol import types as lsp
 from pain001.constants import valid_xml_types
 from pygls.lsp.server import LanguageServer
 
-from pain001_lsp import __version__, _faces
-from pain001_lsp._corpus import _CORPUS_MISSING as _CORPUS_MISSING
+from pain001_lsp import __version__, _corpus, _diagnostics, _faces, _records
 from pain001_lsp._corpus import (
     CORPUS_GET_COMMAND,
     CORPUS_LIST_COMMAND,
     corpus_get_command,
     corpus_list_command,
 )
-from pain001_lsp._corpus import _corpus_api as _corpus_api
-from pain001_lsp._corpus import corpus_get as corpus_get
-from pain001_lsp._corpus import corpus_list as corpus_list
 from pain001_lsp._csv import compute_diagnostics_csv
-from pain001_lsp._diagnostics import _IDENTIFIER_FIELDS as _IDENTIFIER_FIELDS
-from pain001_lsp._diagnostics import _SEVERITY as _SEVERITY
 from pain001_lsp._diagnostics import (
     _identifier_diagnostics,
     _schema_diagnostics,
     _to_lsp_diagnostics,
 )
-from pain001_lsp._diagnostics import _identifier_valid as _identifier_valid
 from pain001_lsp._documents import is_csv_uri, is_payment_document
 from pain001_lsp._layout import document_symbol, formatting
 from pain001_lsp._names import HUMAN_NAMES
@@ -92,11 +85,32 @@ from pain001_lsp._records import (
     _record_close_positions,
     _record_index_at_position,
 )
-from pain001_lsp._records import (
-    _record_close_position as _record_close_position,
-)
-from pain001_lsp._records import _record_line_offsets as _record_line_offsets
 from pain001_lsp._schema import DEFAULT_MESSAGE_TYPE, _load_schema
+
+# Names that moved into private modules when this one was split. They
+# stay importable from here (``from pain001_lsp.server import
+# corpus_list`` keeps working) through ``__getattr__`` below, rather than
+# as imports this module never uses.
+_MOVED: dict[str, Any] = {
+    "_CORPUS_MISSING": _corpus,
+    "_corpus_api": _corpus,
+    "corpus_get": _corpus,
+    "corpus_list": _corpus,
+    "_IDENTIFIER_FIELDS": _diagnostics,
+    "_SEVERITY": _diagnostics,
+    "_identifier_valid": _diagnostics,
+    "_record_close_position": _records,
+    "_record_line_offsets": _records,
+}
+
+
+def __getattr__(name: str) -> Any:
+    """Resolve a name that moved into a private module (PEP 562)."""
+    module = _MOVED.get(name)
+    if module is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    return getattr(module, name)
+
 
 # Placeholders used by ``build_insert_text`` when offering a "fill in missing
 # required fields" quick-fix. Values map to JSON Schema ``type`` keys.

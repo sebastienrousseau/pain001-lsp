@@ -125,3 +125,21 @@ SURFACE = [
 def test_server_module_surface(name):
     """Every helper, handler and constant stays importable from server."""
     assert hasattr(lsp_server, name)
+
+
+def test_moved_names_resolve_to_their_new_home():
+    """A moved name read from server is the object its module defines."""
+    from pain001_lsp import _corpus, _diagnostics, _records
+
+    assert lsp_server.corpus_list is _corpus.corpus_list
+    assert lsp_server._identifier_valid is _diagnostics._identifier_valid
+    assert lsp_server._record_line_offsets is _records._record_line_offsets
+    from pain001_lsp.server import corpus_get
+
+    assert corpus_get is _corpus.corpus_get
+
+
+def test_unknown_names_still_raise_attribute_error():
+    """``__getattr__`` keeps the module's normal missing-name error."""
+    with pytest.raises(AttributeError, match="no_such_name"):
+        _ = lsp_server.no_such_name
