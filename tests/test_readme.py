@@ -13,6 +13,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parent.parent
 README = ROOT / "README.md"
 
@@ -56,20 +58,79 @@ def test_badges_are_28_pixel_shields_then_the_demo():
     assert len(badges) >= 6
     assert {height for _, height in badges} == {"28"}
     assert all("style=for-the-badge" in src for src, _ in badges)
-    assert text.index('src=".github/demo.gif"') > text.index("height=")
+    assert text.index(f'src="{RAW}.github/demo.gif"') > text.index("height=")
     assert (ROOT / ".github" / "demo.gif").is_file()
 
 
-def test_repository_links_resolve():
+RAW = "https://raw.githubusercontent.com/sebastienrousseau/pain001-lsp/main/"
+
+
+def test_every_image_is_an_absolute_https_url():
+    """PyPI does not resolve relative image paths in the README."""
+    sources = re.findall(r'<img src="([^"]+)"', _text())
+    assert sources
+    assert [src for src in sources if not src.startswith("https://")] == []
+    for src in sources:
+        if src.startswith(RAW):
+            assert (ROOT / src.removeprefix(RAW)).is_file(), src
+
+
+def _python_snippets() -> list[str]:
+    return re.findall(r"^```python\n(.*?)^```$", _text(), re.M | re.S)
+
+
+def test_python_snippets_run(capsys):
+    """Every Python block in the README runs as written.
+
+    The Quick Start promises code a reader can paste; running it here
+    means a renamed helper or a changed return shape fails the suite
+    instead of leaving the README wrong.
+    """
+    snippets = _python_snippets()
+    assert snippets
+    for snippet in snippets:
+        exec(compile(snippet, "README.md", "exec"), {})
+    assert capsys.readouterr().out.strip()
+
+
+def test_every_example_is_listed():
+    """The Examples table names every runnable script in examples/."""
+    text = _text()
+    scripts = sorted(p.name for p in (ROOT / "examples").glob("[0-9]*.py"))
+    assert scripts
+    missing = [name for name in scripts if f"examples/{name})" not in text]
+    assert not missing, missing
+
+
+def test_documentation_links_the_four_entry_points():
+    """User manual, API reference, developer docs and the family map."""
+    section = _text().split("## Documentation", 1)[1].split("\n## ", 1)[0]
+    for target in (
+        "https://sebastienrousseau.com/pain001-lsp/)",
+        "https://sebastienrousseau.com/pain001-lsp/api.html)",
+        "/DEVELOPMENT.md)",
+        "(#the-pain001-lsp-ecosystem)",
+    ):
+        assert target in section, target
+
+
+#: Root Markdown the manual includes from docs/, so its links are absolute.
+INCLUDED = ["README.md", "ARCHITECTURE.md", "DEVELOPMENT.md"]
+
+
+@pytest.mark.parametrize("name", INCLUDED)
+def test_repository_links_resolve(name):
     """Every link into this repository's main branch names a real path.
 
     Links are absolute so they work on PyPI and in the Sphinx manual,
-    which includes this file from docs/; a renamed file must not leave
-    one dangling.
+    which includes these files from docs/; a renamed file must not leave
+    one dangling. The manual's link check skips these URLs (a file added
+    on a branch is not on main yet), so this test is their check.
     """
     base = "https://github.com/sebastienrousseau/pain001-lsp/"
+    text = (ROOT / name).read_text(encoding="utf-8")
     paths = re.findall(
-        re.escape(base) + r"(?:blob|tree)/main/([^)\"#\s]+)", _text()
+        re.escape(base) + r"(?:blob|tree)/main/([^)\"#\s]+)", text
     )
     assert paths
     missing = [p for p in paths if not (ROOT / p).exists()]

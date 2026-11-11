@@ -195,6 +195,22 @@ files = [
 ]
 
 [[package]]
+name = "codespell"
+version = "2.4.3"
+description = "Fix common misspellings in text files"
+optional = false
+python-versions = ">=3.9"
+groups = ["dev"]
+files = [
+    {file = "codespell-2.4.3-py3-none-any.whl", hash = "sha256:af2505b335e8573dbd2d384d1c4ef498f4006f4ba2d6fceca01e55b91f52628a"},
+    {file = "codespell-2.4.3.tar.gz", hash = "sha256:cbe085e331227b37bb86ef8bddd08dc768c704ee9a07ca869852c093fa2793e2"},
+]
+
+[package.extras]
+hard-encoding-detection = ["chardet"]
+toml = ["tomli ; python_version < \"3.11\""]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -1134,14 +1150,14 @@ files = [
 
 [[package]]
 name = "pain001"
-version = "0.0.85"
+version = "0.0.86"
 description = "Pain001 is a Python Library for Automating ISO 20022-Compliant Payment Files Using CSV Data."
 optional = false
 python-versions = "<4.0,>=3.11"
 groups = ["main"]
 files = [
-    {file = "pain001-0.0.85-py3-none-any.whl", hash = "sha256:6b05d1270949dc864b4d97c01184ef1f01d2a05f4f0d8f7c82c8229bcc545c2d"},
-    {file = "pain001-0.0.85.tar.gz", hash = "sha256:97b36d450576644a1bd120624d50582bfc7c1cb5a565954bbae00843bfe3183e"},
+    {file = "pain001-0.0.86-py3-none-any.whl", hash = "sha256:8d285cf4b22b3f35b4dfacf9046cb9806ac73d1d39afea513d459504d9e953b3"},
+    {file = "pain001-0.0.86.tar.gz", hash = "sha256:ed3da2429d23ebd5655bb0e69d0b6c9b4bfb232017c59181642c400d133591c1"},
 ]
 
 [package.dependencies]
@@ -1930,4 +1946,4 @@ docs = ["jinja2", "sphinx", "sphinx_rtd_theme"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "276fac7ed63198f431fe0c2608122ed65cadde27e59ce399e844c1635f7f9392"
+content-hash = "c4334173ddc53d238aa056c959ecc431313cee087a4b38cfa0b26b045bed63cb"

@@ -7,7 +7,7 @@ of the [pain001](https://github.com/sebastienrousseau/pain001) library.
 The versions are **target** windows; releases ship when the gates pass,
 not on a calendar.
 
-## Where we are: v0.0.85
+## Where we are: v0.0.86
 
 - Diagnostics (JSON Schema plus IBAN and BIC), completion, hover, the
   missing-fields quick fix on the record under the cursor, formatting,
@@ -24,8 +24,6 @@ not on a calendar.
 - Targeted code actions per diagnostic (e.g. "remove invalid IBAN",
   "uppercase BIC", "regenerate `ctrl_sum` from `payment_amount`
   totals").
-- Shrink the complexity baseline: `_record_close_positions`,
-  `_record_line_offsets` and the length of `server.py`.
 
 ## After that
 

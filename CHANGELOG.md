@@ -9,6 +9,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.86] - 2026-11-11
+
+### Added
+
+- Add a code of conduct (adapted from Contributor Covenant 2.1, the
+  suite's shared text) and a markdownlint CI job (`docs-lint.yml`,
+  configured in `.markdownlint-cli2.jsonc`); fix the Markdown it
+  flagged.
+- Run every Python block in the README as part of the test suite, so
+  the Quick Start cannot drift from the helpers it calls.
+- Add `DEVELOPMENT.md`, mapping every CI job to the local command that
+  reproduces it, and a devcontainer that installs the project and runs
+  `make check`.
+- Spell-check the tree with codespell in the docs-lint workflow, the
+  pre-commit hooks and `make check` (`make spelling`, configured in
+  `pyproject.toml`).
+- A Docs check workflow (`docs-check.yml`) builds the manual with every
+  Sphinx warning an error and runs Sphinx's link check on every push
+  and pull request (`make docs`, `make linkcheck`); the deploy build in
+  `docs.yml` uses the same warnings-as-errors flags. Links into this
+  repository's `main` are skipped by the link check and checked offline
+  instead, for `README.md`, `ARCHITECTURE.md` and `DEVELOPMENT.md`, by
+  `tests/test_readme.py`.
+- The manual includes `ARCHITECTURE.md` and `DEVELOPMENT.md`, and its API
+  reference documents the faces helpers (`faces_list`,
+  `faces_project`).
+- `KEYS.asc`: the maintainer's SSH signing keys in allowed-signers
+  format, the same keys the core, MCP server and mockbank publish, so
+  a signed commit or tag can be checked with
+  `git config gpg.ssh.allowedSignersFile KEYS.asc`.
+
+### Changed
+
+- Release 0.0.86 in lockstep with the pain001 suite and require core
+  pain001 0.0.86; the locks resolve its published artifacts.
+- Align the pre-commit ruff and black hooks with the locked versions,
+  drop the `ruff-format` hook that fought black, and keep black off the
+  vendored `tests/test_suite_conformance.py`, which the old hooks
+  rewrote.
+- `CONTRIBUTING.md` points at `make check` and `DEVELOPMENT.md`, asks for
+  the DCO sign-off, and states the dual Apache-2.0 OR MIT licence.
+- README: the ecosystem table lists all nine suite repositories, the
+  Examples table lists `05_faces_commands.py`, and Documentation links
+  the manual's API reference and `DEVELOPMENT.md`; `tests/test_readme.py`
+  now checks both tables' sources and the four documentation links.
+- `ARCHITECTURE.md` described pygls 1.x (`pygls >=1.3,<2`) and a
+  six-helper, single-module server; it now states the pygls 2.x range
+  the package requires, maps every module, the formatting, symbol and
+  workspace commands, and links ADR 0003 on explicit handler
+  registration.
+- The record walkers behind diagnostics, the quick fix and the outline
+  (`_record_line_offsets`, `_record_close_positions`) share one brace
+  scan, `_braces`, which skips strings with a regular expression. Both
+  are within every complexity ceiling and leave the baseline; their
+  output is unchanged on 300,000 random documents and pinned by
+  `tests/test_record_scanning.py`.
+- `server.py` (976 lines) is split under the 500-line ceiling: the
+  schema loader (`_schema.py`), the record checks and their `lsprotocol`
+  mapping (`_diagnostics.py`), the record walkers (`_records.py`),
+  formatting and the outline (`_layout.py`), the corpus commands
+  (`_corpus.py`) and `compute_diagnostics_csv` (into `_csv.py`) move
+  out, and `server.py` imports them back, so every name it exposed is
+  still importable from `pain001_lsp.server`. `complexity-baseline.json`
+  is now empty.
+- The README demo is served from `raw.githubusercontent.com` on
+  `main` instead of a relative path, which PyPI does not resolve;
+  `tests/test_readme.py` fails on any relative README image.
+
+### Removed
+
+- `CODE-OF-CONDUCT.md`, a second copy of the code of conduct;
+  `CODE_OF_CONDUCT.md` is the one GitHub and `GOVERNANCE.md` link to.
+
 ## [0.0.85] - 2026-11-10
 
 ### Changed

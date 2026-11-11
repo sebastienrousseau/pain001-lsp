@@ -16,6 +16,8 @@ explains its structure, versions and a complete, schema-valid example.
 
 readme
 api
+architecture
+development
 COMPARISON
 BENCHMARKS
 POLICIES

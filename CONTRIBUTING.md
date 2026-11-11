@@ -20,11 +20,14 @@ suite. This guide covers the development workflow and standards.
 # Clone and install
 git clone git@github.com:sebastienrousseau/pain001-lsp.git
 cd pain001-lsp
-poetry install
+poetry install --all-extras
 
-# Verify
-poetry run pytest tests/ -q
+# Verify: every gate CI runs on each push
+make check
 ```
+
+[DEVELOPMENT.md](DEVELOPMENT.md) maps each CI job to the local command
+that reproduces it.
 
 The package depends on the core `pain001` library and `pygls`; both are
 installed automatically by `poetry install`.
@@ -54,25 +57,27 @@ pip install poetry
 
 1. **Fork** the repository
 2. **Create a branch** from `main`:
+
    ```bash
    git checkout -b feat/my-feature
    ```
+
 3. **Make changes** - follow the coding standards below
-4. **Run tests**:
+4. **Run every gate** (lint, types, bandit, complexity, version
+   sources, tests at 100 % line and branch coverage, docstrings,
+   examples, spelling):
+
    ```bash
-   poetry run pytest tests/ -v
+   make check
    ```
-5. **Run linters**:
+
+5. **Sign off and sign the commit**:
+
    ```bash
-   poetry run ruff check pain001_lsp/
-   poetry run mypy pain001_lsp/
-   poetry run black --check pain001_lsp/ tests/
+   git commit -s -S -m "feat: add my feature"
    ```
-6. **Sign and commit**:
-   ```bash
-   git commit -S -m "feat: add my feature"
-   ```
-7. **Push** and open a pull request
+
+6. **Push** and open a pull request
 
 ## Commit Signing (Required)
 
@@ -117,13 +122,13 @@ poetry run pytest tests/test_lsp_server.py -v
 
 ## Pull Request Checklist
 
-- [ ] All tests pass (`poetry run pytest`)
-- [ ] Linters pass (`ruff check`, `mypy`, `black --check`)
-- [ ] Commits are signed
+- [ ] `make check` passes
+- [ ] Commits are signed and carry a `Signed-off-by` trailer (DCO)
 - [ ] PR title follows conventional commit format
 - [ ] New features include tests and documentation
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under
-the [Apache License 2.0](LICENSE).
+By contributing, you agree that your contributions will be dual-licensed
+under the [Apache License 2.0](LICENSE-APACHE) or the
+[MIT License](LICENSE-MIT), at the user's option, as the project is.

@@ -61,3 +61,14 @@ autodoc_default_options = {
 autodoc_typehints = "description"
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
+
+# Link check (`make linkcheck`, docs-check.yml): retry a slow host
+# before calling a link broken, so one network blip does not fail CI.
+linkcheck_retries = 3
+linkcheck_timeout = 30
+# This repository's own files on main are checked offline instead, by
+# tests/test_readme.py: a file added on a branch is not on main until the
+# branch merges, and GitHub rate-limits the many blob URLs.
+linkcheck_ignore = [
+    r"https://github\.com/sebastienrousseau/pain001-lsp/(blob|tree)/main/",
+]

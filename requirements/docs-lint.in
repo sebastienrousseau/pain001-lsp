@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau <sebastian.rousseau@gmail.com>
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+# Spelling checker for the docs-lint workflow, which installs only this
+# set (configured in pyproject.toml [tool.codespell]). Hash-pinned in
+# docs-lint.txt.
+# Regenerate:
+#   uv pip compile --generate-hashes --universal --python-version 3.12 \
+#     requirements/docs-lint.in -o requirements/docs-lint.txt
+codespell==2.4.3

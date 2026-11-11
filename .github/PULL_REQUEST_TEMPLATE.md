@@ -47,4 +47,4 @@ SHA-256 of the artifacts produced by `python -m build` on this branch:
 <sha256>  dist/pain001_lsp-<version>.tar.gz
 ```
 
-**Full Changelog**: https://github.com/sebastienrousseau/pain001-lsp/compare/<base>...<head>
+**Full Changelog**: `https://github.com/sebastienrousseau/pain001-lsp/compare/<base>...<head>`

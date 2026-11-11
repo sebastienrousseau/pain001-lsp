@@ -5,9 +5,10 @@
 ## Reporting Security Vulnerabilities
 
 If you discover a security vulnerability in pain001-lsp, please email
-**security@pain001.com** instead of using the issue tracker.
+**<security@pain001.com>** instead of using the issue tracker.
 
 Please include:
+
 1. Description of the vulnerability
 2. Steps to reproduce
 3. Potential impact
@@ -66,6 +67,6 @@ chooses to send.
 
 ## Contact
 
-- **Email**: security@pain001.com
-- **GitHub Advisories**: https://github.com/sebastienrousseau/pain001-lsp/security/advisories
-- **GitHub issues** (not for vulnerabilities): https://github.com/sebastienrousseau/pain001-lsp/issues
+- **Email**: <security@pain001.com>
+- **GitHub Advisories**: <https://github.com/sebastienrousseau/pain001-lsp/security/advisories>
+- **GitHub issues** (not for vulnerabilities): <https://github.com/sebastienrousseau/pain001-lsp/issues>

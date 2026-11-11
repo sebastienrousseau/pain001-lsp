@@ -23,7 +23,7 @@ WORKFLOWS = ROOT / ".github" / "workflows"
 INSTALLER = "scripts/ci-install.sh"
 
 #: Workflows that install the package and so select a core source.
-INSTALLING = ["ci", "docs", "fuzz", "mutation", "nightly", "pr"]
+INSTALLING = ["ci", "docs", "docs-check", "fuzz", "mutation", "nightly", "pr"]
 
 
 def _predicates(path: Path) -> list[str]:

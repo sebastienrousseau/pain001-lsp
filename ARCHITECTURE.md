@@ -14,6 +14,8 @@ Editor LSP client (Neovim, VS Code, Helix, ...)
         v
 pain001_lsp/server.py
    |   |   |   |
+   |   |   |   |   (also: formatting, document_symbol, workspace/executeCommand
+   |   |   |   |    for the corpus and faces commands)
    |   |   |   `-- code_action     -> multi-record "Add missing required fields" quick-fix
    |   |   `------ hover            -> hover_text()           -> pain001 schema descriptions
    |   `---------- completion       -> completion_items()     -> pain001 schema + supported types
@@ -30,12 +32,23 @@ are thin glue that maps the helpers' plain-dict diagnostics into
 
 | Area | Module | Responsibility |
 | :--- | :--- | :--- |
-| **Server** | `pain001_lsp/server.py` | pygls `LanguageServer` instance, feature handlers, plus the pure helpers |
+| **Server** | `pain001_lsp/server.py` | pygls `LanguageServer` instance, the configured message type, the diagnostics, completion, hover and quick-fix handlers and their pure helpers, and every handler and command registration; it imports and re-exports the helpers of the modules below, so `pain001_lsp.server` stays the import path |
+| **Schemas** | `pain001_lsp/_schema.py` | Loads (and caches) the core's bundled input JSON Schema for a message type; the default message type |
+| **Record diagnostics** | `pain001_lsp/_diagnostics.py` | Schema and IBAN/BIC checks per record, and the mapping of plain-dict diagnostics to `lsprotocol` |
+| **Record positions** | `pain001_lsp/_records.py` | Walks the raw text for braces outside strings: each record's first line, its closing brace, the record under a cursor |
+| **Formatting and outline** | `pain001_lsp/_layout.py` | The `formatting` and `document_symbol` handlers |
+| **Corpus** | `pain001_lsp/_corpus.py` | The `pain001.corpus.list` and `pain001.corpus.get` commands |
+| **Document routing** | `pain001_lsp/_documents.py` | Which documents get diagnostics, and from which engine (JSON or CSV) |
+| **Parse errors** | `pain001_lsp/_parsing.py` | Turns whatever `json.loads` raises on editor text into one diagnostic |
+| **CSV** | `pain001_lsp/_csv.py` | Wraps the core's CSV diagnostic engine into the server's plain-dict diagnostics (`compute_diagnostics_csv`) |
+| **Faces** | `pain001_lsp/_faces.py` | The `pain001.faces.list` and `pain001.faces.project` commands |
+| **Names** | `pain001_lsp/_names.py` | Human-readable names of the message types offered in completion |
+| **Command arguments** | `pain001_lsp/_commands.py` | Reads the arguments of a `workspace/executeCommand` request as one dict |
 | **Entry point** | `pain001_lsp.server:main` (console script: `pain001-lsp`) | Launches the server over stdio |
 | **Version** | `pain001_lsp/__init__.py` | Single source of truth (`__version__`); the LSP reads it for the protocol handshake |
-| **Tests** | `tests/test_lsp_server.py`, `tests/test_stdio_e2e.py` | In-process + end-to-end-via-subprocess regressions |
-| **Examples** | `examples/` | One runnable script per usage shape (helpers, quick-fix, configuration) |
-| **Release helpers** | `scripts/verify_versions.py` | Asserts `__version__`, `pyproject.toml`, and `CHANGELOG.md` agree |
+| **Tests** | `tests/` | In-process and end-to-end (subprocess over stdio) regressions; layout in [`DEVELOPMENT.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/DEVELOPMENT.md) |
+| **Examples** | `examples/` | One runnable script per usage shape (helpers, quick fix, configuration, corpus and faces commands) |
+| **Release helpers** | `scripts/verify_versions.py`, `scripts/release_notes.py` | Every version source agrees; the release page is written from `releases/vX.Y.Z.md` |
 
 ## Editor features
 
@@ -51,6 +64,12 @@ The current LSP surface:
 - **Hover** - schema description for the field under the cursor.
 - **Code actions** - multi-record "Add missing required fields"
   quick-fix.
+- **Formatting** - whole-document two-space JSON as one edit.
+- **Document symbols** - one symbol per top-level record.
+- **Commands** - `pain001.corpus.list` and `pain001.corpus.get` (the
+  core's example corpus), `pain001.faces.list` and
+  `pain001.faces.project` (another standard's shape of a pain.001
+  document, with a loss report).
 - **Workspace configuration** - `initializationOptions.messageType`
   override at startup; `workspace/didChangeConfiguration` for live
   switching.
@@ -63,6 +82,8 @@ The current LSP surface:
 - `hover_text(field, message_type=...)`
 - `missing_required_fields(record, message_type=...)`
 - `build_insert_text(missing, message_type=...)`
+- `corpus_list(options)` and `corpus_get(options)`
+- `pain001_lsp._faces.faces_list()` and `faces_project(options)`
 
 Every helper is independently testable; the LSP handlers below them are
 thin glue.
@@ -73,9 +94,10 @@ thin glue.
   the `pain001` public API (schemas, validators, the CSV diagnostic
   engine). New behaviour generally means a new helper that wires up an
   existing pain001 surface.
-- **Pygls 1.x for runtime parity.** Pinned to `pygls >=1.3,<2` so the
-  standalone server can coexist with the in-tree `pain001[lsp]` server
-  in the same environment.
+- **pygls 2.x, the core's range.** `pygls >=2.1,<3` is the range the
+  core's `lsp` extra declares, so both install in one environment.
+- **Handlers registered by explicit calls**, not decorators, so mutation
+  testing reaches them ([ADR 0003](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/adr/0003-register-handlers-explicitly.md)).
 - **URI-suffix dispatch.** `.csv` URIs run the CSV engine; everything
   else runs the JSON engine. No file content sniffing.
 - **Coverage enforced at 100%** line+branch and docstring; only the
@@ -87,15 +109,19 @@ thin glue.
 - **Add a diagnostic rule:** extend `compute_diagnostics()` (for JSON
   records) or add to the upstream
   `pain001.lsp.diagnostics.diagnostics_for_csv()` (for CSV cells).
-- **Add a code action:** add an `@server.feature(lsp.TEXT_DOCUMENT_CODE_ACTION)`
-  branch that returns a `lsp.CodeAction` with a `WorkspaceEdit`.
+- **Add a code action:** extend `code_action()` to return another
+  `lsp.CodeAction` with a `WorkspaceEdit`.
+- **Add a command:** write a pure helper returning a plain dict and a
+  thin `*_command` wrapper, then register it with `server.command(...)`
+  beside the others at the end of `server.py`.
 - **Surface a new pain001 helper:** once it lands in
   `pain001.constants` / `pain001.validation` / `pain001.lsp.diagnostics`,
   expose it through a new pure helper here.
 
 ## Where to look first
 
-- Runnable examples: [`examples/`](examples/)
-- Roadmap: [`ROADMAP.md`](ROADMAP.md)
-- Release process: [`RELEASING.md`](RELEASING.md)
+- Runnable examples: [`examples/`](https://github.com/sebastienrousseau/pain001-lsp/tree/main/examples/)
+- Development and CI gates: [`DEVELOPMENT.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/DEVELOPMENT.md)
+- Roadmap: [`ROADMAP.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/ROADMAP.md)
+- Release process: [`RELEASING.md`](https://github.com/sebastienrousseau/pain001-lsp/blob/main/RELEASING.md)
 - Parent library: [`pain001`](https://github.com/sebastienrousseau/pain001)
