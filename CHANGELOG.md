@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.86] - 2026-11-11
+
 ### Added
 
 - Add a code of conduct (adapted from Contributor Covenant 2.1, the
@@ -36,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Release 0.0.86 in lockstep with the pain001 suite.
 - Align the pre-commit ruff and black hooks with the locked versions,
   drop the `ruff-format` hook that fought black, and keep black off the
   vendored `tests/test_suite_conformance.py`, which the old hooks

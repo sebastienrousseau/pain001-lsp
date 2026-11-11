@@ -67,9 +67,9 @@
 python -m pip install pain001-lsp
 ```
 
-> **Latest release: v0.0.85**: released with pain001 0.0.85. Diagnostics,
-> completion and the editor commands are unchanged; support questions now
-> go to this repository's GitHub issues.
+> **Latest release: v0.0.86**: released with pain001 0.0.86. Diagnostics,
+> completion and the editor commands are unchanged; the manual and its
+> links are checked in CI, and the README's Python snippets run as tests.
 
 The package installs a `pain001-lsp` console command and pulls in the core
 [`pain001`][pain001] library, [`pygls`][pygls] and `jsonschema`. To keep the
