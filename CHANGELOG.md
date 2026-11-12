@@ -9,8 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.87] - 2026-11-12
+
 ### Changed
 
+- Release 0.0.87 in lockstep with the pain001 suite.
 - Requires pain001 0.0.87 (floor `>=0.0.87,<1`), the suite version.
 - Suite Consistency no longer runs on another workflow's completion
   (`workflow_run`). It audits the family daily and on dispatch, as the
