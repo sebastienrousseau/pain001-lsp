@@ -9,6 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.87] - 2026-11-12
+
+### Changed
+
+- Release 0.0.87 in lockstep with the pain001 suite.
+- Requires pain001 0.0.87 (floor `>=0.0.87,<1`), the suite version.
+- Suite Consistency no longer runs on another workflow's completion
+  (`workflow_run`). It audits the family daily and on dispatch, as the
+  core's does, since that trigger runs with the default branch's trust
+  whatever started it. Regenerated from pain001's
+  `scripts/render_ecosystem_workflows.py`.
+
+### Added
+
+- The README's Security section names the project's
+  [OpenSSF Best Practices passing badge](https://www.bestpractices.dev/projects/15786),
+  meeting the OpenSSF Best Practices silver criterion
+  `documentation_achievements`.
+
+### Fixed
+
+- Suite Consistency pins the core's ecosystem check at `febcd0a`, which
+  accepts the five pain001 SDK repositories as known members not yet
+  released. From the 0.0.86 release until this change every scheduled
+  run failed on them as undeclared repositories.
+
 ## [0.0.86] - 2026-11-11
 
 ### Added
