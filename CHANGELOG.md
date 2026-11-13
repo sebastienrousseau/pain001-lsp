@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- The docs toolchain requires soupsieve 4.0 or newer: earlier versions
+  have a polynomial-time denial of service in the descendant combinator
+  (GHSA-mmhr-3c5m-f64f). Only the hash-pinned docs set contained it, so
+  the published package is unaffected. The docs set now compiles from
+  Python 3.11.5, the oldest version soupsieve 4 supports.
+
 ## [0.0.87] - 2026-11-12
 
 ### Changed

@@ -3,7 +3,7 @@
 # Sphinx toolchain for .github/workflows/docs.yml on top of the runtime
 # set (autodoc imports the package). Hash-pinned in docs.txt.
 # Regenerate:
-#   uv pip compile --generate-hashes --universal --python-version 3.11 \
+#   uv pip compile --generate-hashes --universal --python-version 3.11.5 \
 #     requirements/docs.in -o requirements/docs.txt
 -r runtime.in
 sphinx
@@ -13,3 +13,7 @@ sphinx-autodoc-typehints
 sphinx-copybutton
 # GHSA-6q48-6c7w-9gw2; sphinx reaches certifi through requests.
 certifi>=2026.10.23
+# soupsieve (via furo's beautifulsoup4) before 4.0.0 has a polynomial-time
+# DoS in the descendant combinator (GHSA-mmhr-3c5m-f64f); 4.x needs
+# Python 3.11.5, so the docs set compiles from 3.11.5.
+soupsieve>=4.0.0
