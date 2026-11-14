@@ -37,7 +37,7 @@
 
 **The pain001-lsp ecosystem**
 
-- [The pain001-lsp ecosystem](#the-pain001-lsp-ecosystem): the core library and the other eight members of the pain001 suite
+- [The pain001-lsp ecosystem](#the-pain001-lsp-ecosystem): the core library and the other thirteen members of the pain001 suite
 
 **Library reference**
 
@@ -67,9 +67,9 @@
 python -m pip install pain001-lsp
 ```
 
-> **Latest release: v0.0.87**: released with pain001 0.0.87. Diagnostics,
-> completion and the editor commands are unchanged; the scheduled suite
-> audit runs green again and no longer uses `workflow_run`.
+> **Latest release: v0.0.88**: released with pain001 0.0.88. Diagnostics,
+> completion and the editor commands are unchanged; the ecosystem table
+> now lists the five SDKs that joined the suite.
 
 The package installs a `pain001-lsp` console command and pulls in the core
 [`pain001`][pain001] library, [`pygls`][pygls] and `jsonschema`. To keep the
@@ -111,7 +111,7 @@ in [`editors/vscode/`](https://github.com/sebastienrousseau/pain001-lsp/tree/mai
 - Python 3.11 or newer, tested in CI on 3.11, 3.12, 3.13 and 3.14 on
   Linux ([toolchain policy](https://github.com/sebastienrousseau/pain001-lsp/blob/main/docs/POLICIES.md)). The package is pure Python
   and runs wherever its dependencies do: macOS, Linux and Windows.
-- `pain001` 0.0.87 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
+- `pain001` 0.0.88 or newer (below 1.0), `pygls` 2.1 or newer (below 3) and
   `jsonschema` 4.17 or newer (below 5), installed automatically.
 - An editor with a Language Server Protocol client (Neovim, VS Code, Helix,
   Emacs, Sublime Text LSP and others).
@@ -156,7 +156,7 @@ print(missing_required_fields({"id": "MSG-0001"})[:3])
 
 ## The pain001-lsp ecosystem
 
-`pain001-lsp` is one of the nine repositories of the pain001 suite, built
+`pain001-lsp` is one of the fourteen repositories of the pain001 suite, built
 around the [`pain001`][pain001] library for ISO 20022 customer credit
 transfer initiation (`pain.001`) files. Every member ships the same version,
 the core first, and every interface calls the core's validators and
@@ -174,6 +174,11 @@ apply the same rules.
 | [`pain001-plugin-template`](https://github.com/sebastienrousseau/pain001-plugin-template) | Cookiecutter plugin scaffold | Develop an external loader or validator |
 | [`pain001-fast`](https://github.com/sebastienrousseau/pain001-fast) | Experimental native validation extension | Optional IBAN, BIC and character-set helpers |
 | [pain001.com](https://github.com/sebastienrousseau/pain001.github.io) | Website and browser demo | Browse documentation and try the library |
+| [`pain001-sdk-go`](https://github.com/sebastienrousseau/pain001-sdk-go) | Go client for the REST API, tested with the conformance kit | Call the REST API from Go services |
+| [`pain001-sdk-java`](https://github.com/sebastienrousseau/pain001-sdk-java) | Java client for the REST API, tested with the conformance kit | Call the REST API from JVM applications |
+| [`pain001-sdk-rust`](https://github.com/sebastienrousseau/pain001-sdk-rust) | Rust client for the REST API, tested with the conformance kit | Call the REST API from Rust programs |
+| [`pain001-sdk-dotnet`](https://github.com/sebastienrousseau/pain001-sdk-dotnet) | .NET client for the REST API, tested with the conformance kit | Call the REST API from .NET applications |
+| [`pain001-sdk-cpp`](https://github.com/sebastienrousseau/pain001-sdk-cpp) | C++ client for the REST API, tested with the conformance kit | Call the REST API from C++ programs |
 
 ---
 
