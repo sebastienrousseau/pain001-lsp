@@ -9,8 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.88] - 2026-11-14
+
 ### Changed
 
+- Release 0.0.88 in lockstep with the pain001 suite.
 - Requires pain001 0.0.88 (floor `>=0.0.88,<1`), the suite version.
 - Suite Consistency pins the core's ecosystem check at `404ebb9`, the
   pain001 0.0.88 release, which audits the five SDK repositories with
