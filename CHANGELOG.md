@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Requires pain001 0.0.88 (floor `>=0.0.88,<1`), the suite version.
 - Suite Consistency pins the core's ecosystem check at `404ebb9`, the
   pain001 0.0.88 release, which audits the five SDK repositories with
   the rest of the family; the job is now named "Every family
