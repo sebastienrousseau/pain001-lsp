@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the rest of the family; the job is now named "Every family
   publication agrees". Regenerated from pain001's
   `scripts/render_ecosystem_workflows.py`.
+- The README's ecosystem table lists the fourteen suite repositories:
+  the Go, Java, Rust, .NET and C++ SDKs joined the family at 0.0.88.
 
 ### Security
 
