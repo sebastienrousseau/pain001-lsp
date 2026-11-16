@@ -35,7 +35,7 @@ pytest = ">=9.0.3,<10.0.0"
 pytest-cov = ">=6.0.0,<8.0.0"
 pytest-benchmark = ">=5.0.0,<6.0.0"
 black = "^26.3.1"
-ruff = ">=0.1,<0.18"
+ruff = ">=0.17.5,<0.18"
 mypy = ">=1.11,<3.0"
 mutmut = "^3.7.0"
 bandit = "^1.7.0"
@@ -43,7 +43,7 @@ interrogate = "^1.7.0"
 packaging = ">=23"
 # Complexity gate (scripts/check_complexity.py); also in requirements/ci.in.
 radon = ">=6.0.1,<7"
-complexipy = { version = ">=8.1,<9", python = "<3.16" }
+complexipy = { version = ">=9.0.0,<10", python = "<3.16" }
 # Spelling gate (`make spelling`); requirements/docs-lint.in pins it for CI.
 codespell = ">=2.4.1,<3"
 

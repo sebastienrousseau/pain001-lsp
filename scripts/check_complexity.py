@@ -121,28 +121,36 @@ def measure() -> Report:
     return report
 
 
-def compare(current: Report, baseline: Report) -> list[str]:
-    """Return every way ``current`` breaks the ratchet on ``baseline``."""
-    problems: list[str] = []
+def _regressions(current: Report, baseline: Report) -> Iterator[str]:
+    """Yield every metric in ``current`` that is new or worse."""
     for key, metrics in current.items():
         allowed = baseline.get(key, {})
         for metric, value in metrics.items():
             if metric not in allowed:
-                problems.append(f"{key}: {metric} {value} is over the ceiling")
+                yield f"{key}: {metric} {value} is over the ceiling"
             elif value > allowed[metric]:
-                problems.append(
-                    f"{key}: {metric} rose from {allowed[metric]} to {value}"
-                )
+                yield f"{key}: {metric} rose from {allowed[metric]} to {value}"
+
+
+def _improvements(current: Report, baseline: Report) -> Iterator[str]:
+    """Yield every baselined metric that improved, so the baseline shrinks."""
     for key, metrics in baseline.items():
         for metric, value in metrics.items():
             now = current.get(key, {}).get(metric)
             if now is None or now < value:
-                problems.append(
+                yield (
                     f"{key}: {metric} improved from {value} to "
                     f"{now if now is not None else 'within the ceiling'}; "
                     f"run with --update to shrink the baseline"
                 )
-    return problems
+
+
+def compare(current: Report, baseline: Report) -> list[str]:
+    """Return every way ``current`` breaks the ratchet on ``baseline``."""
+    return [
+        *_regressions(current, baseline),
+        *_improvements(current, baseline),
+    ]
 
 
 def main(argv: list[str] | None = None) -> int:
