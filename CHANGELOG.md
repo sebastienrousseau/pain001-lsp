@@ -9,7 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.0.89] - Unreleased
+## [0.0.89] - 2026-11-16
+
+### Changed
+
+- Release 0.0.89 in lockstep with the pain001 suite.
+- Dependency updates folded in from Dependabot (#110 to #114): ruff
+  0.17.5 (floor `>=0.17.5` in pyproject.toml and requirements/ci.in),
+  complexipy 9 (range `>=9.0.0,<10`), filelock 4.2.10 in the ci, audit
+  and build sets, and myst-parser 5.2.0 with mdit-py-plugins 0.7.0 in
+  the docs set.
+- complexipy 9 scores cognitive complexity higher than 8 did and put
+  `scripts/check_complexity.py`'s `compare` at 18, over the ceiling of
+  15. It is split into `_regressions` and `_improvements` with the
+  same output and order; the complexity baseline stays empty.
 
 ## [0.0.88] - 2026-11-14
 
