@@ -4,7 +4,7 @@
 # The container runs the pygls language server over stdio so an LSP
 # client can launch it directly with ``docker run -i --rm pain001-lsp``.
 
-FROM python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704 AS builder
+FROM python:3.15-slim@sha256:65a65fc7b30b06cb6df4930fd4650697cb23f4c2698ab81fc87e4b031bc36928 AS builder
 
 WORKDIR /build
 
@@ -43,7 +43,7 @@ RUN python -m venv /opt/venv \
     && /opt/venv/bin/pip check
 
 
-FROM python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704
+FROM python:3.15-slim@sha256:65a65fc7b30b06cb6df4930fd4650697cb23f4c2698ab81fc87e4b031bc36928
 
 LABEL org.opencontainers.image.title="pain001-lsp" \
       org.opencontainers.image.description="Language Server Protocol server for the pain001 ISO 20022 library." \
