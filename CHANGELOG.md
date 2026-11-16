@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.90] - Unreleased
 
+### Changed
+
+- Requires pain001 0.0.90 (floor `>=0.0.90,<1`), the suite version.
+  pain001 0.0.90 keeps 0.0.89's dependency floors, so no other
+  package moves in the lock or the hash-pinned sets.
+
 ## [0.0.89] - 2026-11-16
 
 ### Changed
