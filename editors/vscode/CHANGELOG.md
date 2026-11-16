@@ -4,6 +4,10 @@
 
 The extension ships at the pain001 suite's version.
 
+## 0.0.89
+
+- Release with pain001-lsp 0.0.89. Editor diagnostics and commands are unchanged.
+
 ## 0.0.88
 
 - Release with pain001-lsp 0.0.88. Editor diagnostics and commands are unchanged.

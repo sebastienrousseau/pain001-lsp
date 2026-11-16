@@ -67,9 +67,9 @@
 python -m pip install pain001-lsp
 ```
 
-> **Latest release: v0.0.88**: released with pain001 0.0.88. Diagnostics,
-> completion and the editor commands are unchanged; the ecosystem table
-> now lists the five SDKs that joined the suite.
+> **Latest release: v0.0.89**: released with pain001 0.0.89. Diagnostics,
+> completion and the editor commands are unchanged; the development
+> tools move to ruff 0.17.5 and complexipy 9.
 
 The package installs a `pain001-lsp` console command and pulls in the core
 [`pain001`][pain001] library, [`pygls`][pygls] and `jsonschema`. To keep the
