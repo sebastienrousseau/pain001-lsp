@@ -9,10 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.0.90] - Unreleased
+## [0.0.90] - 2026-11-16
 
 ### Changed
 
+- Release 0.0.90 in lockstep with the pain001 suite.
+- The container image moves from `python:3.12-slim` to
+  `python:3.15-slim` (Dependabot #115), pinned by digest in both
+  Dockerfile stages. The test matrix stays on Python 3.11 to 3.14.
 - Requires pain001 0.0.90 (floor `>=0.0.90,<1`), the suite version.
   pain001 0.0.90 keeps 0.0.89's dependency floors, so no other
   package moves in the lock or the hash-pinned sets.
