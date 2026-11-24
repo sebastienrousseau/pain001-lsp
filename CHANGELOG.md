@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Work for 0.0.91. It moves under a dated `## [0.0.91]` heading in the
+release-prep commit, once pain001 0.0.91 is on PyPI and the `pain001`
+floor can follow it.
+
+### Changed
+
+- Dependency updates folded in from Dependabot (#117 to #122):
+
+  | Package | From | To | Where |
+  | --- | --- | --- | --- |
+  | ruff | 0.17.5 | 0.17.6 | `pyproject.toml`, `requirements/ci.in` (floor `>=0.17.6`) |
+  | filelock | 4.2.10 | 4.3.1 | ci, audit and build sets (floor `>=4.2.12`) |
+  | virtualenv | 21.15.6 | 21.15.13 | build set (floor `>=21.15.9`) |
+  | soupsieve | 4.1 | 4.1.3 | docs set (floor `>=4.1.2`) |
+  | github/codeql-action | 4.39.3 | 4.39.4 | CodeQL and Scorecard workflows |
+  | ossf/scorecard-action | 2.5.0 | 2.6.0 | Scorecard workflow |
+  | pain001 check-ecosystem action | 0.0.88 | 0.0.90 | Suite Consistency workflow |
+
+  None of them reaches the published package: its runtime set
+  (`requirements/runtime.txt`) does not change.
+
 ## [0.0.90] - 2026-11-16
 
 ### Changed
