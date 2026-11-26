@@ -9,12 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Work for 0.0.91. It moves under a dated `## [0.0.91]` heading in the
-release-prep commit, once pain001 0.0.91 is on PyPI and the `pain001`
-floor can follow it.
+## [0.0.91] - 2026-11-25
 
 ### Changed
 
+- Release 0.0.91 in lockstep with the pain001 suite, and requires
+  pain001 0.0.91 (floor raised in `pyproject.toml` and
+  `requirements/runtime.in`; the hash-pinned sets move only the
+  pain001 pin). The VS Code extension manifest follows the version.
 - Dependency updates folded in from Dependabot (#117 to #122):
 
   | Package | From | To | Where |
@@ -25,10 +27,10 @@ floor can follow it.
   | soupsieve | 4.1 | 4.1.3 | docs set (floor `>=4.1.2`) |
   | github/codeql-action | 4.39.3 | 4.39.4 | CodeQL and Scorecard workflows |
   | ossf/scorecard-action | 2.5.0 | 2.6.0 | Scorecard workflow |
-  | pain001 check-ecosystem action | 0.0.88 | 0.0.90 | Suite Consistency workflow |
+  | pain001 check-ecosystem action | 0.0.88 | 0.0.91 | Suite Consistency workflow |
 
   None of them reaches the published package: its runtime set
-  (`requirements/runtime.txt`) does not change.
+  (`requirements/runtime.txt`) changes only in the pain001 pin.
 
 ## [0.0.90] - 2026-11-16
 
